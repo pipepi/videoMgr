@@ -1,0 +1,5 @@
+ALTER TABLE `t_sysmgr_video`
+	CHANGE COLUMN `img_max` `img_max` VARCHAR(500) NOT NULL DEFAULT '' COMMENT '大图1280' AFTER `encode_asset_id`,
+	ADD COLUMN `img_max_414` VARCHAR(500) NOT NULL DEFAULT '' COMMENT '大图414' AFTER `img_max`,
+	ADD COLUMN `img_min_301` VARCHAR(500) NOT NULL DEFAULT '' COMMENT '小图301' AFTER `img_max_414`,
+	CHANGE COLUMN `img_min` `img_min` VARCHAR(500) NOT NULL DEFAULT '' COMMENT '小图188' AFTER `img_min_301`;

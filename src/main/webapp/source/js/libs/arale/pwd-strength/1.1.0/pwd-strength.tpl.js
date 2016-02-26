@@ -1,0 +1,1 @@
+define("arale/pwd-strength/1.1.0/pwd-strength.tpl",[],'<ul class="ui-pwd-strength">\n    <li class="ui-pwd-strength-item ui-pwd-strength-item-1"></li>\n    <li class="ui-pwd-strength-item ui-pwd-strength-item-2"></li>\n    <li class="ui-pwd-strength-item ui-pwd-strength-item-3"></li>\n    <li class="ui-pwd-strength-word"></li>\n</ul>\n');

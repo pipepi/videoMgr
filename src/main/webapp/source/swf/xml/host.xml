@@ -1,0 +1,33 @@
+
+<host_list>
+	<host id="dev">
+		<mall>http://192.168.1.250:8080</mall>
+		<video>http://192.168.1.206:8080</video>
+		<logoLink>http://192.168.1.250:8080</logoLink>
+	</host>
+
+	<host id="test">
+		<mall>http://192.168.1.207:8080</mall>
+		<video>http://192.168.1.206:8081</video>
+		<logoLink>http://192.168.1.207:8080</logoLink>
+	</host>
+
+	<host id="stage">
+		<mall>http://testenv2015-azt.kaimai8.com</mall>
+		<video>http://testpalyer2015-azt.kaimai8.com</video>
+		<logoLink>http://testenv2015-azt.kaimai8.com</logoLink>
+	</host>
+
+	<host id="kaimai8">
+		<mall>http://www.kaimai8.com</mall>
+		<video>http://player.kaimai8.com</video>
+		<logoLink>http://www.kaimai8.com</logoLink>
+	</host>
+
+	<host id="kssws">
+		<mall>http://123.59.165.170</mall>
+		<video>http://123.59.165.186</video>
+		<logoLink>http://123.59.165.170</logoLink>
+	</host>	
+
+</host_list>

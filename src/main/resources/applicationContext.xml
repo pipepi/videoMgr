@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.2.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+        
+    <context:property-placeholder ignore-unresolvable="true" location="classpath:jdbc.properties" />
+    <context:property-placeholder ignore-unresolvable="true" location="classpath:redis.properties" />  
+  
+    <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">  
+        <property name="maxIdle" value="${redis.maxIdle}" />  
+        <property name="maxActive" value="${redis.maxActive}" />  
+        <property name="maxWait" value="${redis.maxWait}" />  
+        <property name="testOnBorrow" value="${redis.testOnBorrow}" />  
+    </bean>  
+      
+    <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"  
+        p:host-name="${redis.host}" p:port="${redis.port}" p:password="${redis.pass}"  p:pool-config-ref="poolConfig"/>  
+      
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">  
+        <property name="connectionFactory"   ref="connectionFactory" />  
+    </bean> 
+    <!-- 数据源 -->
+    <bean id="dataSource" name="dataSource"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource" abstract="false"
+		lazy-init="default" autowire="default">
+		<!-- 
+		<property name="driverClass"><value>${dirverClassName}</value></property>
+		<property name="jdbcUrl"><value>${url}</value></property>
+		<property name="user"><value>${username}</value></property>
+		<property name="password"><value>${password}</value></property>
+		-->
+	    <property name="driverClass"><value>com.mysql.jdbc.Driver</value></property>
+		<!--<property name="jdbcUrl"><value>jdbc:mysql://localhost:3306/videomgr?characterEncoding=utf-8</value></property>
+		<property name="user"><value>admin</value></property>
+		<property name="password"><value>admin</value></property>-->
+		<property name="jdbcUrl"><value>jdbc:mysql://192.168.1.205:3306/videomgr?generateSimpleParameterMetadata=true</value></property>
+		<property name="user"><value>azt</value></property>
+		<property name="password"><value>123456</value></property>
+		<!--<property name="jdbcUrl"><value>jdbc:mysql://mysqlservices-sha.chinacloudapp.cn:3306/video9cooo?generateSimpleParameterMetadata=true</value></property>
+		<property name="user"><value>video9cooo%Azt_system</value></property>
+		<property name="password"><value>Azt@2015</value></property>-->
+		  <!--连接池中保留的最小连接数。-->            
+		  <property name="minPoolSize" value="10" />        
+		  <!--连接池中保留的最大连接数。Default: 15 -->         
+		  <property name="maxPoolSize" value="100" />        
+		  <!--最大空闲时间,1800秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 -->               
+		  <property name="maxIdleTime" value="1800" />        
+		  <!--当连接池中的连接耗尽的时候c3p0一次同时获取的连接数。Default: 3 -->               
+		  <property name="acquireIncrement" value="3" />        
+		  <property name="maxStatements" value="1000" />         
+		  <property name="initialPoolSize" value="10" />          
+		  <!--每60秒检查所有连接池中的空闲连接。Default: 0 -->       
+		  <property name="idleConnectionTestPeriod" value="60" />          
+		  <!--定义在从数据库获取新连接失败后重复尝试的次数。Default: 30 -->       
+		  <property name="acquireRetryAttempts" value="30" />         
+		  <property name="breakAfterAcquireFailure" value="true" />             
+		  <property name="testConnectionOnCheckout" value="false" />
+	</bean>
+
+    <!-- 模版注入 --> 
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate"> 
+        <property name="dataSource"> 
+            <ref bean="dataSource" /> 
+        </property> 
+    </bean>
+    
+    <!-- 配置事务管理器 -->
+    <bean id="transactionManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+        p:dataSource-ref="dataSource" />
+    <bean id="paramInfoCache" class="com.aepan.sysmgr.common.cache.ParamInfoCache" init-method="initMapParamInfo" autowire="byName"/>   
+    </beans>

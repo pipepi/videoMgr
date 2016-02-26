@@ -1,0 +1,1 @@
+define(function(a,b,c){function d(){f("body").append('<div id="j-loading-bg"></div><div id="j-loading"></div>')}function e(){f("#j-loading-bg").remove(),f("#j-loading").remove()}var f=a("$");c.exports={show:d,hide:e}});

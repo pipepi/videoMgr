@@ -1,0 +1,13 @@
+@CHARSET "UTF-8";
+#content{margin-left: 100px;}
+ul{float: left;margin:0px;padding-left: 0px;}
+ul li{float: left;list-style: none;border:1px solid #dcdcdc;background-color:#ffffff;text-align: center;height: 140px;}
+ul li:hover{color:#e3393c;cursor:pointer;}
+.check-win{position: absolute;margin-left: 35%;margin-top: 10%;}
+.offline-win{position: absolute;margin-left: 35%;margin-top: 10%;}
+.reason-win{position: absolute;margin-left: 35%;margin-top: 10%;}
+.list-page{text-align:center; padding-bottom:10px;}
+.list-page a{margin-left:8px;}
+.pre-page{border:1px solid #dedede;color:#7b7b7b;padding:7px 15px;}
+.next-page{border:1px solid #c8c8c8;color:#333333;padding:7px 15px;}
+.clear{clear:both}

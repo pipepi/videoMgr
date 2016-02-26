@@ -1,0 +1,33 @@
+.text_hide{line-height:999em;overflow:hidden}body{line-height:1.6;font-family:"Microsoft YaHei",Helvetica,Verdana,Arial,Tahoma;font-size:14px}
+body,h1,h2,h3,h4,p,ul,ol,dl,dd{margin:0}
+.msg_default_box{padding:12px 0;border:1px solid #2b4d69;background-color:#445f85;border-radius:3px;-moz-border-radius:3px;-webkit-border-radius:3px;text-align:center;letter-spacing:6px;color:#fff}
+.msg_default_box p{display:inline-block;*display:inline;*zoom:1;vertical-align:middle;letter-spacing:normal;text-align:left;font-size:16px}
+.area{text-align:center}.area_hd h2{display:none}
+.pay_bill .area_hd{border-bottom:3px solid #e0e3eb;padding-bottom:4px;height:60px}
+.pay_bill .area_hd .icon_wrapper{display:inline-block;*display:inline;*zoom:1;position:relative;top:34px;padding-left:12px;padding-right:14px;background-color:#fff}
+
+.area_bd{display:block}.pay_bill .area_bd{display:block}<!--样式隐藏!-->
+
+.wrapper{width:920px;margin-left:auto;margin-right:auto}
+.header{height:66px;background:url(../../images/pay/bg_pay_header15b813.png)}
+.pay_logo img{width:100%;height:100%}
+.content{padding-top:7px;padding-bottom:60px}.aside{clear:both;margin-top:14px;padding-top:20px;border-top:3px solid #e0e3eb}.footer{padding-top:20px;padding-bottom:60px;text-align:center;background-color:#f1f1f1;border-top:1px solid #c1c1c1;color:#8b8e98;font-size:12px}
+.pay_msg .msg_box,.pay_msg .msg_default_box{display:inline-block;*display:inline;*zoom:1;width:258px}
+.pay_msg_t{line-height:2.2;color:#000;font-size:26px;font-weight:400}.pay_msg_desc{padding-top:0;padding-bottom:4px;margin-top:-2px}
+.pay_msg_desc strong{margin-left:.3em;margin-right:.3em;color:#f29a00;font-weight:400}.pay_tip{padding-top:6px;padding-bottom:10px;color:#565656}
+.qr_img_wrapper{display:block;position:relative;height:306px}.qr_img_wrapper .qrcode{width:301px;height:301px}.pay_money{padding-bottom:20px;padding-top:50px;color:#585858;font-size:60px;font-weight:400;border-bottom:1px solid #d0d8e4;line-height:68px}.pay_money span{margin-right:-10px}.pay_bill_unit{padding:18px 0 40px;background:transparent url(../../images/pay/bg_pay_bill_split1518d5.png) no-repeat center bottom}
+.pay_bill_info label{float:left;font-size:14px;color:#8e8e8e}
+.pay_bill_info .pay_bill_value{float:right}
+.pay_add_on.arrow{display:inline-block;width:0;height:0;margin-right:10px;border-width:12px 0 12px 12px;border-color:#c4c7cf;border-style:dashed dashed dashed solid}
+.icon30_add_on{display:inline-block;width:30px;height:30px;vertical-align:middle;background:transparent url(../../images/pay/icon30_add_on1518d5.png) no-repeat 0 0}.help .icon30_add_on{background-position:0 0}
+.icon60_qr{display:inline-block;width:60px;height:60px;vertical-align:middle;background:transparent url(../../images/pay/icon60_qr15b813.png) no-repeat 0 0}
+.qr_default .icon60_qr{background-position:0 -60px}.qr_succ .icon60_qr{background-position:0 0}
+.icon60_pay{display:inline-block;width:60px;height:60px;vertical-align:middle;background:transparent url(../../images/pay/icon60_pay15b813.png) no-repeat 0 0}.shopping .icon60_pay{background-position:0 0}
+.icon110_msg{display:inline-block;width:110px;height:110px;vertical-align:middle;background:transparent url(../../images/pay/icon110_msg15b813.png) no-repeat 0 0}
+
+<!--二维码样式!-->
+.pay_error .icon110_msg{background-position:-110px 0}
+.pay_succ .icon110_msg{background-position:0 0}
+.qr_default #qr_normal,.qr_succ #qr_normal{display:block}.qr_default .msg_box{display:none}
+.qr_succ .msg_default_box{display:none}.pay_error #pay_error{display:block}.pay_succ #pay_succ{display:block}
+.guide{display:none;position:absolute;top:0;margin-left:-101px}

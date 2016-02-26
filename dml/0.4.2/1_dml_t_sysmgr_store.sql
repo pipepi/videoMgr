@@ -1,0 +1,1 @@
+update t_sysmgr_store set logo_url = concat('https://localtest.blob.core.chinacloudapi.cn',logo_url) where logo_url is not null;

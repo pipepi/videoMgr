@@ -1,0 +1,1 @@
+seajs.use(["$","underscore","bootstrap"],function(a){a(".help-popover").popover()});

@@ -1,0 +1,1 @@
+drop table  t_sysmgr_package_rule;
