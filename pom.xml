@@ -17,6 +17,10 @@
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
+           <encoding>UTF-8</encoding>
+           <compilerArguments>
+            <extdirs>src\main\webapp\WEB-INF\lib;F:\tomcat.unix.prog.heart.unity6d.com\apache-tomcat-8.0.15\lib</extdirs>
+          </compilerArguments>
         </configuration>
       </plugin>
       <plugin>
@@ -25,15 +29,6 @@
         <configuration>
           <version>3.1</version>
           <failOnMissingWebXml>false</failOnMissingWebXml>
-          <webResources>
-          	<resource>
-          		<directory>lib/</directory>
-          		<targetPath>WEB-INF/lib</targetPath>
-          		<includes>
-          			<include>**/*.jar</include>
-          		</includes>
-          	</resource>
-          </webResources>
         </configuration>
       </plugin>
     </plugins>
@@ -84,6 +79,12 @@
   		<groupId>com.ksyun</groupId>
   		<artifactId>ks3-kss-java-sdk</artifactId>
   		<version>0.6.1</version>
+  		<exclusions>
+  			<exclusion>
+  				<artifactId>commons-logging</artifactId>
+  				<groupId>commons-logging</groupId>
+  			</exclusion>
+  		</exclusions>
   	</dependency>
   	<dependency>
   		<groupId>commons-lang</groupId>
@@ -103,7 +104,7 @@
   	<dependency>
   		<groupId>org.springframework.data</groupId>
   		<artifactId>spring-data-redis</artifactId>
-  		<version>1.6.2.RELEASE</version>
+  		<version>1.1.1.RELEASE</version>
   	</dependency>
   	<dependency>
   		<groupId>com.google.code.gson</groupId>
@@ -144,6 +145,36 @@
   		<groupId>com.google.zxing</groupId>
   		<artifactId>javase</artifactId>
   		<version>3.2.1</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.slf4j</groupId>
+  		<artifactId>log4j-over-slf4j</artifactId>
+  		<version>1.7.16</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>mysql</groupId>
+  		<artifactId>mysql-connector-java</artifactId>
+  		<version>5.1.38</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.sun.jersey</groupId>
+  		<artifactId>jersey-client</artifactId>
+  		<version>1.13</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>javax.inject</groupId>
+  		<artifactId>javax.inject</artifactId>
+  		<version>1</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.codehaus.jackson</groupId>
+  		<artifactId>jackson-core-asl</artifactId>
+  		<version>1.9.2</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.codehaus.jackson</groupId>
+  		<artifactId>jackson-mapper-asl</artifactId>
+  		<version>1.9.2</version>
   	</dependency>
   </dependencies>
 </project>

@@ -31,7 +31,7 @@ public class UserRowMapper implements RowMapper<User>{
         user.setEmail(rs.getString("email"));
         user.setRoleId(rs.getInt("role_id"));
         user.setQqidKey(rs.getString("qqid_key"));
-        try {
+        /*try {
         	 if(!StringUtils.isBlank(rs.getString("rolename"))){
              	user.setRoleName(rs.getString("rolename"));
              }
@@ -40,7 +40,7 @@ public class UserRowMapper implements RowMapper<User>{
              }
 		} catch (Exception e) {
 			//ignore
-		}
+		}*/
        
         user.setPackageId(rs.getInt("package_id"));
         user.setStatus(rs.getInt("status"));

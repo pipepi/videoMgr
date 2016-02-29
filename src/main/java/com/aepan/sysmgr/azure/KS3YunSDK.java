@@ -210,7 +210,7 @@ public class KS3YunSDK {
 	    
 	    //高清
 	    Adp adp1161 = new Adp();
-	    adp1161.setCommand("tag=avop&f=mp4&res=720x480&vbr=1800k&vfr=30");
+	    adp1161.setCommand("tag=avop&f=mp4&res=854x480&vbr=1100k&vfr=30");
 	    adp1161.setKey(key+DEFAULT_ENCODE_KEY);
 	    adps.add(adp1161);
 	    

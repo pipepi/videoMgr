@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+	<property name="APP_Name" value="videoMgr"></property>
+	<contextName>${APP_Name}</contextName>
 	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">  
         <encoder>  
-            <pattern>%d{yy.MM.dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>  
+            <pattern>%d{yyyy.MM.dd HH:mm:ss:SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>  
         </encoder>  
     </appender>
+    <logger name="org.apache.http.wire" level="info" addtivity="false">
+    	<appender-ref ref="console"/>
+    </logger>
+    <logger name="com.mchange.v2.c3p0.impl" level="info" addtivity="false">
+    	<appender-ref ref="console"/>
+    </logger>
     <root level="debug">  
         <appender-ref ref="console"/>  
     </root> 
