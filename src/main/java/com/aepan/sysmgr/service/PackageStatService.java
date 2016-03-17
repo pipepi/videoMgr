@@ -80,4 +80,19 @@ public interface PackageStatService{
 	 */
 	void countUsedFlow();
 
+	/**
+	 * @param userId
+	 */
+	void countLindedVideoNum(int userId);
+
+	/**
+	 * @param userId
+	 */
+	void countLindedProductNum(int userId);
+
+	/**
+	 * @param userId
+	 */
+	void countStoreNum(int userId);
+
 }

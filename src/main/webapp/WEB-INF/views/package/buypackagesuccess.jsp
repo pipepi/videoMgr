@@ -43,7 +43,7 @@
         <img src="${ctx}/source/images/partner/package/1_4.jpg" width="58" height="22"/></li>
        </ul>
      </div> 
-	<input type="hidden" id="IndexUrl" value="${IndexUrl}">
+	<input type="hidden" id="IndexUrl" value="${partnerIndexUrl}">
      <div class="next-btns" style="width:350px; "><a href="" class="ck-infors-btns">查看详情说明</a><a href="javascript:goVideoManage()" class="naxt-btns-cons">我去开启</a>
       <div class="clear"></div>  
      </div>

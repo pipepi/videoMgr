@@ -3,19 +3,26 @@
  */
 package com.aepan.sysmgr.web.controller;
 
+import java.io.IOException;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
@@ -33,9 +40,11 @@ import com.aepan.sysmgr.model.hm.StoreSubInfo;
 import com.aepan.sysmgr.model.log.OperationLog;
 import com.aepan.sysmgr.model.lucene.ProductAttribute;
 import com.aepan.sysmgr.model.lucene.SearchParams;
+import com.aepan.sysmgr.model.lucene.StoreArray;
 import com.aepan.sysmgr.model.lucene.StoreSub;
 import com.aepan.sysmgr.model.packageinfo.PackageInfo;
 import com.aepan.sysmgr.model.packageinfo.PackageStat;
+import com.aepan.sysmgr.service.SearchService;
 import com.aepan.sysmgr.util.AjaxResponseUtil;
 import com.aepan.sysmgr.util.ConfigManager;
 import com.aepan.sysmgr.util.Constants;
@@ -54,7 +63,8 @@ import com.alibaba.fastjson.JSONObject;
 public class StoreController extends DataTableController {
 
 	private static final Logger logger = LoggerFactory.getLogger(StoreController.class);
-	
+	@Autowired
+	private SearchService searchService;
 	/**
 	 * 获取店铺list
 	 * @param request
@@ -286,23 +296,25 @@ public class StoreController extends DataTableController {
 		model.addAttribute("totalProductNum", totalProductNum);
 		
 		NumberFormat nf = NumberFormat.getNumberInstance();
+		nf.setGroupingUsed(false);
 		nf.setMaximumFractionDigits(3);
 		float  totalFlowNum=packageStatInfo.getFlowNum()/1024;
 		model.addAttribute("totalFlowNum", nf.format(totalFlowNum));
 		float usedFlowNum=packageStatInfo.getUsedFlowNum()/1024;
-		model.addAttribute("usedFlowNum", nf.format(usedFlowNum));
+		float remainFlowNum = totalFlowNum - usedFlowNum<0?0:totalFlowNum - usedFlowNum;
+		model.addAttribute("remainFlowNum", nf.format(remainFlowNum));
 		Date now = new Date();
 		boolean isOutDate=now.after(endTime);
 		model.addAttribute("isOutDate",isOutDate);
-		float flowUseRate=0;
+		double flowUseRate=0;
 		if(totalFlowNum!=0){
 			flowUseRate = usedFlowNum/totalFlowNum;
 		}
-		int flowUseRateInt=Math.round(flowUseRate*100);
+		double flowUseRateInt=flowUseRate*100;
 		if(flowUseRateInt>100){
 			flowUseRateInt=100;
 		}
-		model.addAttribute("flowUseRate",100-flowUseRateInt);
+		model.addAttribute("flowUseRate",100-Float.parseFloat(nf.format(flowUseRateInt)));
 		model.addAttribute("packageEndTime",packageEndTimeFormat);
 		
 		String memberId = (String) session.getAttribute(Constants.SESSION_MEMBERID);
@@ -312,7 +324,6 @@ public class StoreController extends DataTableController {
 		
 		return "store/bfqlist";
 	}
-	
 	
 	
 	/**
@@ -430,6 +441,7 @@ public class StoreController extends DataTableController {
 			lock.unlock();
 		}
 		model.addAttribute("success", true);
+		packageStatService.countStoreNum(user.getId());
 		AjaxResponseUtil.returnData(response, JSONObject.toJSONString(model));
 		
 		//记录操作日志
@@ -494,6 +506,7 @@ public class StoreController extends DataTableController {
 		if(storeId>0){
 			storeService.delete(configService,storeId, user.getId());
 		}
+		packageStatService.countStoreNum(user.getId());
 		OperationLogUtil.addLog(configService, 
 				new OperationLog(OperationLog.TYPE_播放器, 
 						user.getPartnerAccountId(),
@@ -503,7 +516,169 @@ public class StoreController extends DataTableController {
 						request.getRemoteAddr()));
 		return "redirect:/store/videolist";
 	}
+	private void setQK(StringBuffer query ,String k){
+		query.append("name:").append("*").append(k).append("*").append(" OR ")
+	     .append("desc:").append("*").append(k).append("*").append(" OR ")
+	     .append("v_name:").append("*").append(k).append("*").append(" OR ")
+	     .append("v_desc:").append("*").append(k).append("*").append(" OR ")
+	     .append("p_name:").append("*").append(k).append("*").append(" OR ")
+	     .append("p_desc:").append("*").append(k).append("*");
+	}
+	private void setQ(StringBuffer query ,String k,String storeType){
+		if(k==null&&storeType==null){
+			query.append("*:*");
+		}else if(k==null&&storeType!=null){
+			query.append("type:").append(storeType);
+		}else if(k!=null&&storeType==null){
+			setQK(query,k);
+		}else if(k!=null&&storeType!=null){
+			query.append("(");
+			setQK(query,k);
+			query.append(") ");
+		    query.append(" AND ").append("type:").append(storeType);
+		}
+	}
+	private static void setFQ(StringBuffer fq,String productAttrs, String priceStr){
+		if(productAttrs!=null&&!productAttrs.trim().isEmpty()){
+			String[] attrs = productAttrs.split("@");
+			if(attrs.length>0){
+				for (int i=0;i<attrs.length;i++) {
+					String[] aItems = attrs[i].split("_");
+					if(aItems!=null&&aItems.length>=2){
+						String attrId = aItems[0];
+						fq.append("(");
+						for(int j=1;j<aItems.length;j++){
+							String attrValue = aItems[j];
+							fq.append("(");
+							fq.append("p_attrname:").append(attrId)
+							.append(" AND ")
+							.append("p_attrvalue:").append(attrValue);
+							fq.append(")");
+							if(j<aItems.length-1){
+								fq.append(" OR ");
+							}
+						}
+						fq.append(")");
+						if(i<attrs.length-1){
+							fq.append(" AND ");
+						}
+					}
+					
+				}
+				
+			}
+		}
+		if(priceStr!=null&&priceStr.trim().length()>0){
+			String[] priceArry = priceStr.split("_");
+			if(priceArry!=null&&priceArry.length>=2){
+				float priceMin = Float.parseFloat(priceArry[0]);
+				float priceMax = Float.parseFloat(priceArry[1]);
+				if(fq.length()>0){
+					fq.append(" AND ");
+				}
+				fq.append("(")
+				.append("p_pricemin:").append("[").append(priceMin).append(" TO ").append(priceMax).append("]")
+				.append(" OR ")
+				.append("p_pricemax:").append("[").append(priceMin).append(" TO ").append(priceMax).append("]")
+				.append(")");
+				
+			}
+		}
+	}
+	public static void main(String[] args) {
+		StringBuffer fq = new StringBuffer();
+		String productAttrs = "1_2_3@2_4_6";
+		setFQ(fq, productAttrs,"2_3");
+		System.out.println(fq.toString());
+		
+	}
+	private String SetToString(ArrayList<String> set){
+		if(set!=null&&!set.isEmpty()){
+			String rs = "";
+			for (String s : set) {
+				rs += s +",";
+			}
+			rs = rs.substring(0,rs.length()-1);
+			return rs;
+		}
+		return "";
+	}
+	private List<StoreSub> toStoreSub(List<StoreArray> lstoreList){
+		List<StoreSub> list = new ArrayList<StoreSub>();
+		if(lstoreList!=null&&!lstoreList.isEmpty()){
+			for (StoreArray s : lstoreList) {
+				StoreSub sub = new StoreSub(
+						Integer.parseInt(s.getId()), 
+						s.getName(), 
+						s.getDesc(), 
+						s.getV_img(),
+						s.getV_img_max(),
+						SetToString(s.getType()),
+						s.getP_ids(),
+						s.getP_pricemax(),
+						s.getP_pricemin(),
+						s.getV_hot(),
+						s.getUpdate_time());
+				list.add(sub);
+			}
+			
+		}
+		return list;
+	}
 	@RequestMapping("/store/searchbylucene")
+	public String searchBySolr(HttpServletRequest request,HttpServletResponse response,ModelMap model){
+		HttpRequestInfo reqInfo = new HttpRequestInfo(request);
+		String k = reqInfo.getParameter("searchWord");//搜索框输入词   
+		String storeType = reqInfo.getParameter("typeId");//播放器类型
+		String productAttrs = reqInfo.getParameter("attrId");//41_139_126@40_132
+		String priceStr = reqInfo.getParameter("expKeywords");//价格区间 
+		String sortStr = reqInfo.getParameter("orderType");//排序字段  例如1_1代表人气升序，1_2人气降序,2_1价格升序,2_2价格降序。
+		String pageNo = reqInfo.getParameter("pageNo");//页面
+		String pageSize = reqInfo.getParameter("pageSize");//每页记录数
+		logger.info("searchWord="+k+
+				"   typeId="+storeType+
+				"   attrId="+productAttrs+
+				"   expKeywords="+priceStr+
+				"   orderType="+sortStr+
+				"   pageNo="+pageNo+
+				"   pageSize="+pageSize
+				);
+		String sortBy = "v_hot";//排序字段   p_pricemax  v_hot
+		String sortType = "desc";//排序方式  desc  asc
+		int pn = pageNo==null?1:Integer.parseInt(pageNo);
+		int ps = pageSize==null?10:Integer.parseInt(pageSize);
+		if(sortStr!=null&&sortStr.trim().length()>0){
+			String[] sortArry = sortStr.split("_");
+			if(sortArry!=null&&sortArry.length>=2){
+				int sby = Integer.parseInt(sortArry[0]);
+				sortBy = sby==1?"v_hot":(sby==2?"p_pricemax":"update_time");
+				sortType = Integer.parseInt(sortArry[1])==1?"asc":"desc";
+			}
+		}
+		StringBuffer query = new StringBuffer();
+		setQ(query, k, storeType);
+		StringBuffer fq = new StringBuffer();
+		setFQ(fq, productAttrs,priceStr);
+		
+		
+		SolrQuery solrQuery = new SolrQuery();
+		solrQuery.setQuery(query.toString());
+		solrQuery.setFilterQueries(fq.toString());
+		solrQuery.setSort(sortBy, sortType.equals("desc")?ORDER.desc:ORDER.asc);
+		solrQuery.setStart((pn-1)*ps);
+		solrQuery.setRows(ps);
+		try {
+			List<StoreArray> lstoreList = searchService.select(solrQuery);
+			List<StoreSub> list = toStoreSub(lstoreList);
+			String json = JSONUtil.toJson(list);
+			logger.debug("search by solr result json:\n\n"+json);
+			AjaxResponseUtil.returnData(response, json);
+		} catch (SolrServerException | IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	//@RequestMapping("/store/searchbylucene")
 	public String searchMulti(HttpServletRequest request, HttpServletResponse response, ModelMap model){
 		HttpRequestInfo reqInfo = new HttpRequestInfo(request);
 		String k = reqInfo.getParameter("searchWord");//搜索框输入词   
@@ -630,6 +805,17 @@ public class StoreController extends DataTableController {
 			AjaxResponseUtil.returnData(response, JSONUtil.toJson(list));
 		}else{
 			AjaxResponseUtil.returnData(response, "[]");
+		}
+		return null;
+	}
+	@RequestMapping("/store/mosthot")
+	public String getMostHotStoreId(HttpServletRequest request, HttpServletResponse response, ModelMap model){
+		HttpRequestInfo reqInfo = new HttpRequestInfo(request);
+		int productId = reqInfo.getIntParameter("pid", 0);
+		if(productId>0){
+			AjaxResponseUtil.returnData(response, ""+storeService.getMostHotStoreId(productId));
+		}else{
+			AjaxResponseUtil.returnData(response, "0");
 		}
 		return null;
 	}

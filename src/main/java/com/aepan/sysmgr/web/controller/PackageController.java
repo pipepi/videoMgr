@@ -3,12 +3,15 @@
  */
 package com.aepan.sysmgr.web.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.joda.time.DateTime;
+import org.joda.time.Months;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,7 @@ import com.aepan.sysmgr.model.User;
 import com.aepan.sysmgr.model.config.PartnerConfig;
 import com.aepan.sysmgr.model.log.OperationLog;
 import com.aepan.sysmgr.model.packageinfo.PackageInfo;
+import com.aepan.sysmgr.model.packageinfo.PackageStat;
 import com.aepan.sysmgr.service.ConfigService;
 import com.aepan.sysmgr.service.OrderService;
 import com.aepan.sysmgr.service.PackageService;
@@ -68,15 +72,37 @@ public class PackageController extends DataTableController {
 		if(!isLogin(request)){
 			return "redirect:/login";
 		}
-		List<PackageInfo> packagelist = packageService.getList(PackageInfo.PACKAGE_TYPE_PACKAGE, 1, 3);
+		List<PackageInfo> packagelist = packageService.getList(PackageInfo.PACKAGE_TYPE_PACKAGE, 1, 4);
     	String currentPackageId = request.getParameter("currentPackageId");
-
+    	int userId = getLoginUser(request).getId();
+    	List<Integer> linkPNumList = storeService.getLinkedProductPerStore(userId);
+    	int storeNum = linkPNumList==null?0:linkPNumList.size();
+    	model.addAttribute("storeNum", storeNum);
+    	model.addAttribute("linkPNumListStr",list2Str(linkPNumList));
+    	model.addAttribute("linkPNumCount",list2Count(linkPNumList));
 		model.addAttribute("packageList", packagelist);
     	model.addAttribute("currentPackageId", currentPackageId);
 		return "/package/buypackagelist";
 	}
-	
-	
+	private int list2Count(List<Integer> linkPNumList){
+		int count = 0;
+		if(linkPNumList!=null&&!linkPNumList.isEmpty()){
+			for (Integer integer : linkPNumList) {
+				count += integer;
+			}
+		}
+		return count;
+	}
+	private String list2Str(List<Integer> linkPNumList){
+		String rs = "";
+		if(linkPNumList!=null&&!linkPNumList.isEmpty()){
+			for (Integer integer : linkPNumList) {
+				rs += integer+",";
+			}
+			rs = rs.substring(0, rs.length()-1);
+		}
+		return rs;
+	}
 	
 	/**
 	 * 购买套餐列表
@@ -146,6 +172,7 @@ public class PackageController extends DataTableController {
 		HttpRequestInfo reqInfo = new HttpRequestInfo(request);
     	Integer id = reqInfo.getIntParameter("id", -1);
     	Integer duration = reqInfo.getIntParameter("duration", 0);
+    	Integer sort = reqInfo.getIntParameter("sort", 1);
     	if(id > -1){
     		PackageInfo rpackage = packageService.getById(id);
     		if(rpackage == null){
@@ -154,14 +181,25 @@ public class PackageController extends DataTableController {
     		if(duration!=0){
     			rpackage.setDuration(duration);
     		}
-    		float price = rpackage.getPrice();
+    		/*float price = rpackage.getPrice();
     		float monthFlowPrice = rpackage.getMonthFlowPrice();
     		
     		float totalPrice = (price+monthFlowPrice)*duration;
     		totalPrice = (float)Math.round(totalPrice*100)/100;//保留两位小数点
-    		
-    		rpackage.setTotalPrice(totalPrice);
+    		 */    		
+    		//rpackage.setTotalPrice(totalPrice);
     		model.addAttribute("packageInfo", rpackage);
+    		model.addAttribute("sort", sort);//套餐列表排序配置，方便获取套餐写死属性
+    		//当前套餐剩余有效期（月），剩余流量数(GB)
+    		User user = getLoginUser(request);
+    		PackageStat packageStat = packageStatService.getByUserId(user.getId());
+    		int remainMonths = packageStat.getRemainedValidityDate();
+    		String remainFlowStr = packageStat.getRemainedValidityFlow();
+    		double remainFlows = Double.valueOf(remainFlowStr);
+    		boolean showCheckWin = remainMonths<=0&&remainFlows<=0?false:true;
+    		model.addAttribute("showCheckWin", showCheckWin);
+    		model.addAttribute("remainMonths", ""+remainMonths);
+    		model.addAttribute("remainflows", remainFlowStr);
     	}
 		return "/package/buypackageconfirm";
 	}
@@ -209,22 +247,22 @@ public class PackageController extends DataTableController {
         productOrder.setChannelId("");
         
         if(PackageInfo.PACKAGE_TYPE_FLOW==rpackage.getPackageType()){
-        	productOrder.setAmount(Math.round(rpackage.getFlowNum()*1024));
+        	productOrder.setAmount(Math.round(rpackage.getFlowNum()));
         }else{
         	productOrder.setAmount(duration);
         }
         
         session.setAttribute(Constants.CURRENT_PAY_PACKAGE_ORDER_ID, orderId);
-        float packagePrice = rpackage.getPrice();
+ /*       float packagePrice = rpackage.getPrice();
         float monthFlowPrice = rpackage.getMonthFlowPrice();
         float totalPrice = (packagePrice+monthFlowPrice)*duration;
         
         totalPrice = (float)Math.round(totalPrice*100)/100;//保留两位小数点
-        
+*/        
 //        productOrder.setSellerName(sellerUser.getUserName());
         String[] p = {rpackage.getId()+""};
         productOrder.setProductId(p);
-        productOrder.setPrice(totalPrice);
+        productOrder.setPrice(rpackage.getTotalPrice());
         productOrder.setToAddress("");
         productOrder.setToMobile("");
         productOrder.setProductNames(rpackage.getName());
@@ -296,16 +334,16 @@ public class PackageController extends DataTableController {
     	Integer productNum = reqInfo.getIntParameter("productNum",0);
     	Float price = reqInfo.getFloatParameter("price",0);
     	Integer duration=reqInfo.getIntParameter("duration",0);
-    	Float monthFlowPrice = reqInfo.getFloatParameter("monthFlowPrice",0);
+    	//Float monthFlowPrice = reqInfo.getFloatParameter("monthFlowPrice",0);
     	float flowNum = reqInfo.getFloatParameter("flowNum",0);
     	
     	rpackage.setPlayerNum(playerNum);
-    	rpackage.setPrice(price);
+    	rpackage.setTotalPrice(price);
     	rpackage.setProductNum(productNum);
     	rpackage.setVideoNum(videoNum);
     	rpackage.setDuration(duration);
     	rpackage.setFlowNum(flowNum);
-    	rpackage.setMonthFlowPrice(monthFlowPrice);
+    	//rpackage.setMonthFlowPrice(monthFlowPrice);
     	
     	logger.debug("save package:"+rpackage);
     	packageService.save(rpackage);
@@ -343,16 +381,16 @@ public class PackageController extends DataTableController {
         	Integer productNum = reqInfo.getIntParameter("productNum",0);
         	Float price = reqInfo.getFloatParameter("price",0);
         	Integer duration=reqInfo.getIntParameter("duration",0);
-        	Float monthFlowPrice = reqInfo.getFloatParameter("monthFlowPrice",0);
+        	//Float monthFlowPrice = reqInfo.getFloatParameter("monthFlowPrice",0);
         	float flowNum = reqInfo.getFloatParameter("flowNum",0);
         	
         	rpackage.setPlayerNum(playerNum);
-        	rpackage.setPrice(price);
+        	rpackage.setTotalPrice(price);
         	rpackage.setProductNum(productNum);
         	rpackage.setVideoNum(videoNum);
         	rpackage.setDuration(duration);
         	rpackage.setFlowNum(flowNum);
-        	rpackage.setMonthFlowPrice(monthFlowPrice);
+        	//rpackage.setMonthFlowPrice(monthFlowPrice);
         	
         	logger.debug("update package:"+rpackage);
         	packageService.update(rpackage);

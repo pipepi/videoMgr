@@ -3,6 +3,7 @@
  */
 package com.aepan.sysmgr.service.implement;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,7 @@ public class PackageStatServiceImpl implements PackageStatService{
 		if(stat==null){
 			PackageStat packageStat = new PackageStat();
 			packageStat.setUserId(userId);
+			packageStat.setUsedFlowCountTime(new Date());
 			packageStatDao.save(packageStat );
 			stat = packageStatDao.getByUserId(userId);
 		}
@@ -98,5 +100,16 @@ public class PackageStatServiceImpl implements PackageStatService{
 	public void countUsedFlow(){
 		packageStatDao.countUsedFlow();
 	}
-	
+	@Override
+	public void countLindedVideoNum(int userId){
+		packageStatDao.countLindedVideoNum(userId);
+	}
+	@Override
+	public void countLindedProductNum(int userId){
+		packageStatDao.countLindedProductNum(userId);
+	}
+	@Override
+	public void countStoreNum(int userId){
+		packageStatDao.countStoreNum(userId);
+	}
 }

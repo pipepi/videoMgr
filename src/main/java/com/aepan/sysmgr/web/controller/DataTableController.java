@@ -77,8 +77,8 @@ public class DataTableController {
 		User user = getUser(req);
 		int userId = user.getId();
 		PackageStat packageStat = packageStatService.getByUserId(userId);
-		int  totalFlowNum=Math.round(packageStat.getFlowNum()/1024);
-		int usedFlowNum = Math.round(packageStat.getUsedFlowNum()/1024);
+		float  totalFlowNum=packageStat.getFlowNum()/1024;
+		float usedFlowNum = packageStat.getUsedFlowNum()/1024;
 		boolean flowEnough=true;
 		if(usedFlowNum>=totalFlowNum){
 			flowEnough=false;
@@ -105,7 +105,7 @@ public class DataTableController {
 		PostMethod method = new PostMethod(url);
 		method.setRequestBody("{id:"+partnerAccountId+"}");
 		method.setRequestHeader("Content-Type", "application/json");
-	    
+	    log.debug("\n"+url);
 		HttpClient client = new HttpClient();
 		try {
 			client.executeMethod(method);
@@ -138,7 +138,7 @@ public class DataTableController {
 		PostMethod method = new PostMethod(url);
 		method.setRequestBody("{id:"+subUserId+"}");
 		method.setRequestHeader("Content-Type", "application/json");
-	    
+		log.debug("\n"+url);
 		HttpClient client = new HttpClient();
 		try {
 			client.executeMethod(method);

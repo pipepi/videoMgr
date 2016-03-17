@@ -187,6 +187,7 @@ public class Product3Controller extends DataTableController {
         if(storeId > 0 ){
         	User user = (User)request.getSession().getAttribute(Constants.SESSION_USER);
         	String productIds = reqInfo.getParameter("productIds", "");
+        	LinkProductInfo lpi  = new LinkProductInfo();
         	if(productIds.trim().length()>0){
         		String[] pidArr = productIds.split(",");
         		List<StoreProduct> batchList = new ArrayList<StoreProduct>();
@@ -203,7 +204,7 @@ public class Product3Controller extends DataTableController {
         			}
 					batchList.add(sv);
 				}
-        		LinkProductInfo lpi = productService.canLink(user.getId(),user.getPackageId(), storeId, batchList);
+        		lpi = productService.canLink(user.getId(),user.getPackageId(), storeId, batchList);
         		logger.debug(lpi.toString());
         		if(lpi.can){
         			productService.deleteByUserIdANDStoreId(user.getId(), storeId);
@@ -248,6 +249,8 @@ public class Product3Controller extends DataTableController {
         		}
         	}
         	model.addAttribute("success", true);
+        	packageStatService.countLindedProductNum(user.getId());
+        	partnerDataService.sendMsgOfProductsLinked(lpi.linkPids, lpi.unLinkPids);
         	AjaxResponseUtil.returnData(response, JSONObject.toJSONString(model));
         	return null;
         }

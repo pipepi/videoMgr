@@ -26,18 +26,16 @@ public class PackageRowMapper implements RowMapper<PackageInfo>{
 		rpackage.setPlayerNum(rs.getInt("player_num"));
 		rpackage.setVideoNum(rs.getInt("video_num"));
 		rpackage.setProductNum(rs.getInt("product_num"));
-		rpackage.setPrice(rs.getFloat("price"));
+		rpackage.setTotalPrice(rs.getFloat("price"));
 		rpackage.setDuration(rs.getInt("duration"));
 		rpackage.setFlowNum(rs.getFloat("flow_num"));
-		rpackage.setMonthFlowPrice(rs.getFloat("month_flow_price"));
-		float price = rpackage.getPrice();
+		//rpackage.setMonthFlowPrice(rs.getFloat("month_flow_price"));
+		/*float price = rpackage.getPrice();
 		float monthFlowPrice = rpackage.getMonthFlowPrice();
 		int duration = rpackage.getDuration();
 		float totalPrice = (price+monthFlowPrice)*duration;
-		
 		totalPrice = (float)Math.round(totalPrice*100)/100;//保留两位小数点
-		
-		rpackage.setTotalPrice(totalPrice);
+		rpackage.setTotalPrice(totalPrice);*/	
 		rpackage.setCreateTime(rs.getTimestamp("create_time"));
 		rpackage.setCreateTime(rs.getTimestamp("update_time"));
 		return rpackage;

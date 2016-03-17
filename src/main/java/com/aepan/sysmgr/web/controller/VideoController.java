@@ -34,6 +34,7 @@ import com.aepan.sysmgr.model._enum.ResponseType;
 import com.aepan.sysmgr.model._enum.Validate;
 import com.aepan.sysmgr.model.config.FileConfig;
 import com.aepan.sysmgr.model.log.OperationLog;
+import com.aepan.sysmgr.model.packageinfo.PackageInfo;
 import com.aepan.sysmgr.model.packageinfo.PackageStat;
 import com.aepan.sysmgr.model.tempinfo.LinkVideoInfo;
 import com.aepan.sysmgr.service.ConfigService;
@@ -266,6 +267,7 @@ public class VideoController extends DataTableController {
         		}
         	}
         	model.addAttribute("success", true);
+        	packageStatService.countLindedVideoNum(user.getId());
         	AjaxResponseUtil.returnData(response, JSONObject.toJSONString(model));
         	return null;
         }
@@ -306,8 +308,8 @@ public class VideoController extends DataTableController {
 		User user = getUser(request);
 		int userId = user.getId();
 		PackageStat packageStat = packageStatService.getByUserId(userId);
-		int  totalFlowNum=Math.round(packageStat.getFlowNum()/1024);
-		int usedFlowNum = Math.round(packageStat.getUsedFlowNum()/1024);
+		float  totalFlowNum=packageStat.getFlowNum()/1024;
+		float usedFlowNum = packageStat.getUsedFlowNum()/1024;
 		boolean flowEnough=true;
 		if(usedFlowNum>=totalFlowNum){
 			flowEnough=false;
@@ -317,6 +319,11 @@ public class VideoController extends DataTableController {
 		boolean isOutDate=now.after(endTime);
 		model.addAttribute("isOutDate",isOutDate);
 		model.addAttribute("flowEnough",flowEnough);
+		PackageInfo packageInfo =  packageService.getById(user.getPackageId());
+		int hadVideoNum = videoService.getVideoCountByUserId(userId);
+		int canHaveVideoNum = packageInfo==null?0:packageInfo.getCanHaveVideoNum();
+		model.addAttribute("hadVideoNum", hadVideoNum);
+		model.addAttribute("canHaveVideoNum", canHaveVideoNum);
 		return "/video/ui/list";
 		
 	}

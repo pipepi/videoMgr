@@ -115,10 +115,9 @@ public class ProductServiceImpl implements ProductService {
 	public LinkProductInfo canLink(int userId,int packgeId,int storeId,List<StoreProduct> batchList){
 		LinkProductInfo lpi = new LinkProductInfo();
 		PackageInfo p = packageDao.getById(packgeId);
-		if(p.getProductNum()<batchList.size()){
+		if(p.getProductNum()<batchList.size()){//限定每个播放器可关联商品数量
 			lpi.onceStoreProductNum=batchList.size();
 			lpi.onceStoreCanLinkProductNum=p.getProductNum();
-			
 			return lpi;
 		}
 		
@@ -126,14 +125,14 @@ public class ProductServiceImpl implements ProductService {
 		List<StoreProduct> linkedList  = productDao.getStoreProductListByUserId(userId);
 		List<StoreProduct> exceptCurrList = new ArrayList<StoreProduct>();
 		if(linkedList!=null&&!linkedList.isEmpty()){
-			for (StoreProduct storeVideo : linkedList) {
-				//获得除去当前要关联播放器相关StoreVideo后的List<StoreVideo>
-				if(storeVideo.storeId != storeId){
-					exceptCurrList.add(storeVideo);
+			for (StoreProduct StoreProduct : linkedList) {
+				//获得除去当前要关联播放器相关StoreProduct后的List<StoreProduct>
+				if(StoreProduct.storeId != storeId){
+					exceptCurrList.add(StoreProduct);
 				}
 			}
 		}
-		//完成本次关联后的List<StoreVideo>
+		//完成本次关联后的List<StoreProduct>
 		exceptCurrList.addAll(batchList);
 
 		int linkedProductNum = exceptCurrList.size();
@@ -145,13 +144,61 @@ public class ProductServiceImpl implements ProductService {
 			lpi.can = false;
 		}else{
 			lpi.can = true;
+			setLinkAndUnlinkProductIds(lpi,linkedList,batchList);
 		}
 		return lpi;
 	}
-
-	/* (non-Javadoc)
-	 * @see com._aepan.sysmgr.service.ProductService#getStoreProductIdList(int)
+	/**
+	 * 设置 本次关联商品 要关联的商品id列表和要取消关联的商品id列表
+	 * @param linkPInfo 结果封装
+	 * @param linkedList 已关联商品
+	 * @param batchList 要关联商品
 	 */
+	private void setLinkAndUnlinkProductIds(LinkProductInfo linkPInfo,List<StoreProduct> linkedList,List<StoreProduct> batchList){
+		String linkPids = "";
+		String unLinkPids = "";
+		if(linkedList==null||linkedList.isEmpty()){
+			if(batchList==null||batchList.isEmpty()){
+				//nothing to od
+			}else{
+				linkPids = getIdsStr(batchList);
+			}
+		}else{
+			if(batchList==null||batchList.isEmpty()){
+				unLinkPids = getIdsStr(linkedList);
+			}else{
+				for(int i = 0 ;i<linkedList.size();i++){
+					for(int j=0;j<batchList.size();i++){
+						StoreProduct a = linkedList.get(i);
+						StoreProduct b = batchList.get(j);
+						if(!batchList.contains(a)){
+							linkPids += a.getProductId()+",";
+						}
+						if(!linkedList.contains(b)){
+							unLinkPids += b.getProductId()+",";
+						}
+					}
+				}
+				if(linkPids.length()>0){
+					linkPids = linkPids.substring(0,linkPids.length()-1);
+				}
+				if(unLinkPids.length()>0){
+					unLinkPids = unLinkPids.substring(0,unLinkPids.length()-1);
+				}
+			}
+		}
+		linkPInfo.unLinkPids = unLinkPids;
+		linkPInfo.linkPids = linkPids;
+	}
+	private String getIdsStr(List<StoreProduct> batchList){
+		StringBuffer sb = new StringBuffer();
+		for (StoreProduct sp : batchList) {
+			sb.append(sp.getProductId()).append(",");
+		}
+		String rs = sb.toString();
+		return rs.substring(0,rs.length()-1);
+	}
+	
 	@Override
 	public List<Integer> getStoreProductIdList(int storeId) {
 		return productDao.getStoreProductIdList(storeId);

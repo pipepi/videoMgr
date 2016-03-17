@@ -14,6 +14,9 @@ public class User implements Serializable {
 	
 	public static final int PARTNER_SELLER=1;
 	public static final int PARTNER_ADMIN=2;
+	public static final int STATUS_FREEZE = -1;//冻结
+	public static final int STATUS_CHECKING = 0;//审核中
+	public static final int STATUS_OK = 1;//正常
 	/**
 	 * 
 	 */

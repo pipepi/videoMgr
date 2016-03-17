@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -32,6 +34,7 @@ import com.aepan.sysmgr.service.CacheService;
 import com.aepan.sysmgr.service.StorageService;
 import com.aepan.sysmgr.service.VideoService;
 import com.aepan.sysmgr.util.DateUtil;
+import com.aepan.sysmgr.util.ThreadManager;
 
 /**
  * @author Administrator
@@ -61,7 +64,8 @@ public class VideoServiceImpl implements VideoService {
 		return id;
 	}
 	private void asyncUploadAzure(Video video){
-		new Thread(new UploadAzure(video)).start(); 
+		//new Thread(new UploadAzure(video)).start(); 
+		ThreadManager.getInstance().execute(new UploadAzure(video));
 	}
 	private  class  UploadAzure implements Runnable {
 		private Video video;

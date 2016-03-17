@@ -120,6 +120,7 @@ public class ConfigManager {
 				//partnerConfig.ROOT_PATH_KAIMAI8 = "http://192.168.1.250:8080";
 				luceneConfig.DIR_URL = "E:\\code\\video0.3.0\\videoMgr\\dir";
 				luceneConfig.INDEX_URL = "E:\\code\\video0.3.0\\videoMgr\\lucene\\store";
+				luceneConfig.SOLR_URL = "http://192.168.1.223:8983/solr/mycollection_shard2_replica1";
 				config.config = JSONUtil.toJson(luceneConfig);
 				configService.add(config);
 			}

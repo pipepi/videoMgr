@@ -113,6 +113,7 @@ function saveProductLinks(){
 			  $('#linked-num2-span-'+_player).html("<strong>"+_linked_productids_arr.length+"</strong>");
 			  $('#link-product-a-'+_player).attr("linked-product-ids",pids);
 			 $("#product-list").toggle();
+			 window.location.reload();
 		  }else{
 			  if(attr.ol>0){
 				  alert("单个播放器关联["+attr.ol+"]个商品，但您的套餐单个播放器只可承载["+attr.oc+"]个！");

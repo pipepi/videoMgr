@@ -103,6 +103,10 @@
 			_attr_value = _old_value.html();
 			var _mouse_y = e.pageY;
 			$(".edit").find("input").val(_attr_value);
+			//console.log(_mouse_y);
+			if(_mouse_y>450){
+				_mouse_y = 450;
+			}
 			$(".edit").css("top",_mouse_y+"px");
 			$(".edit").css("left","150px");
 			$(".edit").toggle();
@@ -254,6 +258,7 @@
   	<table confid="5" confname="LuceneConfig">
   		<tr><td>索引创建目录</td><td>${conf.luceneConfig.INDEX_URL }</td><td><div class="btn" attrname="INDEX_URL"></div></td></tr>
   		<tr><td>庖丁词库目录</td><td>${conf.luceneConfig.DIR_URL }</td><td><div class="btn" attrname="DIR_URL"></div></td></tr>
+  		<tr><td>solrCloud地址</td><td>${conf.luceneConfig.SOLR_URL }</td><td><div class="btn" attrname="SOLR_URL"></div></td></tr>
   	</table>
 </div>
 <div class="title_1">支付配置</div>

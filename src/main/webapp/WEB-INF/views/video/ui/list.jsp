@@ -70,9 +70,6 @@
 <script type="text/javascript">
 var ctx = "${ctx}";
 	function deleteVideo(id){
-		if(!checkPackageStat()){
-			return
-		}
 		if(confirm("确定删除?")){
 			window.location="${ctx}/video/delete?res_type=HTML&video_id="+id;
 		}
@@ -161,14 +158,13 @@ function checkPackageStat(){
 	
 	var isOutDate="${isOutDate}";
 	var flowEnough="${flowEnough}";
-
 	if(isOutDate=="true"){
 		$("#packagelimitDesc").css("display","");
-		$("#packagelimitDesc").text("套餐已过期。请续约，");
+		$("#packagelimitDesc").text("套餐已过期，请续约。");
 		return false;
 	}else if(flowEnough=='false'){	
 		$("#packagelimitDesc").css("display","");
-		$("#packagelimitDesc").text("流量不够.请购买流量。");
+		$("#packagelimitDesc").text("流量不够，请购买流量。");
 		return false;
 	}
 	return true;
@@ -178,7 +174,14 @@ function checkPackageStat(){
 
 function addVideo(){
 	if(!checkPackageStat()){
-		return
+		return;
+	}
+	var hadVideoNum = parseInt("${hadVideoNum}",10);
+	var canHaveVideoNum = parseInt("${canHaveVideoNum}",10);
+	if(hadVideoNum>=canHaveVideoNum){
+		$("#packagelimitDesc").css("display","");
+		$("#packagelimitDesc").text("套餐视频数量已满["+hadVideoNum+"/"+canHaveVideoNum+"]");
+		return;
 	}
 	window.location='${ctx}/video/async/page';	
 }

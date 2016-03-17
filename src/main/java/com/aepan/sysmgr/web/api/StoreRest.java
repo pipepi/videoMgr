@@ -114,31 +114,31 @@ public class StoreRest {
 	public String showStore( HttpServletRequest request, HttpServletResponse response ) throws IOException {
 		HttpRequestInfo reqInfo = new HttpRequestInfo(request);
         int storeId = reqInfo.getIntParameter("storeId", -1);
-        if(storeId>0){
-        	String storeInfoCache = cacheService.get(CacheObject.STOREINFO, storeId);
-        	if(storeInfoCache!=null){
-        		logger.debug("\n  /rest/store/showStore \nload from redis storeId="+storeId+"\n");
-        		return storeInfoCache;
-        	}
-        }
-        
         StoreInfo storeInfo = new StoreInfo();
         Store store =null;
-		try {
-        	 store  = storeService.getById(storeId);
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return responseLog(JsonResp.CODE_GET_STORE_FAILED , "Get store error id:"+storeId);
-		}
-      
-		
+        store  = storeService.getById(storeId);
+        if(store ==null){
+        	return responseLog(JsonResp.CODE_GET_STORE_FAILED , "Get store error id:"+storeId);
+        }
+        //校验播放器归属用户状态  已冻结用户，播放器不可播放
+        int userId = store.getUserId();
+        User user = userService.getByUserId(userId);
+        if(user==null||user.getStatus()==User.STATUS_FREEZE){
+        	return responseLog(JsonResp.CODE_GET_USER_FREEZE , "Get store error id:"+storeId+"user had been freezed,userId="+user.getId());
+        }
+        
+        //从缓存获取播放器信息
+    	String storeInfoCache = cacheService.get(CacheObject.STOREINFO, storeId);
+    	if(storeInfoCache!=null){
+    		logger.debug("\n  /rest/store/showStore \nload from redis storeId="+storeId+"\n");
+    		return storeInfoCache;
+    	}
+        
 		storeInfo.setId(store.getId());
 		storeInfo.setShareContent(store.getShareContent());
 		storeInfo.setName(store.getName());
 		storeInfo.setDescription(store.getDescription());
 		storeInfo.setUserId(store.getUserId());
-        int userId = store.getUserId();
-        User user = userService.getByUserId(userId);
         if(user!=null){
         	storeInfo.setQqidKey(user.getQqidKey());
         }

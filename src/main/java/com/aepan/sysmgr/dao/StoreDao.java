@@ -52,4 +52,10 @@ public interface StoreDao {
 	 * @return
 	 */
 	List<StoreSubInfo> getSellerOtherStores(int userId, int storeId);
+	/**
+	 * 获取商品最热的播放器id
+	 * @param productId
+	 * @return
+	 */
+	int getMostHotStoreId(int productId);
 }

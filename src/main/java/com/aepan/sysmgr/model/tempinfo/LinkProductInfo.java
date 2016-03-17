@@ -22,4 +22,12 @@ public class LinkProductInfo implements Serializable{
 	public int linkedProductNum;
 	//套餐中可关联数量
 	public int canlinkProductNum;
+	//关联后商品id列表
+	public String linkPids;
+	//取消关联商品id列表
+	public String unLinkPids;
+	public LinkProductInfo() {
+		linkPids = "";
+		unLinkPids = "";
+	}
 }

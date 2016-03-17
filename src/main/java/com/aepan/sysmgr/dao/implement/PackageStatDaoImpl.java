@@ -34,7 +34,7 @@ public class PackageStatDaoImpl implements PackageStatDao {
 	@Override
 	public boolean save(PackageStat packageStat) {
 		StringBuffer sb = new StringBuffer(" insert into t_sysmgr_package_stat(user_id,"
-				+ "package_id,player_num,video_num,product_num,flow_num,used_flow_num,duration,send_notify,start_time,end_time,create_time,update_time) values( ?,?,?,?,?,?,?,?,?,?,?,now(),now())");
+				+ "package_id,player_num,video_num,product_num,flow_num,used_flow_num,used_flow_count_time,duration,send_notify,start_time,end_time,create_time,update_time) values( ?,?,?,?,?,?,?,?,?,?,?,?,now(),now())");
 
 		int ret = jdbcTemplate.update(sb.toString(), new Object[]{
 			packageStat.getUserId(),
@@ -44,6 +44,7 @@ public class PackageStatDaoImpl implements PackageStatDao {
 			packageStat.getProductNum(),
 			packageStat.getFlowNum(),
 			packageStat.getUsedFlowNum(),
+			packageStat.getUsedFlowCountTime(),
 			packageStat.getDuration(),
 			packageStat.getSendNotify(),
 			packageStat.getStartime(),
@@ -75,12 +76,14 @@ public class PackageStatDaoImpl implements PackageStatDao {
 	public boolean updatePackageStat(PackageStat packageStat) {
 		
 		
-		StringBuffer sb = new StringBuffer(" update t_sysmgr_package_stat set package_id=?,duration=?,flow_num=?,send_notify=0,start_time=?,end_time=?,update_time=now() where user_id = ? ");
+		StringBuffer sb = new StringBuffer(" update t_sysmgr_package_stat set package_id=?,duration=?,flow_num=?,used_flow_num=?,used_flow_count_time=?,send_notify=0,start_time=?,end_time=?,update_time=now() where user_id = ? ");
 
 		int ret = jdbcTemplate.update(sb.toString(), new Object[]{
 			packageStat.getPackageId(),
 			packageStat.getDuration(),
 			packageStat.getFlowNum(),
+			packageStat.getUsedFlowNum(),
+			packageStat.getUsedFlowCountTime(),
 			packageStat.getStartime(),
 			packageStat.getEndTime(),
 			packageStat.getUserId()
@@ -128,7 +131,7 @@ public class PackageStatDaoImpl implements PackageStatDao {
 	
 	@Override
 	public List<PackageStat> queryLessThan30PackageStat(){
-		String sql = "SELECT * FROM t_sysmgr_package_stat  where (send_notify&1)=0 and date_add(end_time,interval -30 day)<now() limit 2000";
+		String sql = "SELECT * FROM t_sysmgr_package_stat  where (send_notify&1)=0  and duration>1 and date_add(end_time,interval -30 day)<now()  limit 2000";
 		return jdbcTemplate.query(sql, new PackageStatRowMapper());
 	}
 	
@@ -193,5 +196,19 @@ public class PackageStatDaoImpl implements PackageStatDao {
 	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 	    logger.debug("countUsedFlow updateRows="+updateRows+" at "+sdf.format(now).toString());
 	}
-	 
+	@Override
+	public void countLindedVideoNum(int userId){
+		String sql = "update t_sysmgr_package_stat set video_num = (select count(id) from t_sysmgr_store_video where user_id = t_sysmgr_package_stat.user_id) where user_id = ? ";
+		jdbcTemplate.update(sql,userId);
+	}
+	@Override
+	public void countLindedProductNum(int userId){
+		String sql = "update t_sysmgr_package_stat set product_num = (select count(id) from t_sysmgr_store_product where user_id = t_sysmgr_package_stat.user_id) where user_id = ?";
+		jdbcTemplate.update(sql,userId);
+	}
+	@Override
+	public void countStoreNum(int userId){
+		String sql = "update t_sysmgr_package_stat set player_num = (select count(id) from t_sysmgr_store where user_id = t_sysmgr_package_stat.user_id) where user_id = ? ";
+		jdbcTemplate.update(sql,userId);
+	}
 }

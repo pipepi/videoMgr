@@ -51,8 +51,8 @@ var _ctx = "${ctx}";
                     	 </div>
                     	 <!-- <a href="javascript:buyPackage();" class="taocan-xy">套餐续约</a>  -->
                     	 </li>
-                        <li> <div style="padding-top:5px; float:left; color:#666666;"><strong style="color:#333333;font-size:16px;">当前流量使用情况</strong></div>
-                        <div class="bf-list-jdt"><div class="bf-list-jdt-cons" style="width:${flowUseRate}%;"></div><div class="bf-liu-font">${usedFlowNum}G/${totalFlowNum}G</div></div>
+                        <li> <div style="padding-top:5px; float:left; color:#666666;"><strong style="color:#333333;font-size:16px;">当前流量剩余情况</strong></div>
+                        <div class="bf-list-jdt"><div class="bf-list-jdt-cons" style="width:${flowUseRate}%;"></div><div class="bf-liu-font">${remainFlowNum}G/${totalFlowNum}G</div></div>
                         <div style="float:left; margin-top:7px;margin-left:5px; color:#666666;">&nbsp;</div>
                         <!--  <a href="javascript:buyFlow();" class="goumai-ll">购买流量</a>  -->
                         
@@ -206,18 +206,18 @@ function closePreView(){
 }
 
 function checkPackageStat(){
-	var usedFlowNum="${usedFlowNum}"
+	var remainFlowNum="${remainFlowNum}"
 		var totalFlowNum = "${totalFlowNum}"
 		var isOutDate="${isOutDate}";
 		var packageEndTime="${packageEndTime}";
 
 		if(isOutDate=="true"){
 			$("#packagelimitDesc").css("display","");
-			$("#packagelimitDesc").text("套餐已过期。请续约，");
+			$("#packagelimitDesc").text("套餐已过期，请续约。");
 			return false;
-		}else if(usedFlowNum>=totalFlowNum){	
+		}else if(remainFlowNum<=0){	
 			$("#packagelimitDesc").css("display","");
-			$("#packagelimitDesc").text("流量不够.请购买流量。");
+			$("#packagelimitDesc").text("流量不够，请购买流量。");
 			return false;
 		}
 		return true;

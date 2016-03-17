@@ -90,4 +90,21 @@ public interface StoreService {
 	 * @return
 	 */
 	List<StoreVideo> getStoreVideoList(int userId, int storeId);
+	/**
+	 * @param configService
+	 * @param store
+	 */
+	void addSolr(ConfigService configService, Store store);
+	/**
+	 * 获取每个播放器关联视频数量 =》用于购买套餐时弹窗
+	 * @param userId
+	 * @return
+	 */
+	List<Integer> getLinkedProductPerStore(int userId);
+	/**
+	 * 获取商品最热的播放器id
+	 * @param productId
+	 * @return
+	 */
+	int getMostHotStoreId(int productId);
 }

@@ -13,4 +13,8 @@ import com.aepan.sysmgr.model.hm.PartnerProductPage;
 public interface PartnerDataService {
 	public PartnerProductPage getProducts(int partnerUserId,int page,int pagesize,String orderBy,String orderType);
 	public PartnerProductPage getProducts(String productIds);
+	/**开通视频电商 通知*/
+	void sendMsgOfOpenVideoStore(int partnerUserId, int packageId);
+	/**商品被关联或取消关联 通知*/
+	void sendMsgOfProductsLinked(String linkedPids,String unlinkedPids);
 }

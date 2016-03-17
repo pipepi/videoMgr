@@ -447,4 +447,9 @@ public class ProductDaoImpl implements ProductDao {
 		return jdbcTemplate.update(" update t_sysmgr_product_type set name = ? where id = ? ",
 				new Object[]{productType.getName(), productType.getId()}) > 0;
 	}
+	@Override
+	public List<Integer> getLinkedProductNumPerStore(int userId){
+		String sql = "select count(product_id) from t_sysmgr_store_product where user_id = ? group by store_id ";
+		return jdbcTemplate.queryForList(sql, new Object[] {userId}, Integer.class);
+	}
 }

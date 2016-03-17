@@ -154,6 +154,8 @@ function finishPay(){
   		  console.log(attr);
   		  if(attr.success){
   			 go(_pn);
+  			backChoose();
+  			cancelPay();
   		  }else{
   			  $("#payInfo").addClass("zf-fonts");
   			  $("#payInfo").text("未完成支付，请支付");

@@ -3,12 +3,18 @@
  */
 package com.aepan.sysmgr.service.implement;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.NumericField;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +40,7 @@ import com.aepan.sysmgr.model.packageinfo.PackageStat;
 import com.aepan.sysmgr.service.CacheService;
 import com.aepan.sysmgr.service.ConfigService;
 import com.aepan.sysmgr.service.PartnerDataService;
+import com.aepan.sysmgr.service.SearchService;
 import com.aepan.sysmgr.service.StoreService;
 import com.aepan.sysmgr.util.lucene.SearchHelper;
 import com.aepan.sysmgr.web.controller.VideoController;
@@ -61,6 +68,8 @@ public class StoreServiceImpl implements StoreService {
 	private CacheService cacheService;
 	@Autowired
 	private PartnerDataService partnerDataService;
+	@Autowired
+	private SearchService searchService;
 	@Override
 	public PageList<Store> getList(Map<String, Object> params, int pageNo,
 			int pageSize) {
@@ -200,6 +209,7 @@ public class StoreServiceImpl implements StoreService {
 	public void update(ConfigService configService,Store store){
 		store.harmSensitiveWord();
 		//store.addLucene();
+		addSolr(configService, store);
 		addLucene(configService,store);
 		cacheService.delete(CacheObject.STOREINFO, store.getId());
 		storeDao.update(store);
@@ -213,12 +223,24 @@ public class StoreServiceImpl implements StoreService {
 		packageStatDao.updateUsedNum(packageStat);
 		//删除播放器的和商品、视频的关联关系
 		videoDao.deleteByUserIdANDStoreId(userId, storeId);
+		msgPartnerProductUnlink(userId,storeId);
 		productDao.deleteByUserIdANDStoreId(userId, storeId);
 		//删除搜索索引
 		SearchHelper.delete(configService, storeId+"");
 		//清楚缓存
 		cacheService.delete(CacheObject.STOREINFO, storeId);
 		
+	}
+	private void msgPartnerProductUnlink(int userId,int storeId){
+		List<StoreProduct> sp = productDao.getStoreProductList(userId, storeId);
+		if(sp!=null&&!sp.isEmpty()){
+			String unLinkPids = "";
+			for (StoreProduct p : sp) {
+				unLinkPids +=p.getProductId()+",";
+			}
+			unLinkPids = unLinkPids.substring(0,unLinkPids.length()-1);
+			partnerDataService.sendMsgOfProductsLinked("", unLinkPids);
+		}
 	}
 	@Override
 	public int getLinkedProductNum(int storeId){
@@ -234,6 +256,7 @@ public class StoreServiceImpl implements StoreService {
 	public void addLucene(ConfigService configService,int storeId){
 		Store store = getById(storeId);
 		if(store!=null){
+			addSolr(configService, store);
 			addLucene(configService,store);
 		}
 	}
@@ -276,6 +299,135 @@ public class StoreServiceImpl implements StoreService {
 			}
 		}
 		return null;
+	}
+	private com.aepan.sysmgr.model.lucene.Store getLuceneStore(ConfigService configService,Store store){
+		if(store != null){
+			int userId = store.getUserId();
+			int storeId = store.getId();
+			com.aepan.sysmgr.model.lucene.Store luceneStore = new com.aepan.sysmgr.model.lucene.Store();
+			luceneStore.setId(store.getId()+"");
+			luceneStore.setName(store.getName());
+			luceneStore.setDesc(store.getDescription());
+			Set<String> typeSet = new HashSet<String>();
+			String[] typeArr = store.getType().split("\\,");
+			for (String t : typeArr) {
+				typeSet.add(t);
+			}
+			luceneStore.setType(typeSet);
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+			
+			luceneStore.setUpdate_time(df.format(store.getUpdateTime()==null?new Date():store.getUpdateTime()));
+			luceneStore.setV_img(store.getLogoUrl());
+			luceneStore.setV_img_max(store.getMaxLogoUrl());
+			if(!setVideoIndex(userId, storeId, luceneStore)){
+				return null;
+			}
+			if(!setProductIndex(userId, storeId, luceneStore)){
+				return null;
+			}
+			return luceneStore;
+		}
+		return null;
+	}
+	private boolean setProductIndex(int userId,int storeId,com.aepan.sysmgr.model.lucene.Store luceneStore){
+		List<StoreProduct> spList = productDao.getStoreProductList(userId, storeId);
+		if(spList==null||spList.isEmpty()){
+			return false;
+		}else{
+			StringBuffer pIds = new StringBuffer();
+			float priceMax = 0.0f;
+			float priceMin = 0.0f;
+			Set<String> pName = new HashSet<String>();
+			Set<String> pDesc = new HashSet<String>();
+			Set<String> pType = new HashSet<String>();
+			Set<String> pAttrName = new HashSet<String>();
+			Set<String> pAttrValue = new HashSet<String>();
+			for (StoreProduct sp : spList) {
+				if(sp.productPrice>priceMax){
+					priceMax = sp.productPrice;
+				}
+				if(priceMin==0.0f||sp.productPrice<priceMin){
+					priceMin = sp.productPrice;
+				}
+				logger.info("\nsp.productPrice:"+sp.productPrice+"     priceMax:"+priceMax+"   priceMin:"+priceMin+"\n");
+				pIds.append(sp.getProductId()).append(",");
+				if(sp.getProductName()!=null&&!sp.getProductName().isEmpty()){
+					pName.add(sp.getProductName());
+				}
+				if(sp.getProductDesc()!=null&&!sp.getProductDesc().isEmpty()){
+					logger.info("add product desc into lucene index lib:"+sp.getProductDesc());
+					pDesc.add(sp.getProductDesc());
+				}
+				if(sp.getProductType()!=null&&!sp.getProductType().isEmpty()){
+					pType.add(sp.getProductType());
+				}
+				if(sp.productAttrs!=null&&!sp.productAttrs.isEmpty()){
+					for (ProductAttribute pattr : sp.productAttrs) {
+						pAttrName.add(pattr.id.toString());
+						for (Integer v : pattr.values) {
+							pAttrValue.add(v.toString());
+						}
+					}
+				}
+			}
+			String pIdsStr = pIds.toString();
+			if(pIdsStr.endsWith(",")){
+				pIdsStr = pIdsStr.substring(0, pIdsStr.length()-1);
+			}
+			luceneStore.setP_ids(pIdsStr);
+			luceneStore.setP_pricemax(priceMax);
+			luceneStore.setP_pricemin(priceMin);
+			luceneStore.setP_name(pName);
+			luceneStore.setP_desc(pDesc);
+			luceneStore.setP_type(pType);
+			luceneStore.setP_attrname(pAttrName);
+			luceneStore.setP_attrvalue(pAttrValue);
+			return true;
+		}
+	}
+	private boolean setVideoIndex(int userId,int storeId,com.aepan.sysmgr.model.lucene.Store luceneStore){
+		List<StoreVideo> svlist = videoDao.getStoreVideoList(userId,storeId);
+		if(svlist==null||svlist.isEmpty()){
+			return false;
+		}else{
+			int clickNum = 0;
+			//Set<String> vId = new HashSet<String>();
+			Set<String> vName = new HashSet<String>();
+			Set<String> vDesc = new HashSet<String>();
+			for (StoreVideo sv : svlist) {
+				Video v = videoDao.findVideoById(sv.videoId);
+				if(v!=null){
+					//vId.add(v.getId()+"");
+					vName.add(v.getName());
+					vDesc.add(v.getDesc());
+					clickNum+=v.videoCnum;
+					clickNum+=v.h5VideoCnum;
+				}
+			}
+			luceneStore.setV_hot(clickNum);
+			luceneStore.setV_name(vName);
+			luceneStore.setV_desc(vDesc);
+			return true;
+		}
+	}
+	@Override
+	public void addSolr(ConfigService configService,Store store){
+		if(store!=null){
+			com.aepan.sysmgr.model.lucene.Store luceneStore = getLuceneStore(configService, store);
+			if(luceneStore!=null){
+				try {
+					searchService.add(luceneStore);
+				} catch (IOException | SolrServerException e) {
+					logger.debug("addSolr error,storeId = "+store.getId()+"");
+				}
+			}else{
+				try {
+					searchService.delete(store.getId()+"");
+				} catch (SolrServerException | IOException e) {
+					logger.debug("addSolr-->delete error,storeId = "+store.getId()+"");
+				}
+			}
+		}
 	}
 	@Override
 	public void addLucene(ConfigService configService,Store store){
@@ -426,6 +578,12 @@ public class StoreServiceImpl implements StoreService {
 	public List<StoreVideo> getStoreVideoList(int userId, int storeId){
 		return videoDao.getStoreVideoList(userId, storeId);
 	}
-
-	
+	@Override
+	public List<Integer> getLinkedProductPerStore(int userId){
+		return productDao.getLinkedProductNumPerStore(userId);
+	}
+	@Override
+	public int getMostHotStoreId(int productId){
+		return storeDao.getMostHotStoreId(productId);
+	}
 }

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import com.aepan.sysmgr.dao.ProductDao;
 import com.aepan.sysmgr.dao.VideoDao;
+import com.aepan.sysmgr.model.Store;
 import com.aepan.sysmgr.model.StoreInfo;
 import com.aepan.sysmgr.model.StoreProduct;
 import com.aepan.sysmgr.model.StoreVideo;
@@ -26,6 +27,7 @@ import com.aepan.sysmgr.service.CacheService;
 import com.aepan.sysmgr.service.ConfigService;
 import com.aepan.sysmgr.service.StoreService;
 import com.aepan.sysmgr.util.JSONUtil;
+import com.aepan.sysmgr.util.lucene.SearchHelper;
 
 /**
  * @author lanker
@@ -99,7 +101,28 @@ public class CacheServiceImpl<K, V> implements CacheService {
 			redisTemplate.delete(list);
 		}
 	}
-	
+	@Override
+	public void deleteByUserId(CacheObject cacheObject, int userId){
+		//删除搜索引擎索引
+		List<Store> storeList = storeService.getListByUserId(userId);
+		if(storeList!=null&&!storeList.isEmpty()){
+			for (Store store : storeList) {
+				SearchHelper.delete(configService, store.getId()+"");
+			}
+		}
+		//to do 删除redis缓存  待定 
+	}
+	@Override
+	public void addByUserId(CacheObject cacheObject, int userId){
+		//添加搜索引擎索引
+		List<Store> storeList = storeService.getListByUserId(userId);
+		if(storeList!=null&&!storeList.isEmpty()){
+			for (Store store : storeList) {
+				storeService.addSolr(configService, store);
+				storeService.addLucene(configService, store);
+			}
+		}
+	}
 	@Override
 	public void deleteByVideoId(CacheObject cacheObject, int vid) {
 		if(vid>0){

@@ -39,7 +39,7 @@ public class StoreDaoImpl implements StoreDao {
 			int pageSize) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" select id, name, description, share_content, inner_code, type, ");
-		sb.append(" private_dns, com_address, com_tele, user_id, logo_url,logo_url_301, max_logo_url,max_logo_url_414, status, create_time ");
+		sb.append(" private_dns, com_address, com_tele, user_id, logo_url,logo_url_301, max_logo_url,max_logo_url_414, status, create_time,update_time ");
 		sb.append(" from t_sysmgr_store where user_id = ? ");
 		
 		//params sortName
@@ -68,7 +68,7 @@ public class StoreDaoImpl implements StoreDao {
 		
 		String sql = "  select id, name, description, share_content, inner_code, "
 				+ " type, private_dns, com_address, com_tele, user_id, logo_url, logo_url_301,max_logo_url,max_logo_url_414,"
-				+ " status, create_time from t_sysmgr_store where id = ? ";
+				+ " status, create_time,update_time from t_sysmgr_store where id = ? ";
 		return jdbcTemplate.queryForObject(sql, new Object[] {id}, new StoreRowMapper());
 		
 	}
@@ -94,7 +94,7 @@ public class StoreDaoImpl implements StoreDao {
 	public List<Store> getOnlineListByUserId(int userId) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" select id, name, description, share_content, inner_code, type, ");
-		sb.append(" private_dns, com_address, com_tele, user_id, logo_url,logo_url_301, max_logo_url,max_logo_url_414, status, create_time ");
+		sb.append(" private_dns, com_address, com_tele, user_id, logo_url,logo_url_301, max_logo_url,max_logo_url_414, status, create_time,update_time ");
 		sb.append(" from t_sysmgr_store where user_id = ? and status = 1 order by update_time desc ");
 		
 		List<Store> list = jdbcTemplate.query(sb.toString(), new Object[]{userId},
@@ -140,7 +140,7 @@ public class StoreDaoImpl implements StoreDao {
 	public List<Store> getListByUserId(int userId) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" select id, name, description, share_content, inner_code, type, ");
-		sb.append(" private_dns, com_address, com_tele, user_id, logo_url,logo_url_301,  max_logo_url,max_logo_url_414, status, create_time ");
+		sb.append(" private_dns, com_address, com_tele, user_id, logo_url,logo_url_301,  max_logo_url,max_logo_url_414, status, create_time,update_time ");
 		sb.append(" from t_sysmgr_store where user_id = ? order by update_time desc ");
 		
 		List<Store> list = jdbcTemplate.query(sb.toString(), new Object[]{userId},
@@ -155,8 +155,9 @@ public class StoreDaoImpl implements StoreDao {
 	public boolean save(Store store) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" insert into t_sysmgr_store(name, description, share_content, inner_code, ");
-        sb.append(" type, private_dns, com_address, com_tele, user_id, logo_url, max_logo_url ) ");
-        sb.append(" value(?, ? ,?, ?, ?, ?, ?, ?, ?, ?,?) ");
+        sb.append(" type, private_dns, com_address, com_tele, user_id, logo_url, max_logo_url,create_time ) ");
+        sb.append(" value(?, ? ,?, ?, ?, ?, ?, ?, ?, ?,?,?) ");
+        Date now = new Date();
 		int ret = jdbcTemplate.update(sb.toString(), new Object[]{
 			store.getName(),
 			store.getDescription(),
@@ -169,6 +170,7 @@ public class StoreDaoImpl implements StoreDao {
 			store.getUserId(),
 			store.getLogoUrl(),
 			store.getMaxLogoUrl(),
+			now
 		});
 		return ret > 0;
 	}
@@ -229,5 +231,17 @@ public class StoreDaoImpl implements StoreDao {
 		.append(Store.STATUS_在线)
 		.append(" and s.user_id <> ? order by s.id desc limit 0,? ");
 		return jdbcTemplate.query(sb.toString(), new Object[]{type,userId,num},STORESUBINFO_OTHER_ROWMAPPER);
+	}
+	@Override
+	public int getMostHotStoreId(int productId){
+		String sql = "select a.store_id from t_sysmgr_store_video a,t_sysmgr_video b,t_sysmgr_store_product c "+
+				"where a.store_id = c.store_id and a.video_id = b.id "+
+				"and c.product_id = ? group by a.store_id order by sum(b.h5_video_cnum+b.video_cnum) desc limit 0,1";
+		int rs = 0;
+		try {
+			rs = jdbcTemplate.queryForObject(sql, new Object[]{productId}, Integer.class);
+		} catch (Exception e) {
+		}
+		return rs;
 	}
 }

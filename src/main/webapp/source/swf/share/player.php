@@ -39,7 +39,7 @@
 				window.location = mallHost+"/Play/Index?id="+storeId;
 			}else
 			{
-				window.location = mallHost+"/m-Wap/VideoShop/shop?storeId="+storeId;
+				window.location = mallHost+"/m-weixin/VideoShop/shop?storeId="+storeId;
 			}
 			return flag; 
 		}

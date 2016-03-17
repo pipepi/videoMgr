@@ -108,7 +108,7 @@ public class SearchHelper {
             		doc.get("desc"), 
             		doc.get("v_img"),
             		doc.get("v_img_max"),
-            		doc.get("type"),"",0,0,0);
+            		doc.get("type"),"",0,0,0,null);
             slist.add(ss);
             logger.info(
             		"ID:" + doc.get("id") + 
@@ -138,7 +138,8 @@ public class SearchHelper {
 	            		doc.get("p_ids"),
 	            		Float.parseFloat(doc.get("p_pricemax")),
 	            		Float.parseFloat(doc.get("p_pricemin")),
-	            		Integer.parseInt(doc.get("v_hot"))
+	            		Integer.parseInt(doc.get("v_hot")),
+	            		null
 	            		);
 	            slist.add(ss);
 	            logger.info(

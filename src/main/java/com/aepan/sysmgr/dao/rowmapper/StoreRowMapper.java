@@ -52,6 +52,7 @@ public class StoreRowMapper implements RowMapper<Store>{
         store.setMaxLogoUrl_414(rs.getString("max_logo_url_414"));
         store.setStatus(rs.getInt("status"));
         store.setCreateTime(rs.getTimestamp("create_time"));
+        store.setUpdateTime(rs.getTimestamp("update_time"));
 		return store;
 	}
 

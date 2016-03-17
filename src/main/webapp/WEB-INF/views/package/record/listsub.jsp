@@ -10,7 +10,11 @@
 	<tbody>
 		<c:forEach items="${list }" var="o" varStatus="ind">
 			<tr height="60" <c:if test="${ind.index%2==0 }">bgcolor="#fafbfb"</c:if>>
-				<td  width="15%" align="center"><c:if test="${o.attr==1}">${o.productNames }</c:if><c:if test="${o.attr==2}">流量</c:if></td>
+				<td  width="15%" align="center">
+					<c:choose>
+						<c:when test="${o.attr==2}">流量</c:when>
+						<c:otherwise>${o.productNames }</c:otherwise>
+					</c:choose>
 				<td width="15%" align="center">${o.amount }<c:if test="${o.attr==1}">个月</c:if><c:if test="${o.attr==2}">G</c:if></td>
 				<td width="20%" align="center"><span><fmt:formatDate value="${o.createTime }" pattern="yyyy/MM/dd HH:mm"/></span></td>
 				<td  width="20%" align="center">${o.price }</td>

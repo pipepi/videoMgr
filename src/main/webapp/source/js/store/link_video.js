@@ -86,6 +86,7 @@ function saveVideoLinks(){
 				  $('#store-logo-'+_player).attr("src",_ctx+"/source/images/aztimg/logo_kaimai8.png");
 			  }
 			 $("#video-list").toggle();
+			 window.location.reload();
 		  }else{
 			  
 			  if(attr.ol>0){

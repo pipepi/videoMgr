@@ -4,6 +4,7 @@
 package com.aepan.sysmgr.dao.implement;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -209,8 +210,8 @@ public class OrderDaoImpl implements OrderDao {
 	public boolean create(ProductOrder productOrder) {
 		StringBuffer sb = new StringBuffer("insert into t_sysmgr_product_order(channel_id, ");
 		sb.append(" order_id, out_order_id,buyers_id, buyers_name, seller_id, seller_name, ");
-		sb.append(" product_id, product_name, quantitys, amount, price, to_province,to_city,to_area,to_address, to_mail, to_zip_code, to_mobile, pay_for, attr) ");
-	    sb.append(" values(?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?) ");
+		sb.append(" product_id, product_name, quantitys, amount, price, to_province,to_city,to_area,to_address, to_mail, to_zip_code, to_mobile, pay_for, attr,create_time) ");
+	    sb.append(" values(?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?) ");
 		
 	    StringBuffer setProductId = new StringBuffer();
 	    String[] params = productOrder.getProductId();
@@ -229,7 +230,7 @@ public class OrderDaoImpl implements OrderDao {
 	    		setQuantitys.append(",");
 	    	}
 	    }
-	    
+	    Date now = new Date();
 		int ret = jdbcTemplate.update(sb.toString(), new Object[]{
 			productOrder.getChannelId(),
 			productOrder.getOrderId(),
@@ -251,7 +252,8 @@ public class OrderDaoImpl implements OrderDao {
 			productOrder.getToZipCode(),
 			productOrder.getToMobile(),
 			productOrder.getPayfor(),
-			productOrder.getAttr()
+			productOrder.getAttr(),
+			now
 		});
 		return ret > 0;
 	}

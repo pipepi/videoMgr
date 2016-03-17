@@ -32,13 +32,12 @@
                  	 <tr height="40" width="100%">
                  	 
                  	   	<th width="10%">套餐名称</th>
-                        <th width="10%">可分享播放器</th>
-                        <th width="14%">每播放器搭载视频</th>
-                        <th width="14%">每播放器搭载商品</th>
-                        <th width="10%">每月套餐单价</th>
-                        <th width="10%">流量(单位T)</th>
-                        <th width="10%">每月流量费用</th>
-                        <th width="8%">期限</th>
+                        <th width="10%">可分享播放器（个）</th>
+                        <th width="14%">每播放器搭载视频（个）</th>
+                        <th width="14%">每播放器搭载商品（个）</th>
+                        <th width="10%">套餐价格（元）</th>
+                        <th width="10%">流量（单位GB）</th>
+                        <th width="8%">期限（月）</th>
                         <th width="9%">操作</th>
                      <tr>
 
@@ -51,10 +50,9 @@
                       <td width="10%" align="center">${packageinfo.playerNum }</td>
                       <td align="center">${packageinfo.videoNum }</td>
                       <td align="center">${packageinfo.productNum }</td>
-                      <td align="center">${packageinfo.price }</td>
-                      <td align="center">${packageinfo.flowNum } T</td>
-                       <td align="center">${packageinfo.monthFlowPrice } 元</td>
-                      <td align="center">${packageinfo.duration } 个月</td>
+                      <td align="center">${packageinfo.totalPrice }</td>
+                      <td align="center">${packageinfo.flowNum }</td>
+                      <td align="center">${packageinfo.duration }</td>
                       <td align="center"><a href="javascript:window.location='${ctx}/package/show?eqId=${packageinfo.id }'">编辑</a></td>
 							    
 							    

@@ -40,7 +40,7 @@ public class PackageInfo implements Serializable {
 	 */
 	private int playerNum;
 	/**
-	 * 视频数量
+	 * 每个播放器可关联视频数量
 	 */
 	private int videoNum;
 	/**
@@ -50,7 +50,7 @@ public class PackageInfo implements Serializable {
 	/**
 	 * 每月套餐价格
 	 */
-	private float price;
+	//private float price;
 	
 	/**
 	 * 流量
@@ -59,7 +59,7 @@ public class PackageInfo implements Serializable {
 	/**
 	 * 每月流量价格
 	 */
-	private float monthFlowPrice;
+	//private float monthFlowPrice;
 	/**
 	 * 默认显示时长
 	 */
@@ -83,6 +83,11 @@ public class PackageInfo implements Serializable {
 	 */
 	private Date updateTime;
 
+	public int getCanHaveVideoNum(){
+		return videoNum*playerNum;
+		
+	}
+	
 	public int getId() {
 		return id;
 	}
@@ -139,7 +144,7 @@ public class PackageInfo implements Serializable {
 		this.flowNum = flowNum;
 	}
 
-	public float getMonthFlowPrice() {
+	/*public float getMonthFlowPrice() {
 		return monthFlowPrice;
 	}
 
@@ -153,7 +158,7 @@ public class PackageInfo implements Serializable {
 
 	public void setPrice(float price) {
 		this.price = price;
-	}
+	}*/
 
 	public int getDuration() {
 		return duration;
@@ -218,8 +223,8 @@ public class PackageInfo implements Serializable {
 	public String toString() {
 		return "PackageInfo [id=" + id + ", name=" + name + ", packageType="
 				+ packageType + ", playerNum=" + playerNum + ", videoNum="
-				+ videoNum + ", productNum=" + productNum + ", price=" + price
-				+ ", flowNum=" + flowNum + ", monthFlowPrice=" + monthFlowPrice
+				+ videoNum + ", productNum=" + productNum //+ ", price=" + price
+				+ ", flowNum=" + flowNum //+ ", monthFlowPrice=" + monthFlowPrice
 				+ ", duration=" + duration + ", canChooseDuration="
 				+ canChooseDuration + ", totalPrice=" + totalPrice
 				+ ", createTime=" + createTime + ", updateTime=" + updateTime

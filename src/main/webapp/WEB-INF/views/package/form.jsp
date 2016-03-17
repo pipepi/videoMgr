@@ -13,7 +13,7 @@
 
 
 
-function chooseDuration(d){
+/* function chooseDuration(d){
 	
 	var beforeDuration=$("#duration").attr("value");
 	
@@ -21,7 +21,7 @@ function chooseDuration(d){
 	$("#duration"+beforeDuration).attr("class","zhine-a");
 	$("#duration"+d).attr("class","currents");	
 
-}
+} */
 
 
 function submit(){	
@@ -69,43 +69,38 @@ function submit(){
                   <td ><input type="text" maxlength="50" class="inputs" name="name" id="name" value="${packageInfo==null?'':packageInfo.name }"/> &nbsp;<span id = "name-tip" style = "display:none;color: #e3393c;"></span></td>
                 </tr>
                 <tr>
-                  <td align="right" ><label>可分享播放器：</label></td>
+                  <td align="right" ><label>可分享播放器（个）：</label></td>
                   <td ><input type="text" class="inputs" name="playerNum" maxlength="5" value="${packageInfo==null?'':packageInfo.playerNum }"/></td>
                 </tr>
                 <tr>
-                  <td align="right" ><label>每播放器搭载视频：</label></td>
+                  <td align="right" ><label>每播放器搭载视频（个）：</label></td>
                   <td ><input type="text" class="inputs" name="videoNum" maxlength="5" value="${packageInfo==null?'':packageInfo.videoNum }"/></td>
                 </tr>
                 <tr>
-                  <td align="right" ><label>每播放器搭载商品：</label></td>
+                  <td align="right" ><label>每播放器搭载商品（个）：</label></td>
                  <td ><input type="text" class="inputs" name="productNum" maxlength="5" value="${packageInfo==null?'':packageInfo.productNum }"/></td>
                 </tr>
                 
                 
                 <tr>
-                  <td align="right" ><label>每月套餐单价：</label></td>
-                 <td ><input type="text" class="inputs" name="price" maxlength="5" value="${packageInfo==null?'':packageInfo.price }"/></td>
+                  <td align="right" ><label>套餐价格（元）：</label></td>
+                 <td ><input type="text" class="inputs" name="price" maxlength="5" value="${packageInfo==null?'':packageInfo.totalPrice }"/></td>
                 </tr>
                 
                 
                 <tr>
-                  <td align="right" ><label>流量(单位T)：</label></td>
+                  <td align="right" ><label>流量(单位GB)：</label></td>
                  <td ><input type="text" class="inputs" name="flowNum" maxlength="5" value="${packageInfo==null?'':packageInfo.flowNum }"/></td>
                 </tr>
-                
                 <tr>
-                  <td align="right" ><label>每月流量价格：</label></td>
-                  <td ><input type="text" class="inputs" name="monthFlowPrice"  maxlength="5" value="${packageInfo==null?'':packageInfo.monthFlowPrice }"/></td>
-                </tr>
-                
-                 
-                <tr>
-                  <td align="right" ><label>默认周期：</label></td>
-                  <td>
-                  <!-- a href="javascript:chooseDuration(1)" id="duration1" class="zhine-a ${(packageInfo!=null&&packageInfo.duration=='1')?'currents':''}" >1个月</a-->
+                  <td align="right" ><label>期限（月）：</label></td>
+                  <!--<td>
+                   <a href="javascript:chooseDuration(1)" id="duration1" class="zhine-a ${(packageInfo!=null&&packageInfo.duration=='1')?'currents':''}" >1个月</a>
                   <a href="javascript:chooseDuration(6)" id="duration6" class="zhine-a ${(packageInfo!=null&&packageInfo.duration=='6')?'currents':''}" >6个月</a>
                   <a href="javascript:chooseDuration('12')" id="duration12" class="zhine-a ${(packageInfo!=null&&packageInfo.duration=='12')?'currents':''}">12个月</a>
-                  <a href="javascript:chooseDuration('24')" id="duration24" class="zhine-a ${(packageInfo!=null&&packageInfo.duration=='24')?'currents':''}">24个月</a></td>
+                  <a href="javascript:chooseDuration('24')" id="duration24" class="zhine-a ${(packageInfo!=null&&packageInfo.duration=='24')?'currents':''}">24个月</a>
+                  </td>-->
+                  <td><input type="text" class="inputs" name="duration"  id="duration"  maxlength="5" value="${packageInfo==null?'':packageInfo.duration }"/></td>
                 </tr>
                </table>
                  <div style="width:240px; margin:0 auto;margin-top:20px;">
@@ -119,7 +114,7 @@ function submit(){
             </div>
             <input type="hidden" class="inputs" name="id" value="${packageInfo==null?'':packageInfo.id }"/>
             
-            <input type="hidden" class="inputs" name="duration"  id="duration" value="${packageInfo==null?'':packageInfo.duration }"/>
+            <!-- <input type="hidden" class="inputs" name="duration"  id="duration" value="${packageInfo==null?'':packageInfo.duration }"/> -->
             
          </form>
         </div>

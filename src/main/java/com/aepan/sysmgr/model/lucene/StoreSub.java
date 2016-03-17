@@ -4,6 +4,7 @@
 package com.aepan.sysmgr.model.lucene;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @author lanker
@@ -22,9 +23,10 @@ public class StoreSub implements Serializable {
 	private float priceMax;
 	private float priceMin;
 	private int hot;
+	private Date updateTime;
 	public StoreSub() {
 	}
-	public StoreSub(int id ,String name ,String desc ,String img,String imgMax,String storeType,String pids,float priceMax,float priceMin,int hot) {
+	public StoreSub(int id ,String name ,String desc ,String img,String imgMax,String storeType,String pids,float priceMax,float priceMin,int hot,Date updateTime) {
 		this.id = id;
 		this.name = name;
 		this.desc = desc;
@@ -35,7 +37,7 @@ public class StoreSub implements Serializable {
 		this.priceMax = priceMax;
 		this.priceMin = priceMin;
 		this.hot = hot;
-		
+		this.updateTime = updateTime;
 	}
 	
 	public int getId() {
@@ -98,6 +100,18 @@ public class StoreSub implements Serializable {
 	}
 	public void setHot(int hot) {
 		this.hot = hot;
+	}
+	/**
+	 * @return the updateTime
+	 */
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+	/**
+	 * @param updateTime the updateTime to set
+	 */
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
 	}
 	
 }

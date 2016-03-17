@@ -62,10 +62,10 @@ public class PackageDaoImpl implements PackageDao {
 			rpackage.getPlayerNum(),
 			rpackage.getVideoNum(),
 			rpackage.getProductNum(),
-			rpackage.getPrice(),
+			rpackage.getTotalPrice(),
 			rpackage.getDuration(),
 			rpackage.getFlowNum(),
-			rpackage.getMonthFlowPrice(),
+			0.0f
 		});
 		return ret > 0;
 	}
@@ -83,10 +83,10 @@ public class PackageDaoImpl implements PackageDao {
 			rpackage.getPlayerNum(),
 			rpackage.getVideoNum(),
 			rpackage.getProductNum(),
-			rpackage.getPrice(),
+			rpackage.getTotalPrice(),
 			rpackage.getDuration(),
 			rpackage.getFlowNum(),
-			rpackage.getMonthFlowPrice(),
+			0.0f,
 			rpackage.getId()
 		});
 		return ret > 0;

@@ -96,4 +96,11 @@ public interface ProductDao {
 	 */
 	void update(StoreProduct storeProduct);
 
+	/**
+	 * 获取每个播放器关联视频数量 =》用于购买套餐时弹窗
+	 * @param userId
+	 * @return
+	 */
+	List<Integer> getLinkedProductNumPerStore(int userId);
+
 }

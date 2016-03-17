@@ -27,6 +27,7 @@ public class PackageStatRowMapper implements RowMapper<PackageStat> {
 		rpackage.setProductNum(rs.getInt("product_num"));
 		rpackage.setFlowNum(rs.getFloat("flow_num"));
 		rpackage.setUsedFlowNum(rs.getFloat("used_flow_num"));
+		rpackage.setUsedFlowCountTime(rs.getTimestamp("used_flow_count_time"));
 		rpackage.setDuration(rs.getInt("duration"));
 		rpackage.setStartime(rs.getTimestamp("start_time"));
 		rpackage.setEndTime(rs.getTimestamp("end_time"));

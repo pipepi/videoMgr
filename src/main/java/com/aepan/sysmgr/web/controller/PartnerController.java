@@ -62,6 +62,85 @@ public class PartnerController extends DataTableController{
 	
 	@Autowired
 	CacheService cacheService;
+	@RequestMapping(value="/partner/freezeOrActive", method = {RequestMethod.GET,RequestMethod.POST}, produces = MediaType.APPLICATION_JSON_VALUE)
+	public void freezeOrActiveUser(HttpServletRequest request,HttpServletResponse response,ModelMap model){
+		String partnerIdStr = request.getParameter("partner_id");//第三房合作方id
+		String partnerAccountIdStr = request.getParameter("user_id");//第三方系统唯一账号Id
+		String action = request.getParameter("action");//操作  0:冻结;1:激活 
+		String sign = request.getParameter("sign");//签名
+		String timestamp = request.getParameter("timestamp");//时间戳
+		logger.debug("freezeUser partnerId:"+partnerIdStr+",partnerAccountId:"+partnerAccountIdStr+",sign:"+sign);
+		
+		
+		try {
+			Date timeStampDate = DateUtil.getDate(timestamp);
+			
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.MINUTE, -2);
+			
+			if(timeStampDate.before(cal.getTime())){
+				logger.warn("timeStamp out of date.timestamp:"+timestamp+",cal:"+cal.getTime());
+	       		AjaxResponseUtil.returnData(response,  "{\"success\":false, \"msg\":\"timestamp out date !\"}");
+	       		return;
+			}
+			
+		} catch (ParseException e1) {
+			logger.warn(e1.getMessage(),e1);
+       		AjaxResponseUtil.returnData(response,  "{\"success\":false, \"msg\":\"timestamp valid!\"}");
+       		return;
+		}
+		
+		
+		if(StringUtil.isEmpty(partnerIdStr)||StringUtil.isEmpty(partnerAccountIdStr)){
+			logger.warn("partnerId or partnerAccountId is empty.");
+       		AjaxResponseUtil.returnData(response,  "{\"success\":false, \"msg\":\"not valid!\"}");
+       		return;
+		}
+		   
+		try {
+			String md5Sign = EncryptUtil.getMd5Str(partnerAccountIdStr + timestamp);
+        	if(!sign.equals(md5Sign)){
+        		logger.warn(" sign valid.mysign"+md5Sign+",sign:"+sign+","+sign.equals(md5Sign));	
+           		AjaxResponseUtil.returnData(response,  "{\"success\":false, \"msg\":\"sign not valid!\"}");
+        		return;
+        	}
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+       		AjaxResponseUtil.returnData(response,  "{\"success\":false, \"msg\":\"not valid!\"}");
+       		return;
+		}
+			
+       	Integer partnerId = Integer.valueOf(partnerIdStr);
+       	Integer partnerAccountId = Integer.valueOf(partnerAccountIdStr);
+       	
+       	User user = userService.partnerLogin(partnerId, partnerAccountId);
+       	if(user==null){
+			logger.warn("freezeUser failed.,partnerIdStr:"+partnerIdStr+",partnerAccountIdStr:"+partnerAccountIdStr);
+			AjaxResponseUtil.returnData(response,  "{\"success\":false, \"msg\":\"freezeUser failed!\"}");
+			return;
+		}else{
+			int status = Integer.parseInt(action);
+			user.setStatus(status==0?User.STATUS_FREEZE:User.STATUS_OK);
+			userService.update(user);
+			//添加或删除用户播放器缓存（索引，redis（to do 需求待定））
+			if(user.getStatus()==User.STATUS_OK){
+				cacheService.addByUserId(CacheObject.STOREINFO, user.getId());
+			}else{
+				cacheService.deleteByUserId(CacheObject.STOREINFO, user.getId());
+			}
+			AjaxResponseUtil.returnData(response,  "{\"success\":true, \"msg\":\"freezeUser userId="+user.getId()+" partnerAccountIdStr="+partnerAccountIdStr+"\"}");
+			return;
+		}
+	}
+	@RequestMapping(value="/partner/videoUser", method = {RequestMethod.GET,RequestMethod.POST}, produces = MediaType.APPLICATION_JSON_VALUE)
+	public void videoUser(HttpServletRequest request, HttpServletResponse response, ModelMap model){
+		String partnerIdStr = request.getParameter("partner_id");//第三房合作方id
+		String partnerAccountIdStr = request.getParameter("user_id");//第三方系统唯一账号Id
+		Integer partnerId = Integer.valueOf(partnerIdStr);
+       	Integer partnerAccountId = Integer.valueOf(partnerAccountIdStr);
+       	User user = userService.partnerLogin(partnerId, partnerAccountId);
+       	AjaxResponseUtil.returnData(response, user==null?"{\"success\":false}":"{\"success\":true}");
+	}
 	/**
 	 * 
 	 * @param request

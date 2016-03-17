@@ -4,7 +4,11 @@
 package com.aepan.sysmgr.model.packageinfo;
 
 import java.io.Serializable;
+import java.text.NumberFormat;
 import java.util.Date;
+
+import org.joda.time.DateTime;
+import org.joda.time.Months;
 
 /**
  * @author Doris 2015年9月8日下午3:37:25
@@ -51,6 +55,11 @@ public class PackageStat implements Serializable {
 	private float usedFlowNum;
 	
 	/**
+	 * 流量统计时间
+	 */
+	private Date usedFlowCountTime;
+	
+	/**
 	 * 开通流量数
 	 */
 	private float flowNum;
@@ -79,6 +88,25 @@ public class PackageStat implements Serializable {
 	 */
 	private Date updateTime;
 
+	/**
+	 * 获取剩余有效期（月）
+	 * @return
+	 */
+	public int getRemainedValidityDate(){
+		return endTime==null?0:Months.monthsBetween(new DateTime(),  new DateTime(endTime.getTime())).getMonths();
+	}
+	
+	/**
+	 * 获取剩余流量（GB）
+	 * @return
+	 */
+	public String getRemainedValidityFlow(){
+		NumberFormat nf = NumberFormat.getNumberInstance();
+		nf.setGroupingUsed(false);
+		nf.setMaximumFractionDigits(2);
+		return nf.format((flowNum-usedFlowNum)/1024);
+	}
+	
 	public int getId() {
 		return id;
 	}
@@ -153,6 +181,20 @@ public class PackageStat implements Serializable {
 	 */
 	public void setUsedFlowNum(float usedFlowNum) {
 		this.usedFlowNum = usedFlowNum;
+	}
+
+	/**
+	 * @return the usedFlowCountTime
+	 */
+	public Date getUsedFlowCountTime() {
+		return usedFlowCountTime;
+	}
+
+	/**
+	 * @param usedFlowCountTime the usedFlowCountTime to set
+	 */
+	public void setUsedFlowCountTime(Date usedFlowCountTime) {
+		this.usedFlowCountTime = usedFlowCountTime;
 	}
 
 	public int getDuration() {

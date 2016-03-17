@@ -6,7 +6,7 @@
 <ul class="bfq-listInfors">
 	 <c:forEach var="v" items="${list }" >
 	 <li>
-	   <div class="bf-lists"><img src="${v.imgMin }" width="210" height="126" /><br/><em 
+	   <div class="bf-lists"><img src="${v.imgMin }" width="210" height="126" title="${v.desc }" /><br/><em 
 	   style="height:20px;width: 215px;overflow: hidden;text-overflow:ellipsis;white-space: nowrap;"  title="${v.name }">${v.name}</em></div>
 	   <div class="sp-edit">
 	      <div class="sp-btns-infors">

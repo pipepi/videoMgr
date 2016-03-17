@@ -59,6 +59,7 @@ import com.aepan.sysmgr.service.ConfigService;
 import com.aepan.sysmgr.service.OrderService;
 import com.aepan.sysmgr.service.PackageService;
 import com.aepan.sysmgr.service.PackageStatService;
+import com.aepan.sysmgr.service.PartnerDataService;
 import com.aepan.sysmgr.service.StorageService;
 import com.aepan.sysmgr.service.UserService;
 import com.aepan.sysmgr.util.ConfigManager;
@@ -108,6 +109,9 @@ public class PayRest {
 	
 	@Autowired
 	ConfigService configService;
+	
+	@Autowired
+	private PartnerDataService partnerDataService;
 	
 	@RequestMapping("/pay/platformPay")
     public ModelAndView platformPay(
@@ -228,7 +232,9 @@ public class PayRest {
 			nowCal.add(Calendar.MINUTE, -115);
 			if(nowCal.getTime().before(createTime)){
 				Map<String, String> rParaTemp = new HashMap<String, String>();
-				rParaTemp.put("imgUrl", fileConfig.IMG_AZURE_PRE+codeImgUrl); 
+				int storage = ConfigManager.getInstance().getStorageConfig().getStoragePlatform();
+				String imgPre = ConfigManager.imgPre(storage);
+				rParaTemp.put("imgUrl", imgPre+codeImgUrl); 
 				rParaTemp.put("totalFee", order.getPrice()+"");
 				if(payType==PayConstants.TYPE_WECHAT){
 					mav.setViewName("/paypage/request/wechat");
@@ -613,35 +619,82 @@ public class PayRest {
 		
 	}
 
+	/**
+	 * 更新用户套餐信息
+	 * @param order
+	 */
 	private void updateUserPackage(ProductOrder order) {
 		int userId = order.getBuyersId();
 		int packageId = Integer.parseInt(order.getProductId()[0]);
 		User user = userService.getByUserId(userId);
-		user.setPackageId(packageId);
-		userService.update(user);
 		
 		PackageInfo packageInfo = packageService.getById(packageId);
 		
-		float flowNum = packageInfo.getFlowNum()*1024*1024;
-		
-//		if(PackageInfo.PACKAGE_TYPE_PACKAGE==packageInfo.getPackageType()){
-			PackageStat packageStat = packageStatService.getByUserId(userId);
+		float flowNum = packageInfo.getFlowNum()*1024;
+		PackageStat packageStat = packageStatService.getByUserId(userId);
+		String logMsg = "";
+		if(PackageInfo.PACKAGE_TYPE_PACKAGE==packageInfo.getPackageType()){
+			//如果购买套餐和已有套餐不同，修改用户套餐
+			/*if(user.getPackageId()==0||user.getPackageId()!=packageId){
+				packageStat.setPackageId(packageId);
+				int duration=order.getAmount();
+				packageStat.setDuration(duration);//设置套餐有效期（月）
+				Calendar cal = Calendar.getInstance();
+				packageStat.setStartime(cal.getTime());
+				cal.add(Calendar.MONTH, duration);
+				packageStat.setEndTime(cal.getTime());//直接替换为新套餐有效期，不累加
+				packageStat.setFlowNum(packageStat.getFlowNum()+flowNum);//累加流量
+				packageStatService.updatePackageStat(packageStat);
+				user.setPackageId(packageId);
+				userService.update(user);
+				logMsg = "开通或购买新套餐";
+			}else{
+				int duration=order.getAmount();
+				packageStat.setDuration(duration);//设置套餐有效期（月）
+				Calendar cal = Calendar.getInstance();
+				packageStat.setStartime(cal.getTime());
+				Date endTime = packageStat.getEndTime();
+				if(endTime!=null&&endTime.after(cal.getTime())){
+					cal.setTime(endTime);
+				}
+				cal.add(Calendar.MONTH, duration);
+				packageStat.setEndTime(cal.getTime());//续约套餐，累加有效期
+				packageStat.setFlowNum(packageStat.getFlowNum()+flowNum);//累加流量
+				packageStatService.updatePackageStat(packageStat);
+				logMsg = "续约套餐";
+			}*/
+			//一刀切，旧套餐废弃，新套餐立即生效；已使用流量归零，流量最后统计时间设为当前时间，拥有流量重置为当前套餐流量。
+			packageStat.setPackageId(packageId);
 			int duration=order.getAmount();
 			Calendar cal = Calendar.getInstance();
-			packageStat.setPackageId(packageId);
-			packageStat.setDuration(duration);
+			//设置流量
+			packageStat.setUsedFlowNum(0);
+			packageStat.setUsedFlowCountTime(cal.getTime());
+			packageStat.setFlowNum(flowNum);
+			//设置有效期
+			packageStat.setDuration(duration);//设置套餐有效期（月）
 			packageStat.setStartime(cal.getTime());
-			Date endTime = packageStat.getEndTime();
-			if(endTime!=null&&endTime.after(cal.getTime())){
-				cal.setTime(endTime);
-			}
 			cal.add(Calendar.MONTH, duration);
 			packageStat.setEndTime(cal.getTime());
-			packageStat.setFlowNum(packageStat.getFlowNum()+flowNum);
 			packageStatService.updatePackageStat(packageStat);
-//		}
+			if(user.getPackageId()!=packageId){
+				if(user.getPackageId()==0){
+					//通知第三方 已开通视频套餐
+					partnerDataService.sendMsgOfOpenVideoStore(user.getPartnerAccountId(), packageId);
+				}
+				user.setPackageId(packageId);
+				userService.update(user);
+			}
+			logMsg = "续约套餐";
+		}else if(PackageInfo.PACKAGE_TYPE_FLOW==packageInfo.getPackageType()){
+			packageStat.setFlowNum(packageStat.getFlowNum()+flowNum);//累加流量
+			packageStatService.updatePackageStat(packageStat);
+			logMsg = "购买流量";
+		}else{
+			
+		}
 		
-		if(packageInfo.getFlowNum()!=0){
+		if(packageInfo.getFlowNum()!=0){//流量日志
 			
 			Calendar nowCal = Calendar.getInstance();
 			
@@ -662,10 +715,8 @@ public class PayRest {
 						user.getPartnerAccountId(),
 						user.getPartnerAccountName(),
 						"/package/updateuserpackage", 
-						"开通套餐:"+packageStat.toString(), 
+						logMsg+":"+packageStat.toString(), 
 						order.getOrderId()));
-		
-		
 		
 		
 	}

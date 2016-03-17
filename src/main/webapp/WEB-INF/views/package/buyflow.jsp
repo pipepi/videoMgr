@@ -12,13 +12,13 @@
 
 <script type="text/javascript">
 
-function chooseFlow(id,monthFlowPrice){
+function chooseFlow(id,totalPrice){
 	
 	var beforeDuration=$("#choosedId").attr("value");
 	$("#choosedId").attr("value",id);
 	$("#flowli"+beforeDuration).removeClass("current");
 	$("#flowli"+id).addClass("current");	
-	$("#currentPrice").text(monthFlowPrice);
+	$("#currentPrice").text(totalPrice);
 
 }
 
@@ -67,7 +67,7 @@ function finishPay(){
 		var datas = data.substring(data.indexOf('{')+1,data.lastIndexOf('}'));
   		  datas = "{" + datas + "}";
   		  var attr = eval('('+datas+')');
-  		  console.log(attr);
+  		  //console.log(attr);
   		  if(attr.success){
   			  
   			$("#chooseFlowDiv").css("display","none");
@@ -111,14 +111,14 @@ function packageRecord(){
         <div class="data-peizhi">
         	<ul>
         	 <c:forEach items="${flowList}" varStatus="status" var="flowInfo">
-            	<li id="flowli${flowInfo.id}" class="${currentFlow.id==flowInfo.id?'current':''}" onclick="chooseFlow('${flowInfo.id}','${flowInfo.monthFlowPrice}')">${flowInfo.flowNum}T ¥${flowInfo.monthFlowPrice}</li>
+            	<li id="flowli${flowInfo.id}" class="${currentFlow.id==flowInfo.id?'current':''}" onclick="chooseFlow('${flowInfo.id}','${flowInfo.totalPrice}')">${flowInfo.flowNum}GB ¥${flowInfo.totalPrice}</li>
             		<c:if test="${ currentFlow.id==flowInfo.id}">
             			 <input type="hidden" id="choosedId" value="${flowInfo.id}">
             		</c:if>
         	 </c:forEach>
            </ul>
         </div>
-        <div class="data-money">您需要结算金额为 ￥<span id="currentPrice">${currentFlow.monthFlowPrice}</span></div>
+        <div class="data-money">您需要结算金额为 ￥<span id="currentPrice">${currentFlow.totalPrice}</span></div>
         <div class="next-btns-zf" style="width:120px; margin-top:20px;"><a href="javascript:confirmFlow()" class="naxt-btns-cons" style="width:100px;">结算</a></div>
       </div>
       

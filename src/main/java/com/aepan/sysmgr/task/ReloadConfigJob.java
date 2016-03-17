@@ -19,6 +19,7 @@ import com.aepan.sysmgr.service.ConfigService;
 import com.aepan.sysmgr.util.ConfigManager;
 
 /**
+ * 分布式 多节点
  * 每1小时重新加载配置
  * @author lanker
  * 2015年9月12日下午2:00:48

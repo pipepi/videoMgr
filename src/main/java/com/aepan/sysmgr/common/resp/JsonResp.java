@@ -10,6 +10,7 @@ public class JsonResp {
 	
 	public static final int CODE_GET_STORE_FAILED=20000001;
 	public static final int CODE_GET_PRODUCT_FAILED=20000002;
+	public static final int CODE_GET_USER_FREEZE=20000003;
 	
 	
 

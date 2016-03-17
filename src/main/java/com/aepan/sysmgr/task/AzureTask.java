@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.aepan.sysmgr.service.VideoService;
 
 /**
+ * 分布式 多节点（因为本地临时文件个节点不同）
  * 视频异步编码（微软云）任务
  * @author lanker
  * 2015年12月8日下午2:05:07

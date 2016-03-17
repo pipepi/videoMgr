@@ -79,5 +79,31 @@ public class PartnerDataServiceImpl implements PartnerDataService {
 		
 		return null;
 	}
+	@Override
+	public void sendMsgOfOpenVideoStore(int partnerUserId,int packageId){
+		PartnerConfig partnerConfig = ConfigManager.getInstance().getPartnerConfig(configService);
+		String url = partnerConfig.ROOT_PATH_KAIMAI8+"/api/store/open/"+partnerUserId+"/"+packageId;
+		GetMethod method = new GetMethod(url);
+		HttpClient client = new HttpClient();
+		try {
+			client.executeMethod(method);
+		} catch (IOException e) {
+		}
+	}
 
+	@Override
+	public void sendMsgOfProductsLinked(String linkedPids, String unlinkedPids) {
+		if(linkedPids.length()==0&&unlinkedPids.length()==0) return;
+		if(linkedPids.length()==0){linkedPids = "0";}
+		if(unlinkedPids.length()==0){unlinkedPids = "0";}
+		PartnerConfig partnerConfig = ConfigManager.getInstance().getPartnerConfig(configService);
+		String url = partnerConfig.ROOT_PATH_KAIMAI8+"/api/UpdateProductIsStore/"+linkedPids+"/"+unlinkedPids;
+		GetMethod method = new GetMethod(url);
+		HttpClient client = new HttpClient();
+		try {
+			client.executeMethod(method);
+		} catch (IOException e) {
+		}
+	}
+	
 }

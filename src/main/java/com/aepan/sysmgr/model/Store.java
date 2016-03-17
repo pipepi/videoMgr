@@ -81,6 +81,7 @@ public class Store implements Serializable{
 	private int status;
 	
 	private Date createTime;
+	private Date updateTime;
 	//华哥旧商品   建议删除 todo
 	private List<PartnerProduct> partnerProductList;
 	//用于播放器关联产品功能，产品列表
@@ -278,6 +279,18 @@ public class Store implements Serializable{
 		this.createTime = createTime;
 	}
 
+	/**
+	 * @return the updateTime
+	 */
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+	/**
+	 * @param updateTime the updateTime to set
+	 */
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
 	public String getShareContent() {
 		return shareContent;
 	}
