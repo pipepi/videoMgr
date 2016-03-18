@@ -44,7 +44,7 @@
        </ul>
      </div> 
 	<input type="hidden" id="IndexUrl" value="${partnerIndexUrl}">
-     <div class="next-btns" style="width:350px; "><a href="" class="ck-infors-btns">查看详情说明</a><a href="javascript:goVideoManage()" class="naxt-btns-cons">我去开启</a>
+     <div class="next-btns" style="width:350px; "><a href="javascript:toHelpPage()" class="ck-infors-btns">查看详情说明</a><a href="javascript:goVideoManage()" class="naxt-btns-cons">我去开启</a>
       <div class="clear"></div>  
      </div>
    
@@ -55,10 +55,14 @@
 
 <script type="text/javascript">
 	function goVideoManage(){
-		   var IndexUrl=$("#IndexUrl").val();
-		   
-			window.top.location=IndexUrl;
+		   //var IndexUrl=$("#IndexUrl").val();
+		   //top.window.location.href=partner_ctx+"/SellerAdmin?url="+ctx+"/video/async/page&tar="+ctx+"/video/listhm";
+			window.top.location="${ctx}/store/videolist";
 		    
+	}
+	function toHelpPage(){
+		
+		top.window.location.href="${partnerIndexUrl}/Article/Category";
 	}
 
 </script>

@@ -230,8 +230,8 @@ public class VideoServiceImpl implements VideoService {
 	public float getUsedFlowNumByUserId(int userId){
 		return videoDao.getUsedFlowNumByUserId(userId);
 	}
-	//最后修改时间在一个小时前，状态仍然是编码中的视频，执行再次上传微软云
 	
+	//最后修改时间在一个小时前，状态仍然是编码中的视频，执行再次上传微软云
 	@Override
 	public void azureUploadAndEncode(){
 		Map<String, Object> params = new HashMap<String, Object>();

@@ -119,7 +119,7 @@ public class CacheServiceImpl<K, V> implements CacheService {
 		if(storeList!=null&&!storeList.isEmpty()){
 			for (Store store : storeList) {
 				storeService.addSolr(configService, store);
-				storeService.addLucene(configService, store);
+				//storeService.addLucene(configService, store);
 			}
 		}
 	}

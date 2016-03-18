@@ -42,6 +42,5 @@ public class SearchServiceImpl implements SearchService {
 		//List<Store> ss =  qr.getBeans(Store.class);
 		return ssa;
 	}
-	
 
 }

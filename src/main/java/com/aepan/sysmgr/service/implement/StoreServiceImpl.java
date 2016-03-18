@@ -6,6 +6,7 @@ package com.aepan.sysmgr.service.implement;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import com.aepan.sysmgr.model.StoreProduct;
 import com.aepan.sysmgr.model.StoreProducts;
 import com.aepan.sysmgr.model.StoreVideo;
 import com.aepan.sysmgr.model.Video;
+import com.aepan.sysmgr.model.VideoCheck;
 import com.aepan.sysmgr.model._enum.CacheObject;
 import com.aepan.sysmgr.model.hm.PartnerProduct;
 import com.aepan.sysmgr.model.hm.PartnerProductPage;
@@ -210,7 +212,7 @@ public class StoreServiceImpl implements StoreService {
 		store.harmSensitiveWord();
 		//store.addLucene();
 		addSolr(configService, store);
-		addLucene(configService,store);
+		//addLucene(configService,store);
 		cacheService.delete(CacheObject.STOREINFO, store.getId());
 		storeDao.update(store);
 	}
@@ -257,7 +259,7 @@ public class StoreServiceImpl implements StoreService {
 		Store store = getById(storeId);
 		if(store!=null){
 			addSolr(configService, store);
-			addLucene(configService,store);
+			//addLucene(configService,store);
 		}
 	}
 	@Override
@@ -265,7 +267,8 @@ public class StoreServiceImpl implements StoreService {
 		if(pId>0){
 			PartnerProductPage data= partnerDataService.getProducts(""+pId);
 			updateDB(storeId,data);
-			addLucene(configService,storeId);
+			addSolr(configService,storeId);
+			//addLucene(configService,storeId);
 		}
 	}
 	private void updateDB(int storeId,PartnerProductPage data){
@@ -429,7 +432,13 @@ public class StoreServiceImpl implements StoreService {
 			}
 		}
 	}
-	@Override
+	private void addSolr(ConfigService configService,int storeId){
+		Store store = getById(storeId);
+		if(store!=null){
+			addSolr(configService, store);
+		}
+	}
+	/*@Override
 	public void addLucene(ConfigService configService,Store store){
 		if(store==null) return;
 		int userId = store.getUserId();
@@ -516,7 +525,7 @@ public class StoreServiceImpl implements StoreService {
 		//doc.add(new Field("v_hot",clickNum+"",Field.Store.YES,Field.Index.NOT_ANALYZED));
 		doc.add(new NumericField("v_hot", Field.Store.YES,true).setIntValue(clickNum));
 		SearchHelper.insert(configService,doc);
-	}
+	}*/
 	
 	/**
 	 * 通过storeId找到商家前5个播放器，不足5个时，找同类别点击量最大的播放器
@@ -585,5 +594,21 @@ public class StoreServiceImpl implements StoreService {
 	@Override
 	public int getMostHotStoreId(int productId){
 		return storeDao.getMostHotStoreId(productId);
+	}
+	@Override
+	public void reloadSearchIndex(){
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("status", Store.STATUS_在线);
+		int count = storeDao.getOnlineAmount();
+		int pageSize = 100;
+		int pageCount = count%pageSize==0?count/pageSize:count/pageSize+1;
+		for(int pageNum=1;pageNum<=pageCount;pageNum++){
+			List<Store> list = storeDao.getList(params, pageNum, pageSize);
+			if(list!=null&&!list.isEmpty()){
+				for (Store store : list) {
+					addSolr(configService, store);
+				}
+			}
+		}
 	}
 }

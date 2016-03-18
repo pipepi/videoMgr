@@ -58,4 +58,9 @@ public interface StoreDao {
 	 * @return
 	 */
 	int getMostHotStoreId(int productId);
+	/**
+	 * 获取在线播放器数量
+	 * @return
+	 */
+	int getOnlineAmount();
 }

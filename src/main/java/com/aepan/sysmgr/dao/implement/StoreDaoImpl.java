@@ -42,6 +42,10 @@ public class StoreDaoImpl implements StoreDao {
 		sb.append(" private_dns, com_address, com_tele, user_id, logo_url,logo_url_301, max_logo_url,max_logo_url_414, status, create_time,update_time ");
 		sb.append(" from t_sysmgr_store where user_id = ? ");
 		
+		if(params.get("status")!=null){
+			sb.append(" and status = "+params.get("status"));
+		}
+		
 		//params sortName
 		if(params.get("sortName") != null){
 			sb.append(" order by " + params.get("sortName"));
@@ -243,5 +247,10 @@ public class StoreDaoImpl implements StoreDao {
 		} catch (Exception e) {
 		}
 		return rs;
+	}
+	@Override
+	public int getOnlineAmount(){
+		String sql = "select count(0) from t_sysmgr_store where status = 1 ";
+		return jdbcTemplate.queryForObject(sql, Integer.class);
 	}
 }

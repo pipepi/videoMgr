@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com._21cn.framework.web.HttpRequestInfo;
 import com.aepan.sysmgr.model.config.*;
 import com.aepan.sysmgr.service.ConfigService;
+import com.aepan.sysmgr.service.StoreService;
 import com.aepan.sysmgr.util.AjaxResponseUtil;
 import com.aepan.sysmgr.util.ConfigManager;
 import com.aepan.sysmgr.util.JSONUtil;
@@ -28,6 +29,8 @@ import com.aepan.sysmgr.util.JSONUtil;
 public class ConfigController extends DataTableController {
 	@Autowired
 	private ConfigService configService;
+	@Autowired
+	private StoreService storeService;
 	@RequestMapping("/config/init")
 	public String init(HttpServletRequest req,HttpServletResponse res,ModelMap model) throws Exception{
 		ConfigManager.getInstance().getFileConfig(configService);
@@ -40,6 +43,11 @@ public class ConfigController extends DataTableController {
 		if(id>0){
 			configService.init(id);
 		}
+		return null;
+	}
+	@RequestMapping("/config/reloadStoreSearchIndex")
+	public String reloadStoreSearchIndex(HttpServletRequest req,HttpServletResponse res,ModelMap model){
+		storeService.reloadSearchIndex();
 		return null;
 	}
 	@RequestMapping("/config/page")

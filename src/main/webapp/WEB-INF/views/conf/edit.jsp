@@ -83,6 +83,12 @@
 			window.location.reload();
 		});
 	}
+	function reloadIndex(){
+		var _url = _ctx+"/config/reloadStoreSearchIndex"; 
+		$.post(_url,function(data){
+			window.location.reload();
+		});
+	}
 	function toggle(){
 		$(".folder").click(function(){
 			$(this).parent().find("table").toggle();
@@ -252,7 +258,7 @@
   		<tr><td>oth_csid</td><td>${conf.smsConfig.oth_csid }</td><td><div class="btn" attrname="oth_csid"></div></td></tr>
   	</table>
 </div>
-<div class="title_1">搜索引擎</div>
+<div class="title_1">搜索引擎  <a href="javascript:reloadIndex();">刷新索引(全部播放器重建索引，慎用)</a></div>
 <div>
   	<div class="float title_2">lucene</div><div class="float folder close"></div><div style="clear:both"></div><!-- clear float -->
   	<table confid="5" confname="LuceneConfig">

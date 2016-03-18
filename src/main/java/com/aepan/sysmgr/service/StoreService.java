@@ -44,7 +44,7 @@ public interface StoreService {
 	 * 添加到搜索库
 	 * @param store
 	 */
-	void addLucene(ConfigService configService,Store store);
+	//void addLucene(ConfigService configService,Store store);
 	/**
 	 * 添加到搜索库
 	 * @param storeId
@@ -107,4 +107,8 @@ public interface StoreService {
 	 * @return
 	 */
 	int getMostHotStoreId(int productId);
+	/**
+	 * 重新加载搜索索引
+	 */
+	void reloadSearchIndex();
 }

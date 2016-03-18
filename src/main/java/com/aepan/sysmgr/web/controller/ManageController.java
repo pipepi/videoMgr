@@ -56,7 +56,7 @@ public class ManageController extends DataTableController {
     public String sellerlist(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
 		List<PartnerMgrUser> rlist = new ArrayList<PartnerMgrUser>();
 		PageList<PartnerUser> list = partnerUserService.getList(model, 1, Integer.MAX_VALUE);
-		List<PackageInfo> packageList = packageService.getList(PackageInfo.PACKAGE_TYPE_PACKAGE, 1, 3);
+		List<PackageInfo> packageList = packageService.getList(PackageInfo.PACKAGE_TYPE_PACKAGE, 1, 4);
 		for(int i = 0; i < list.size(); i++ ){
 			PartnerMgrUser pmu = new PartnerMgrUser();
 			PartnerUser pu = list.get(i);
