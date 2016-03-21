@@ -5,6 +5,8 @@ package com.aepan.sysmgr.dao.implement;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,7 @@ import com.aepan.sysmgr.dao.StoreDao;
 import com.aepan.sysmgr.dao.rowmapper.StoreRowMapper;
 import com.aepan.sysmgr.model.Store;
 import com.aepan.sysmgr.model.hm.StoreSubInfo;
+import com.mysql.fabric.xmlrpc.base.Array;
 
 /**
  * @author rakika
@@ -40,10 +43,15 @@ public class StoreDaoImpl implements StoreDao {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" select id, name, description, share_content, inner_code, type, ");
 		sb.append(" private_dns, com_address, com_tele, user_id, logo_url,logo_url_301, max_logo_url,max_logo_url_414, status, create_time,update_time ");
-		sb.append(" from t_sysmgr_store where user_id = ? ");
-		
+		sb.append(" from t_sysmgr_store where 1=1  ");
+		List<Object> paramss = new ArrayList<Object>();
+		if(params.get("userId")!=null){
+			sb.append(" and user_id = ? ");
+			paramss.add(params.get("userId"));
+		}
 		if(params.get("status")!=null){
-			sb.append(" and status = "+params.get("status"));
+			sb.append(" and status = ? ");
+			paramss.add(params.get("status"));
 		}
 		
 		//params sortName
@@ -51,7 +59,7 @@ public class StoreDaoImpl implements StoreDao {
 			sb.append(" order by " + params.get("sortName"));
 			sb.append(" " + params.get("sortOrder"));
 		}
-		List<Store> list = jdbcTemplate.query(sb.toString(), new Object[]{params.get("userId")},
+		List<Store> list = jdbcTemplate.query(sb.toString(), paramss.toArray(),
 				new StoreRowMapper());
 		PageList<Store> pageList = new PageList<Store>();
 		PageTurn pageTurn = new PageTurn(pageNo, pageSize,
