@@ -73,5 +73,13 @@ public interface UserService {
 	 * @return
 	 */
 	public boolean isExistAddress(String mobile, String toAddress);
+
+	/**
+	 * 清除废弃帐号
+	 * @param userIds
+	 */
+	void deleteUser(List<Integer> userIds);
+	
+	List<Integer> getUserIds(String partnerAccountNames);
 	
 }

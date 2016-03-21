@@ -90,7 +90,7 @@ ul,li{list-style:none;margin:0; padding:0;}
 
 .video-titles-new{background-color:#e6e6e6; height:33px;}
 .video-titles-new span{line-height:33px;padding-left:10px;}
-.video-kuangs_new{height:245px;width:502px;border:2px solid #333; position:absolute;background:#ffffff; top:38%;left:25%;}
+.video-kuangs_new{padding-bottom:20px;width:502px;border:2px solid #333; position:absolute;background:#ffffff; top:38%;left:25%;}
 .zf-fonts-new{margin-top:20px;width:440px;margin-left:20px; text-indent:2rem;}
 .video-btnsInfors-new{background-color:#e3393c;color:#ffffff;width:58px;height:38px;border:0; font-size:16px;display:block; float:left; text-align:center; line-height:38px; text-decoration:none; margin-left:10px;}
 .zf-fonts-new em{color:#e3393c; text-decoration:underline;}

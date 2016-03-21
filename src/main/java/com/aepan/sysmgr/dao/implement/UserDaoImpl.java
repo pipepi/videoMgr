@@ -274,5 +274,42 @@ public class UserDaoImpl implements UserDao {
 		        + " and t.id = a.user_id and a.to_address = ? ", 
 					new Object[] { mobile, toAddress }, new UserRowMapper()).size() > 0;		
 	}
-
+	@Override
+	public void deleteUser(int userId){
+		String deleteUserSql = "delete from t_sysmgr_user where id = "+ userId;//#用户帐号信息
+		String deletePackageSql = "delete from t_sysmgr_package_stat where user_id = "+userId;//#套餐信息
+		String deleteBuyFlowSql = "delete from t_sysmgr_flow where user_id = "+userId;//#流量购买信息
+		String deleteFlowLogSql = "delete from t_sysmgr_flow_log where user_id = "+userId;//#流量统计信息
+		String deleteVideoSql = "delete from t_sysmgr_video where user_id = "+userId;//#视频信息
+		String deleteStoreSql = "delete from t_sysmgr_store where user_id = "+userId;//#播放器信息
+		String deleteStoreProductSql = "delete from t_sysmgr_store_product where user_id = "+userId;//#播放器关联视频信息
+		String deleteStoreVideoSql = "delete from t_sysmgr_store_video where user_id = "+userId;//#播放器关联商品信息
+		String deleteProductOrderSql = "delete from t_sysmgr_product_order where buyers_id = "+userId;//#订单信息
+		String deleteProductInfoSql = "delete from t_sysmgr_product_info where user_id = "+userId;//#商品临时信息
+		jdbcTemplate.update(deleteUserSql);
+		jdbcTemplate.update(deletePackageSql);
+		jdbcTemplate.update(deleteBuyFlowSql);
+		jdbcTemplate.update(deleteFlowLogSql);
+		jdbcTemplate.update(deleteVideoSql);
+		jdbcTemplate.update(deleteStoreSql);
+		jdbcTemplate.update(deleteStoreProductSql);
+		jdbcTemplate.update(deleteStoreVideoSql);
+		jdbcTemplate.update(deleteProductOrderSql);
+		jdbcTemplate.update(deleteProductInfoSql);
+	}
+	@Override
+	public List<Integer> getUserIds(String partnerAccountNames){
+		String[] ns = partnerAccountNames.split(",");
+		StringBuffer sql = new StringBuffer(); 
+		sql.append("select id from t_sysmgr_user where partner_account_name in (");
+		for(int i=0;i<ns.length;i++){
+			if(i<ns.length-1){
+				sql.append("?,");
+			}else{
+				sql.append("?");
+			}
+		}
+		sql.append(")");
+		return jdbcTemplate.queryForList(sql.toString(), Integer.class, (Object[])ns);
+	}
 }

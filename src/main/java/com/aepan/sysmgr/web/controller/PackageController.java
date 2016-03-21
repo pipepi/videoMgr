@@ -97,7 +97,7 @@ public class PackageController extends DataTableController {
 		String rs = "";
 		if(linkPNumList!=null&&!linkPNumList.isEmpty()){
 			for (Integer integer : linkPNumList) {
-				rs += integer+",";
+				rs += "<em>"+integer+"</em>,";
 			}
 			rs = rs.substring(0, rs.length()-1);
 		}

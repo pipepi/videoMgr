@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import com._21cn.framework.util.PageList;
 import com.aepan.sysmgr.dao.UserDao;
 import com.aepan.sysmgr.model.User;
+import com.aepan.sysmgr.model._enum.CacheObject;
+import com.aepan.sysmgr.service.CacheService;
 import com.aepan.sysmgr.service.UserService;
 
 /**
@@ -27,7 +29,8 @@ public class UserServiceImpl implements UserService {
 	private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     @Autowired
     private UserDao userDao;
-    
+    @Autowired
+    private CacheService cacheService;
 	@Override
 	public User partnerLogin(int partnerId,int partnerAccountId) {
 		User user = userDao.getUserbyPartnerAccount(partnerId,partnerAccountId);
@@ -162,7 +165,23 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		return userDao.isExistAddress(mobile, toAddress);
 	}
+	@Override
+	public void deleteUser(List<Integer> userIds){
+		if(userIds!=null&&userIds.size()>0){
+			for (Integer userId : userIds) {
+				//清除缓存
+				cacheService.deleteByUserId(CacheObject.STOREINFO, userId);
+				//清除数据库
+				userDao.deleteUser(userId);
+			}
+		}
+	}
 
-
+	@Override
+	public List<Integer> getUserIds(String partnerAccountNames) {
+		return userDao.getUserIds(partnerAccountNames);
+	}
+	
+	
 
 }

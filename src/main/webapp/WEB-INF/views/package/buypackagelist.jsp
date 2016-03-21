@@ -27,12 +27,15 @@ function checkAnyGt(){
 		}
 	}
 	return true;
-}
+} 
 $(function(){
 	var $this = $('.pageckge-choice-current');
 	_selected_store_num = parseInt($this.attr('attrStoreNum'));
 	_selected_pNum_perStore = parseInt($this.attr('attrProductNum'));
-	log();
+	//console.log($("#_selected_store_num").html()+"    _selected_store_num= "+_selected_store_num);
+	$("#_selected_store_num").html(_selected_store_num);
+	$("#_selected_pNum_perStore").html(_selected_pNum_perStore);
+	//log();
 });
 function log(){
 	console.log(_selected_store_num);
@@ -51,17 +54,25 @@ function choosePackage(id,selectedSortId,thisvar){
 	$("#packageDiv"+id).addClass("pageckge-choice-current");	
 
 }
-
+function hideTip(){
+	$(".video-kuangs_new").hide();
+}
+function goVideoControlePage(){
+	window.location = '${ctx}/store/videolist';
+}
 function check(){
 	if(_had_store_num>_selected_store_num||_had_linkproduct_count>_selected_pNum_perStore*_selected_store_num||!checkAnyGt()){
 		//tip
-		var tip= "尊敬的用户，您好：您当前已建立的智能播放器数量为"+_had_store_num+"个，每播放器关联的商品数量分别为"+_had_linkproduct_str+"个;\n"
+		 /*var tip= "尊敬的用户，您好：您当前已建立的智能播放器数量为"+_had_store_num+"个，每播放器关联的商品数量分别为"+_had_linkproduct_str+"个;\n"
 		+"您选择的新套餐的智能播放器数量为"+_selected_store_num+"个，每个智能播放器可关联的商品数量为"+_selected_pNum_perStore+"个;\n"
 		+"请先在您的视频电商控制台删除多余的播放器或取消关联多余的商品再进行套餐续约，谢谢！";
 		if(comfirm(tip)){
 			window.location = '${ctx}/store/videolist'	
 		}else{
-		}
+		}*/
+		$("#_selected_store_num").html(_selected_store_num);
+		$("#_selected_pNum_perStore").html(_selected_pNum_perStore);
+		$(".video-kuangs_new").show();
 	}else{
 		nextStep();
 	}
@@ -224,7 +235,25 @@ function nextStep(){
 							    
 	  </c:forEach>
        
-     </div><!--package-Choice End-->       
+     </div><!--package-Choice End-->   
+     <div class="video-kuangs_new" style="z-index:2000;display: none;">
+           <div class="video-titles-new">
+                   <span>套餐续约</span>
+                  <a href="javascript:hideTip();" class="close-icon"><img src="${ctx}/source/images/partner/package/close.jpg" width="33" height="33"></a>
+                 </div>
+                 <span style="margin-top:20px; display:block;margin-left:20px;">尊敬的用户，您好：</span>
+                 <div class="zf-fonts-new"><!--comm-cons Begin-->
+                 您当前已建立的智能播放器为   <em>${storeNum}</em>  个，每播放器关联的商品数量分别
+为${linkPNumListStr}个；
+<p>您选择的新套餐的智能播放器数量为<em id = "_selected_store_num">0</em>个，每播放器可关联的商品
+数量为 <em id="_selected_pNum_perStore">0</em>个；</p>
+<p> 请先在您的视频电商控制台删除多余的播放器或取消关联多余的商品再
+进行套餐续约，谢谢！</p>
+                </div>  
+                   <div style="width:260px;margin:20px auto;">
+                     <a href="javascript:hideTip();" class="black-btns-cons" style="width:70px">取消</a><a href="javascript:goVideoControlePage()" class="naxt-btns-cons">去视频电商控制台</a>
+                    </div>
+          </div>    
      <div class="next-btns"><a href="javascript:check();" class="naxt-btns-cons">下一步</a> 
       <div class="clear"></div> 
      </div>

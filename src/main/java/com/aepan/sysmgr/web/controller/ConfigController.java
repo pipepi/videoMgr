@@ -4,6 +4,7 @@
 package com.aepan.sysmgr.web.controller;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,6 +18,7 @@ import com._21cn.framework.web.HttpRequestInfo;
 import com.aepan.sysmgr.model.config.*;
 import com.aepan.sysmgr.service.ConfigService;
 import com.aepan.sysmgr.service.StoreService;
+import com.aepan.sysmgr.service.UserService;
 import com.aepan.sysmgr.util.AjaxResponseUtil;
 import com.aepan.sysmgr.util.ConfigManager;
 import com.aepan.sysmgr.util.JSONUtil;
@@ -31,6 +33,8 @@ public class ConfigController extends DataTableController {
 	private ConfigService configService;
 	@Autowired
 	private StoreService storeService;
+	@Autowired
+	private UserService userService;
 	@RequestMapping("/config/init")
 	public String init(HttpServletRequest req,HttpServletResponse res,ModelMap model) throws Exception{
 		ConfigManager.getInstance().getFileConfig(configService);
@@ -48,6 +52,18 @@ public class ConfigController extends DataTableController {
 	@RequestMapping("/config/reloadStoreSearchIndex")
 	public String reloadStoreSearchIndex(HttpServletRequest req,HttpServletResponse res,ModelMap model){
 		storeService.reloadSearchIndex();
+		return null;
+	}
+	@RequestMapping("/config/deleteAccount")
+	public String deleteAccount(HttpServletRequest req,HttpServletResponse res,ModelMap model){
+		HttpRequestInfo reqInfo = new HttpRequestInfo(req);
+		String accountName = reqInfo.getParameter("accountName","");
+		if(accountName!=null&&accountName.length()>0){
+			List<Integer> userIds = userService.getUserIds(accountName);
+			if(userIds!=null&&!userIds.isEmpty()){
+				userService.deleteUser(userIds);
+			}
+		}
 		return null;
 	}
 	@RequestMapping("/config/page")

@@ -74,4 +74,15 @@ public interface UserDao {
 
 	public boolean isExistAddress(String mobile, String toAddress);
 
+	/**
+	 * @param userId
+	 */
+	void deleteUser(int userId);
+
+	/**
+	 * @param partnerAccountNames
+	 * @return
+	 */
+	List<Integer> getUserIds(String partnerAccountNames);
+
 }
