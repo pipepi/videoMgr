@@ -40,6 +40,7 @@ import com.aepan.sysmgr.model.tempinfo.LinkVideoInfo;
 import com.aepan.sysmgr.service.ConfigService;
 import com.aepan.sysmgr.service.PackageService;
 import com.aepan.sysmgr.service.PackageStatService;
+import com.aepan.sysmgr.service.PartnerDataService;
 import com.aepan.sysmgr.service.StorageService;
 import com.aepan.sysmgr.service.StoreService;
 import com.aepan.sysmgr.service.UserService;
@@ -48,7 +49,6 @@ import com.aepan.sysmgr.util.AjaxResponseUtil;
 import com.aepan.sysmgr.util.ConfigManager;
 import com.aepan.sysmgr.util.Constants;
 import com.aepan.sysmgr.util.FileUtil;
-import com.aepan.sysmgr.util.OperationLogUtil;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -74,6 +74,8 @@ public class VideoController extends DataTableController {
 	private StoreService storeService;
 	@Autowired
 	private StorageService storageService;
+	@Autowired
+	private PartnerDataService partnerDataService;
 
 	//----------------------------视频审核 start---------------------------------------
 	@RequestMapping("/video/searchhm")
@@ -146,8 +148,7 @@ public class VideoController extends DataTableController {
 		String checkMsg = reqInfo.getParameter("msg","");
 		videoService.check(videoId, checkState, checkMsg);
 		//记录操作日志
-		OperationLogUtil.addLog(configService, 
-				new OperationLog(OperationLog.TYPE_视频, 
+		partnerDataService.addLog(new OperationLog(OperationLog.TYPE_视频, 
 						user.getPartnerAccountId(),
 						user.getPartnerAccountName(),
 						"/video/check", 
@@ -176,8 +177,7 @@ public class VideoController extends DataTableController {
 				videoService.check(vidInt, VideoCheck.state_下线, checkMsg);
 			}
 			//记录操作日志
-			OperationLogUtil.addLog(configService, 
-					new OperationLog(OperationLog.TYPE_视频, 
+			partnerDataService.addLog(new OperationLog(OperationLog.TYPE_视频, 
 							user.getPartnerAccountId(),
 							user.getPartnerAccountName(),
 							"/video/offLineMulti", 
@@ -387,8 +387,7 @@ public class VideoController extends DataTableController {
 			//删除数据库视频记录，关联播放器记录，云视频数据，云图片数据
 			videoService.delete(Integer.parseInt(id),user.getId());
 			//记录操作日志
-			OperationLogUtil.addLog(configService, 
-					new OperationLog(OperationLog.TYPE_视频, 
+			partnerDataService.addLog(new OperationLog(OperationLog.TYPE_视频, 
 							user.getPartnerAccountId(),
 							user.getPartnerAccountName(),
 							"/video/deletehmAjax", 
@@ -456,8 +455,7 @@ public class VideoController extends DataTableController {
 						}
 					}*/
 					
-					OperationLogUtil.addLog(configService, 
-							new OperationLog(OperationLog.TYPE_视频, 
+					partnerDataService.addLog(new OperationLog(OperationLog.TYPE_视频, 
 									user.getPartnerAccountId(),
 									user.getPartnerAccountName(),
 									"/video/update_ajax", 

@@ -71,16 +71,11 @@ var remainFlows = "${remainflows}"; */
 </head>
 
 <body>
-<div class="container-fluid">
+<div class="container-fluid container-fluid2">
 <div class="sj_buy-video">
-   <div class="sj-buy-videoCons" style="padding-top:34px;">
-     <img src="${ctx}/source/images/partner/package/jdt_2.jpg" width="885" height="62" />
-     <ul class="tjt-font">
-     	<li style="margin-left:65px;">套餐选择</li>
-        <li style="margin-left:295px;"><strong>套餐支付</strong></li>
-        <li style="margin-left:280px;">开启视频电商</li>
-        <div class="clear"/>
-     </ul>
+   <div class="sj-buy-videoCons" >
+     <img src="${ctx}/source/images/partner/package/jdt_2.png" width="100%" />
+
      <!--套餐选择-->
     <div>
      <!--支付平台-->
@@ -99,8 +94,8 @@ var remainFlows = "${remainflows}"; */
           </div><!--comm-cons End-->
       </div>
       
-     <div class="package-Choice" style="margin-top:10px;"  id="confirmPackageDiv"><!--package-Choice Begin-->
-       <div class="pageckge-choice-infors " style="width:222px">
+     <div class="package-Choice"   id="confirmPackageDiv"><!--package-Choice Begin-->
+       <div class="pageckge-choice-infors " >
          <ul>
          	<li style="color:#ffffff; font-size:18px;">项目内容</li>
             <li class="pageckge-Cons">智能播放器数量（个）</li>
@@ -119,7 +114,7 @@ var remainFlows = "${remainflows}"; */
             <li style="height:100px; line-height:105px;color:#cc0000;">价格（元）</li>
          </ul>
        </div>
-       <div class="pageckge-choice-infors2" style="margin-left:222px; width:666px;">
+       <div class="pageckge-choice-infors2" style="margin-left:20%;width:80%;">
          <ul>
          	<li style="color:#ffffff; font-size:18px;">${packageInfo.name }</li>
             <li class="pageckge-Cons">${packageInfo.playerNum }</li>

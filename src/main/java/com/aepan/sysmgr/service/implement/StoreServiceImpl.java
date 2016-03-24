@@ -25,12 +25,14 @@ import com._21cn.framework.util.PageList;
 import com.aepan.sysmgr.dao.PackageStatDao;
 import com.aepan.sysmgr.dao.ProductDao;
 import com.aepan.sysmgr.dao.StoreDao;
+import com.aepan.sysmgr.dao.UserDao;
 import com.aepan.sysmgr.dao.VideoDao;
 import com.aepan.sysmgr.model.ProductInfo;
 import com.aepan.sysmgr.model.Store;
 import com.aepan.sysmgr.model.StoreProduct;
 import com.aepan.sysmgr.model.StoreProducts;
 import com.aepan.sysmgr.model.StoreVideo;
+import com.aepan.sysmgr.model.User;
 import com.aepan.sysmgr.model.Video;
 import com.aepan.sysmgr.model.VideoCheck;
 import com.aepan.sysmgr.model._enum.CacheObject;
@@ -55,7 +57,8 @@ import com.aepan.sysmgr.web.controller.VideoController;
 public class StoreServiceImpl implements StoreService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(VideoController.class);
-
+	@Autowired
+	UserDao userDao;
 	@Autowired
 	StoreDao storeDao;
 	@Autowired
@@ -228,7 +231,12 @@ public class StoreServiceImpl implements StoreService {
 		msgPartnerProductUnlink(userId,storeId);
 		productDao.deleteByUserIdANDStoreId(userId, storeId);
 		//删除搜索索引
-		SearchHelper.delete(configService, storeId+"");
+		//SearchHelper.delete(configService, storeId+"");
+		try {
+			searchService.delete(storeId+"");
+		} catch (SolrServerException | IOException e) {
+			logger.debug("addSolr-->delete error,storeId = "+storeId+"");
+		}
 		//清楚缓存
 		cacheService.delete(CacheObject.STOREINFO, storeId);
 		
@@ -306,9 +314,12 @@ public class StoreServiceImpl implements StoreService {
 	private com.aepan.sysmgr.model.lucene.Store getLuceneStore(ConfigService configService,Store store){
 		if(store != null){
 			int userId = store.getUserId();
+			User user = userDao.getByUserId(userId);
+			if(user==null) return null;
 			int storeId = store.getId();
 			com.aepan.sysmgr.model.lucene.Store luceneStore = new com.aepan.sysmgr.model.lucene.Store();
 			luceneStore.setId(store.getId()+"");
+			luceneStore.setPartnerUserId(user.getPartnerAccountId()+"");
 			luceneStore.setName(store.getName());
 			luceneStore.setDesc(store.getDescription());
 			Set<String> typeSet = new HashSet<String>();

@@ -92,7 +92,7 @@ function packageRecord(){
 </head>
 
 <body>
-<div class="container-fluid">
+<div class="container-fluid container-fluid2">
       <div class="video-add">
          <div class="video-add-title">
          	<ul>

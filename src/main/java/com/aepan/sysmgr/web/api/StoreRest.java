@@ -32,6 +32,7 @@ import com.aepan.sysmgr.model.config.PartnerConfig;
 import com.aepan.sysmgr.model.hm.StoreSubInfo;
 import com.aepan.sysmgr.service.CacheService;
 import com.aepan.sysmgr.service.ConfigService;
+import com.aepan.sysmgr.service.PartnerDataService;
 import com.aepan.sysmgr.service.ProductService;
 import com.aepan.sysmgr.service.StoreService;
 import com.aepan.sysmgr.service.UserService;
@@ -68,6 +69,8 @@ public class StoreRest {
 	UserService userService;
 	@Autowired
 	CacheService cacheService;
+	@Autowired
+	private PartnerDataService partnerDataService;
 	
 	@RequestMapping(value = "/subinfos",produces = MediaType.APPLICATION_JSON_VALUE )
 	@ResponseBody
@@ -157,34 +160,10 @@ public class StoreRest {
         	idListStr=idListStr.substring(0, idListStr.length()-1);
         	int page = reqInfo.getIntAttribute("page",1);
     		int pagesize = reqInfo.getIntAttribute("pagesize",50);
-    		
-    		PartnerConfig partnerConfig = ConfigManager.getInstance().getPartnerConfig(configService);
-    		String productDetailUrl = partnerConfig.GET_PARTNER_PRODUCT_DETAIL_URL;
-//    		StringBuffer param = new StringBuffer("?saleStatus=1&auditStatus=2&page=").append(""+page).append("&rows="+pagesize).append("&ids="+idListStr);
-    		StringBuffer param = new StringBuffer();
-    		param.append(idListStr).append("/").append(videoIds).append("/1/2/").append(page).append("/").append(pagesize);
-
-
-    		PostMethod method = new PostMethod(productDetailUrl+param.toString());
-
-
-    		HttpClient client = new HttpClient();
-
-    		logger.info(method.toString());
-    		try {
-    			client.executeMethod(method);
-    			String ret = method.getResponseBodyAsString();
-    			logger.debug("ret:"+ret);
-    			
-    	        if(method.getStatusCode() == 200 ){
-    	        	storeInfo.setProductList(ret);
-    	        }else{
-    				return responseLog(JsonResp.CODE_GET_PRODUCT_FAILED , "Get store error id:"+storeId);
-    	        }
-    		} catch (IOException e) {
-    			logger.error(e.getMessage(), e);
-    		}
-        	
+    		String ret = partnerDataService.getProductsSKU(idListStr, videoIds, page, pagesize);
+	        if(ret!=null&&ret.length()>0){
+	        	storeInfo.setProductList(ret);
+	        }	
         }
     	//流量统计配置
         storeInfo.setFlowConfig(ConfigManager.getInstance().getFlowConfig());

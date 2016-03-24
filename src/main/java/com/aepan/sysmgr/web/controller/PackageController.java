@@ -31,11 +31,11 @@ import com.aepan.sysmgr.model.packageinfo.PackageStat;
 import com.aepan.sysmgr.service.ConfigService;
 import com.aepan.sysmgr.service.OrderService;
 import com.aepan.sysmgr.service.PackageService;
+import com.aepan.sysmgr.service.PartnerDataService;
 import com.aepan.sysmgr.service.UserService;
 import com.aepan.sysmgr.util.AjaxResponseUtil;
 import com.aepan.sysmgr.util.ConfigManager;
 import com.aepan.sysmgr.util.Constants;
-import com.aepan.sysmgr.util.OperationLogUtil;
 import com.aepan.sysmgr.util.UuidUtil;
 import com.alibaba.fastjson.JSONObject;
 
@@ -58,7 +58,8 @@ public class PackageController extends DataTableController {
 	UserService userService;
 	@Autowired
 	ConfigService configService;
-	
+	@Autowired
+	PartnerDataService partnerDataService;
 
 	/**
 	 * 购买套餐列表
@@ -127,7 +128,7 @@ public class PackageController extends DataTableController {
 	@RequestMapping("/package/finishpay")
 	public String finishPay(ModelMap model){
 		PartnerConfig partnerConfig = ConfigManager.getInstance().getPartnerConfig(configService);
-		String partnerIndexUrl = partnerConfig.PARTNER_INDEX_URL;
+		String partnerIndexUrl = partnerConfig.rootPath+"/SellerAdmin";
 		model.addAttribute("partnerIndexUrl", partnerIndexUrl);
 		return "/package/buypackagesuccess";
 	}
@@ -397,8 +398,7 @@ public class PackageController extends DataTableController {
         	
         	User user = getAdminUser(request);
         	//记录操作日志
-			OperationLogUtil.addLog(configService, 
-					new OperationLog(OperationLog.TYPE_套餐, 
+        	partnerDataService.addLog(new OperationLog(OperationLog.TYPE_套餐, 
 							user.getPartnerAccountId(),
 							user.getPartnerAccountName(),
 							"/package/update", 

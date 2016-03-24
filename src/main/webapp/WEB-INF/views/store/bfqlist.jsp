@@ -24,7 +24,7 @@ var _ctx = "${ctx}";
 </head>
 
 <body>
- <div class="container-fluid">
+ <div class="container-fluid container-fluid2">
  	
       <div class="video-add">
          <div class="video-add-title">
@@ -41,10 +41,10 @@ var _ctx = "${ctx}";
             <div class="video-tabs-cons">
                <div class="video-add-cons" >
                 <ul class="bfq-tab">
-                    <li style="margin-top:4px; float:left;margin-left:20px;">已建立播放器数量<div style="font-size:24px; text-align:center;margin-top:10px;color:#e3393c;">${playerCount }</div></li>
-                    <li style="margin-left:50px; width:620px;">
+                    <li class="bfq-bfNumber">已建立播放器数量<div class="fql-playerCount">${playerCount }</div></li>
+                    <li  class="bfq-li02">
                      <ul>
-                    	<li> <div style="padding-top:4px; float:left; color:#666666;"><strong style="color:#333333;font-size:16px;float:left">当前套餐使用情况</strong>
+                    	<li> <div style="padding-top:4px; float:left; color:#666666;"><div class="bfq-flow-font">当前套餐使用情况</div>
                     	<div style="width:452px; float:left;margin-left:9px;">&nbsp;播放器：<span>${playerCount }/${packageInfo.playerNum }</span>
                     	 &nbsp;视频： <span>${storeVideoCount}/${totalVideoNum }</span> &nbsp;产品：<span>${storeProductCount}/${totalProductNum }</span> &nbsp;有效期至：${packageEndTime}
                     	 </div>
@@ -70,8 +70,8 @@ var _ctx = "${ctx}";
                
    
             <div class="voideo-add2"><!--voideo-add2 Begin-->
-              <div class="video-add-cons">
-	              <div id = "video-yulan" style="position: absolute;z-index: 1000; width: 800px; height: 618px; background-color: rgb(38, 159, 222); display:none;">
+              <div class="video-add-cons" style="min-height:550px;height:auto;">
+	              <div id = "video-yulan" class="voideo-yulan-consTan">
 				   <div style = "position: absolute;right:0;top:0;"><a href="javascript:void(0);" onclick="closePreView()" class="close-icon"></a></div>
 				   <div id = "yulan" class="video-yulan" ></div>
 			      </div>  
@@ -93,9 +93,9 @@ var _ctx = "${ctx}";
                    	onerror='this.src="${ctx }/source/images/aztimg/logo_kaimai8.png"' 
                     title="${store.description }" width="210px" height="126px" /><br/>
                    <em title="${store.name }" 
-                    style="height:20px;width: 215px;overflow: hidden;text-overflow:ellipsis;white-space: nowrap;">${store.name }</em>
+                    class="bfq-storeName">${store.name }</em>
                    </div>
-                   <div class="bf-edit"  style="width:460px;margin-left:80px;">
+                   <div class="bf-edit" >
                      <a href="javascript:edit(${store.id });" class="bfq-bjBtns" style="margin-left:20px;">编辑</a>
                      <a href="javascript:void(0)" previewbtn="1" storeId="${store.id }" class="bfq-bjBtns" >预览</a>
                      <a href="javascript:void(0)" linkPbtn="1" storeId="${store.id }"  class="bfq-cpBtns" id="link-product-a-${store.id}"  linked-product-ids = "${store.linkedProductIds==null?'':store.linkedProductIds }" >关联产品</a>
@@ -105,7 +105,7 @@ var _ctx = "${ctx}";
                                            已关联视频：<span id = "linked-num-span-${store.id}"><strong>${store.linkedVideoNum }</strong></span> 个   </div>
                    </div>
                    
-                   <div style="padding-top:40px;float:right;margin-right: 70px;"><a href="javascript:void(0)"  class="zhineng-sreach" testvalue="${ store.id }">删除</a></div>
+                   <div class="bfq-del-btns"><a href="javascript:void(0)"  class="zhineng-sreach" testvalue="${ store.id }">删除</a></div>
                  </li>
                  </c:forEach>
                  <div class="clear"></div>

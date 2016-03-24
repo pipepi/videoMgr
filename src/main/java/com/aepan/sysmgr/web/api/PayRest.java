@@ -64,7 +64,6 @@ import com.aepan.sysmgr.service.StorageService;
 import com.aepan.sysmgr.service.UserService;
 import com.aepan.sysmgr.util.ConfigManager;
 import com.aepan.sysmgr.util.Constants;
-import com.aepan.sysmgr.util.OperationLogUtil;
 import com.aepan.sysmgr.util.StringUtil;
 import com.aepan.sysmgr.util.UuidUtil;
 import com.aepan.sysmgr.web.api.pay.AlipayCore;
@@ -710,8 +709,7 @@ public class PayRest {
 		
 		
 		//记录操作日志
-		OperationLogUtil.addLog(configService, 
-				new OperationLog(OperationLog.TYPE_套餐, 
+		partnerDataService.addLog(new OperationLog(OperationLog.TYPE_套餐, 
 						user.getPartnerAccountId(),
 						user.getPartnerAccountName(),
 						"/package/updateuserpackage", 

@@ -18,7 +18,7 @@
 </div>
 <div class="comm-cons">
 	<!--comm-cons Begin-->
-	<ul style="overflow: hidden; height: 473px; overflow: auto;">
+	<ul class="comm-consInfors">
 		<c:forEach var="p" items="${list }" varStatus="status" >
 			<li ${(status.index+1)%3==0?'style="margin-right:0;"':'' } >
 				<img src="${p.imagePath }" width="210" height="118" title="发布时间：${p.addedDate }  价格：${p.marketPrice }"/> 

@@ -1,0 +1,1 @@
+UPDATE `videomgr`.`t_sysmgr_config` SET `config`='{"rootPath":"http://192.168.1.250:6004"}' WHERE  `id`=4;

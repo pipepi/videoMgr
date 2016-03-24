@@ -5,7 +5,8 @@ html, body{margin:0 auto;font-family:"Helvetica","Microsoft Yahei",sans-serif;fo
 a{ text-decoration:none;}
 em{ font-style:normal;}
 .clear{clear:both;}
-.container-fluid{padding:20px 15px;width:1010px;position:absolute;left:52%;margin-left:-450px;}
+.container-fluid{width: 1010px;position: relative;margin: 0 auto;overflow: hidden;padding: 20px 0 30px 200px;}
+.container-fluid2{width: 97%;position: relative;margin: 0 auto;overflow: hidden;padding:0 0 20px 0;}
 .video-add-title{height:44px;background-color:#e6e6e6;font-size:14px; line-height:40px; color:#000000;padding-left:15px;}
 .video-add-title a{color:#000000;}
 .video-add-title ul li{ float:left; margin-right:15px;}

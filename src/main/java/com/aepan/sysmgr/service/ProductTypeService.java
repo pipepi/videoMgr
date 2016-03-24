@@ -25,7 +25,6 @@ public interface ProductTypeService {
 
 	/**
 	 * 同步类目
-	 * @param url 接口地址
 	 */
-	void synchronous(String url);
+	void synchronous();
 }

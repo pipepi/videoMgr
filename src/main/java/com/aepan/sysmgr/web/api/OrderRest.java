@@ -350,7 +350,7 @@ public class OrderRest {
 	 */
 	private List<SkusInfo> getProductJson(String[] skus){		
 		
-		PartnerConfig partnerConfig = ConfigManager.getInstance().getPartnerConfig(configService);
+		/*PartnerConfig partnerConfig = ConfigManager.getInstance().getPartnerConfig(configService);
 		String  productSkusInfoUrl= partnerConfig.GET_PARTNER_PRODUCT_SKUSINFO;
 		
 	   StringBuffer sb = new StringBuffer(productSkusInfoUrl);
@@ -385,7 +385,8 @@ public class OrderRest {
 		} catch (IOException e) {
 			logger.error(e.getMessage(),e);
 		}
-		return rlist;
+		return rlist;*/
+		return null;
 	}
 	
 	/**
@@ -394,7 +395,7 @@ public class OrderRest {
 	 */
 	private void updateProductStock(String[] skus, String[] stock){
 		
-		PartnerConfig partnerConfig = ConfigManager.getInstance().getPartnerConfig(configService);
+		/*PartnerConfig partnerConfig = ConfigManager.getInstance().getPartnerConfig(configService);
 		String  updateStokeUrl= partnerConfig.UPDATE_PRODUCT_STOKE;
 		
 	   StringBuffer sb = new StringBuffer(updateStokeUrl);
@@ -427,6 +428,6 @@ public class OrderRest {
 
 		} catch (IOException e) {
 			logger.error(e.getMessage(),e);
-		}
+		}*/
 	}
 }

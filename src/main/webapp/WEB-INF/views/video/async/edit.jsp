@@ -23,7 +23,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <script type = "text/javascript" charset="utf-8" src="${ctx}/source/js/video/file_upload_async.js"></script>
 </head>
 <body>
-  <div  class="container-fluid" ><!--container-fluid Begin-->
+  <div  class="container-fluid container-fluid2" ><!--container-fluid Begin-->
  <!--网络错误-->
 <div class="video-kuangs-newInfors video-kuangs-new" style="display:none;" >
     <div><a href="javascript:void(0)" onclick = "reflashpage()" class="close-icon"></a></div>

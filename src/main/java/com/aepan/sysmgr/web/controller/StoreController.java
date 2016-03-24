@@ -44,13 +44,13 @@ import com.aepan.sysmgr.model.lucene.StoreArray;
 import com.aepan.sysmgr.model.lucene.StoreSub;
 import com.aepan.sysmgr.model.packageinfo.PackageInfo;
 import com.aepan.sysmgr.model.packageinfo.PackageStat;
+import com.aepan.sysmgr.service.PartnerDataService;
 import com.aepan.sysmgr.service.SearchService;
 import com.aepan.sysmgr.util.AjaxResponseUtil;
 import com.aepan.sysmgr.util.ConfigManager;
 import com.aepan.sysmgr.util.Constants;
 import com.aepan.sysmgr.util.DataTableReturnObject;
 import com.aepan.sysmgr.util.JSONUtil;
-import com.aepan.sysmgr.util.OperationLogUtil;
 import com.aepan.sysmgr.util.lucene.SearchHelper;
 import com.alibaba.fastjson.JSONObject;
 
@@ -65,6 +65,8 @@ public class StoreController extends DataTableController {
 	private static final Logger logger = LoggerFactory.getLogger(StoreController.class);
 	@Autowired
 	private SearchService searchService;
+	@Autowired
+	private PartnerDataService partnerDataService;
 	/**
 	 * 获取店铺list
 	 * @param request
@@ -428,12 +430,11 @@ public class StoreController extends DataTableController {
 			store.setUserId(user.getId());
 			storeService.save(store);
 			
-			OperationLogUtil.addLog(configService, 
-					new OperationLog(OperationLog.TYPE_播放器, 
+			partnerDataService.addLog(new OperationLog(OperationLog.TYPE_播放器, 
 							user.getPartnerAccountId(),
 							user.getPartnerAccountName(),
 							"/store/savebfq", 
-							"添加播放器:"+store, 
+							"添加播放器", 
 							request.getRemoteAddr()));
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);
@@ -479,8 +480,7 @@ public class StoreController extends DataTableController {
 		}
 		AjaxResponseUtil.returnData(response, JSONObject.toJSONString(model));
 		
-		OperationLogUtil.addLog(configService, 
-				new OperationLog(OperationLog.TYPE_播放器, 
+		partnerDataService.addLog(new OperationLog(OperationLog.TYPE_播放器, 
 						user.getPartnerAccountId(),
 						user.getPartnerAccountName(),
 						"/store/updatebfq", 
@@ -507,8 +507,7 @@ public class StoreController extends DataTableController {
 			storeService.delete(configService,storeId, user.getId());
 		}
 		packageStatService.countStoreNum(user.getId());
-		OperationLogUtil.addLog(configService, 
-				new OperationLog(OperationLog.TYPE_播放器, 
+		partnerDataService.addLog(new OperationLog(OperationLog.TYPE_播放器, 
 						user.getPartnerAccountId(),
 						user.getPartnerAccountName(),
 						"/store/updatebfq", 
@@ -618,7 +617,8 @@ public class StoreController extends DataTableController {
 						s.getP_pricemax(),
 						s.getP_pricemin(),
 						s.getV_hot(),
-						s.getUpdate_time());
+						s.getUpdate_time(),
+						s.getPartnerUserId());
 				list.add(sub);
 			}
 			

@@ -210,12 +210,7 @@
 <div>
   	<div class="float title_2">c#</div><div class="float folder close"></div><div style="clear:both"></div><!-- clear float -->
   	<table confid="4" confname="PartnerConfig">
-  		<tr><td>根目录</td><td>${conf.partnerConfig.ROOT_PATH_KAIMAI8 }</td><td><div class="btn" attrname="ROOT_PATH_KAIMAI8"></div></td></tr>
-  		<tr><td>PARTNER_INDEX_URL</td><td>${conf.partnerConfig.PARTNER_INDEX_URL }</td><td><div class="btn" attrname="PARTNER_INDEX_URL"></div></td></tr>
-  		<tr><td>GET_PARTNER_PRODUCT_PAGE_URL</td><td>${conf.partnerConfig.GET_PARTNER_PRODUCT_PAGE_URL }</td><td><div class="btn" attrname="GET_PARTNER_PRODUCT_PAGE_URL"></div></td></tr>
-  		<tr><td>GET_PARTNER_PRODUCT_DETAIL_URL</td><td>${conf.partnerConfig.GET_PARTNER_PRODUCT_DETAIL_URL }</td><td><div class="btn" attrname="GET_PARTNER_PRODUCT_DETAIL_URL"></div></td></tr>
-  		<tr><td>GET_PARTNER_PRODUCT_SKUSINFO</td><td>${conf.partnerConfig.GET_PARTNER_PRODUCT_SKUSINFO }</td><td><div class="btn" attrname="GET_PARTNER_PRODUCT_SKUSINFO"></div></td></tr>
-  		<tr><td>UPDATE_PRODUCT_STOKE</td><td>${conf.partnerConfig.UPDATE_PRODUCT_STOKE }</td><td><div class="btn" attrname="UPDATE_PRODUCT_STOKE"></div></td></tr>
+  		<tr><td>根目录</td><td>${conf.partnerConfig.rootPath }</td><td><div class="btn" attrname="rootPath"></div></td></tr>
   	</table>
 </div>
 <div class="title_1">邮件短信</div>
@@ -302,5 +297,34 @@
   		<tr><td>key</td><td>${conf.configMgrKey }</td><td><div class="btn" attrname="configMgrKey"></div></td></tr>
   	</table>
 </div>
+<div class="title_1">用户管理</div>
+<div>
+	<div class="float title_2">删除用户(物理删除，不可恢复，慎用)</div><div class="float folder close"></div><div style="clear:both"></div>
+	<table>
+		<tr><td>用户帐号(,分割)</td>
+		    <td><input type="text" name="accountName" id="accountName" style="width:400px;"/></td>
+		    <td><input type="button" onclick = "deleteUserData()" value="删除" style="margin-right: 30px;width: 50px; "/></td>
+		    </tr>
+	</table>
+</div>
+<script type="text/javascript">
+function deleteUserData(){
+	var accountName = $('#accountName').val();
+	if(accountName!=null&&accountName.length>0){
+		if(confirm("确认删除用户数据？物理删除，不可恢复，慎用！")){
+			var _url = _ctx+"/config/deleteAccount";
+			$.post(_url,{accountName:accountName},function(data){
+				var attr = eval('('+data+')');
+				if(attr.success==0){
+					$('#accountName').val('');
+					alert("删除成功");
+				}else{
+					alert("删除失败");
+				}
+			});
+		}
+	}
+}
+</script>
 </body>
 </html>

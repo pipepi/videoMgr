@@ -66,9 +66,7 @@ public class TaskRest {
 	}
 	@RequestMapping(value="/reloadCategory", produces = MediaType.APPLICATION_JSON_VALUE)
 	public void reloadCategory(HttpServletRequest request, HttpServletResponse response){
-		PartnerConfig config = ConfigManager.getInstance().getPartnerConfig(configService);
-		String url = config.ROOT_PATH_KAIMAI8+"/api/category";
-		pts.synchronous(url);
+		pts.synchronous();
 		AjaxResponseUtil.returnData(response, "ok");
 	}
 	private void sendPackageDueSmsAndEmail(){

@@ -30,12 +30,12 @@ import com.aepan.sysmgr.model._enum.Validate;
 import com.aepan.sysmgr.model.config.FileConfig;
 import com.aepan.sysmgr.model.log.OperationLog;
 import com.aepan.sysmgr.model.packageinfo.PackageInfo;
+import com.aepan.sysmgr.service.PartnerDataService;
 import com.aepan.sysmgr.service.StorageService;
 import com.aepan.sysmgr.util.AjaxResponseUtil;
 import com.aepan.sysmgr.util.ConfigManager;
 import com.aepan.sysmgr.util.Constants;
 import com.aepan.sysmgr.util.FileUtil;
-import com.aepan.sysmgr.util.OperationLogUtil;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -49,13 +49,15 @@ public class VideoAsyncController extends DataTableController {
 	private static final Logger logger = LoggerFactory.getLogger(VideoAsyncController.class);
 	@Autowired
 	private StorageService storageService;
+	@Autowired
+	private PartnerDataService partnerDataService;
 	@RequestMapping("/video/async/page")
 	public String uploadVideoPage(HttpServletRequest request,HttpServletResponse response,ModelMap model){
 		if(!isLogin(request)){
 			return "redirect:/";
 		}
 		model.addAttribute("role", User.PARTNER_SELLER);
-		model.addAttribute("partner_ctx", ConfigManager.getInstance().getPartnerConfig(configService).ROOT_PATH_KAIMAI8);
+		model.addAttribute("partner_ctx", ConfigManager.getInstance().getPartnerConfig(configService).rootPath);
 		return "/video/async/edit";
 	}
 	@RequestMapping("/video/async/upload")
@@ -145,8 +147,7 @@ public class VideoAsyncController extends DataTableController {
 		v.storage = storageService.storage();
 		int id = videoService.insert(v);
 		//记录操作日志
-		OperationLogUtil.addLog(configService, 
-				new OperationLog(OperationLog.TYPE_视频, 
+		partnerDataService.addLog(new OperationLog(OperationLog.TYPE_视频, 
 						user.getPartnerAccountId(),
 						user.getPartnerAccountName(),
 						"/video/save", 
@@ -257,8 +258,7 @@ public class VideoAsyncController extends DataTableController {
 					}
 					videoService.update(v);
 					//记录操作日志
-					OperationLogUtil.addLog(configService, 
-							new OperationLog(OperationLog.TYPE_视频, 
+					partnerDataService.addLog(new OperationLog(OperationLog.TYPE_视频, 
 									user.getPartnerAccountId(),
 									user.getPartnerAccountName(),
 									"/video/update", 

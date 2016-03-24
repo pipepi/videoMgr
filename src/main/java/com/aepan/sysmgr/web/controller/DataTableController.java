@@ -33,6 +33,7 @@ import com.aepan.sysmgr.model.packageinfo.PackageStat;
 import com.aepan.sysmgr.service.ConfigService;
 import com.aepan.sysmgr.service.PackageService;
 import com.aepan.sysmgr.service.PackageStatService;
+import com.aepan.sysmgr.service.PartnerDataService;
 import com.aepan.sysmgr.service.ProductService;
 import com.aepan.sysmgr.service.ProductTypeService;
 import com.aepan.sysmgr.service.StoreService;
@@ -71,7 +72,8 @@ public class DataTableController {
 	PackageService packageService;
 	@Autowired
 	VideoService videoService;
-	
+	@Autowired
+	PartnerDataService partnerDataService;
 	
 	public boolean checkPackageStat(HttpServletRequest req){
 		User user = getUser(req);
@@ -94,35 +96,19 @@ public class DataTableController {
 	}
 	
 	public boolean hasAdminAuth(HttpServletRequest req,int privilegeCode){
-		
-		PartnerConfig config = ConfigManager.getInstance().getPartnerConfig(configService);
-		String url = config.GET_VIDEOAUTH_URL;
-		
 		User user = getAdminUser(req);
-		
 		int partnerAccountId = user.getPartnerAccountId();
-		
-		PostMethod method = new PostMethod(url);
-		method.setRequestBody("{id:"+partnerAccountId+"}");
-		method.setRequestHeader("Content-Type", "application/json");
-	    log.debug("\n"+url);
-		HttpClient client = new HttpClient();
-		try {
-			client.executeMethod(method);
-			String ret = method.getResponseBodyAsString();
-			Gson gson = new Gson();
-			VideoAuth videoAuth = gson.fromJson(ret, VideoAuth.class);
-			log.debug("id="+partnerAccountId+"  \n"+ videoAuth+"-------------"+ret);
-			List<Privilege> authList = videoAuth.getVideoAuthList();
-			if(authList!=null&&!authList.isEmpty()){
-				for (Privilege privilege : authList) {
-					if(privilege.getPrivilegeCode()==privilegeCode&&privilege.isAuth()){
-						return true;
-					}
+		String ret = partnerDataService.adminAuth(partnerAccountId);
+		Gson gson = new Gson();
+		VideoAuth videoAuth = gson.fromJson(ret, VideoAuth.class);
+		log.debug("id="+partnerAccountId+"  \n"+ videoAuth+"-------------"+ret);
+		List<Privilege> authList = videoAuth.getVideoAuthList();
+		if(authList!=null&&!authList.isEmpty()){
+			for (Privilege privilege : authList) {
+				if(privilege.getPrivilegeCode()==privilegeCode&&privilege.isAuth()){
+					return true;
 				}
 			}
-		}catch (IOException e) {
-			log.error(e.getMessage(),e);
 		}
 		return false;
 	}
@@ -130,19 +116,7 @@ public class DataTableController {
 	public boolean hasSellerAuth(HttpServletRequest req,int privilegeCode){
 		HttpSession session = req.getSession();
 		String subUserId=(String) session.getAttribute(Constants.SESSION_SUBUSERID);
-		
-		PartnerConfig config = ConfigManager.getInstance().getPartnerConfig(configService);
-		String url = config.GET_SELLERVIDEOAUTH_URL;
-		
-		
-		PostMethod method = new PostMethod(url);
-		method.setRequestBody("{id:"+subUserId+"}");
-		method.setRequestHeader("Content-Type", "application/json");
-		log.debug("\n"+url);
-		HttpClient client = new HttpClient();
-		try {
-			client.executeMethod(method);
-			String ret = method.getResponseBodyAsString();
+			String ret = partnerDataService.sellerAuth(Integer.parseInt(subUserId));
 			Gson gson = new Gson();
 			VideoAuth videoAuth = gson.fromJson(ret, VideoAuth.class);
 			log.debug(videoAuth+"-------------"+ret);
@@ -154,20 +128,8 @@ public class DataTableController {
 					}
 				}
 			}
-		}catch (IOException e) {
-			log.error(e.getMessage(),e);
-		}
 		return false;
-		
 	}
-	
-	
-	
-	
-	
-	
-	
-	
 	protected boolean isLogin(HttpServletRequest req){
 		HttpSession session = req.getSession();
 		Object user = session.getAttribute(Constants.SESSION_USER);

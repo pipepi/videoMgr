@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import com._21cn.framework.util.PageList;
 import com.aepan.sysmgr.dao.ProductDao;
 import com.aepan.sysmgr.model.ProductType;
+import com.aepan.sysmgr.service.PartnerDataService;
 import com.aepan.sysmgr.service.ProductTypeService;
 
 /**
@@ -38,7 +39,8 @@ public class ProductTypeServiceImpl implements ProductTypeService {
 	private static final Logger logger = LoggerFactory.getLogger(ProductTypeServiceImpl.class);
 	@Autowired
 	private ProductDao productTypeDao;
-	
+	@Autowired
+	private PartnerDataService partnerDataService;
 	/* (non-Javadoc)
 	 * @see com._aepan.sysmgr.service.ProductTypeService#getTypeList(java.util.Map, int, int)
 	 */
@@ -49,10 +51,10 @@ public class ProductTypeServiceImpl implements ProductTypeService {
 		return productTypeDao.getTypeList(params, pageNo, pageSize);
 	}
 	@Override
-	public void synchronous(String url){
+	public void synchronous(){
 		List<ProductType> productTypeList = new ArrayList<ProductType>();
 		Date now = new Date();
-		String rs = getCategory(url);
+		String rs = partnerDataService.getCategory();
 		try {
 			JSONArray array = new JSONArray(rs);
 			for(int i = 0 ;i<array.length();i++){

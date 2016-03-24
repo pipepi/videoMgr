@@ -11,7 +11,7 @@
 	<%@ include file="/WEB-INF/views/inc/_scripts.jsp" %>
 </head>
 <body>
-<div class="container-fluid">
+<div class="container-fluid container-fluid2">
 	<%@ include file="/WEB-INF/views/common/navbar.jsp" %>
     <div class="clearfix" style="overflow:hidden;">
 		<%@ include file="/WEB-INF/views/common/side.jsp" %>

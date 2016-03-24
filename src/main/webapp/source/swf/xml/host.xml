@@ -1,9 +1,9 @@
 
 <host_list>
 	<host id="dev">
-		<mall>http://192.168.1.250:8080</mall>
+		<mall>http://192.168.1.250:6001</mall>
 		<video>http://192.168.1.206:8080</video>
-		<logoLink>http://192.168.1.250:8080</logoLink>
+		<logoLink>http://192.168.1.250:6001</logoLink>
 	</host>
 
 	<host id="test">

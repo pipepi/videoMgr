@@ -101,7 +101,7 @@ public class Product3Controller extends DataTableController {
 		model.addAttribute("list", list);
 		model.addAttribute("turn", list.getPageTurn());
 		PartnerConfig config = ConfigManager.getInstance().getPartnerConfig(configService);
-		model.addAttribute("imgpre", config.ROOT_PATH_KAIMAI8);
+		model.addAttribute("imgpre", config.rootPath);
 		model.addAttribute("orderby", orderBy.equals("time")?0:1);
 		model.addAttribute("ordertype", orderType.equals("desc")?0:1);
 		return "/store/productlistsub";
@@ -238,6 +238,8 @@ public class Product3Controller extends DataTableController {
         		}
         		 
         	}else if(productIds.trim().length()==0){
+        		//获取取消关联的商品id列表
+        		lpi = productService.canLink(user.getId(),user.getPackageId(), storeId, new ArrayList<StoreProduct>());
         		productService.deleteByUserIdANDStoreId(user.getId(), storeId);
         		//更新被关联播放器logo 状态
         		Store store = storeService.getById(storeId);

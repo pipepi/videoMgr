@@ -5,7 +5,8 @@ html, body{margin:0 auto;font-family:"Helvetica","Microsoft Yahei",sans-serif;fo
 a{ text-decoration:none;}
 em{ font-style:normal;}
 .clear{clear:both;}
-.container-fluid{padding:20px 15px;width:1010px;position:absolute;left:52%;margin-left:-450px;}
+.container-fluid{width: 1010px;position: relative;margin: 0 auto;overflow: hidden;padding: 20px 0 30px 200px;}
+.container-fluid2{width: 97%;position: relative;margin: 0 auto;overflow: hidden;padding:0 0 20px 0;}
 .video-add-title{height:44px;background-color:#e6e6e6;font-size:14px; line-height:40px; color:#000000;padding-left:15px;}
 .video-add-title a{color:#000000;}
 .video-add-title ul li{ float:left; margin-right:15px;}
@@ -13,7 +14,7 @@ em{ font-style:normal;}
 .video-add-title .current{border-bottom:2px solid #e3393c; height:42px;}
 .video-add-cons{background-color:#ffffff;padding-top:20px;padding-bottom:10px; padding-left:15px; height:100%; padding-right:15px;}
 .video-add-cons span{color:#e3393c;}
-.video-add-cons .inputs{width:170px; height:30px; border:1px solid #dcdcdc; padding-left:5px;color:#999999; outline:0}
+.video-add-cons .inputs{width:170px; height:30px; border:1px solid #dcdcdc; padding-left:5px;color:#999999; outline:0;font-family:"Helvetica","Microsoft Yahei",sans-serif;}
 .video-add-cons label{margin-right:10px; padding-top:3px;}
 .video-add-cons textarea{border:1px solid #dcdcdc; width:390px;height:50px;color:#999999; outline:0}
 .video-texts{margin-bottom:20px;}
@@ -67,7 +68,7 @@ p{margin:10px auto; width:920px;}
 
 .bf-edit{ float:left;}
 .bf-edit a{ float:left;margin-right:1px; margin-top:40px;}
-.sp-edit{ float:left;width:360px; text-align:center; margin:0 auto;}
+.sp-edit{ float:left;width:40%; text-align:center; margin:0 auto;}
 .sp-btns-infors{text-align:center; width:230px;margin:0 auto;}
 .sp-edit a{ float:left;margin-right:1px; margin-top:40px;}
 
@@ -184,10 +185,20 @@ p{margin:10px auto; width:920px;}
 .comm-cons-bz{margin:20px 0 0 30px; font-size:14px;}
 .comm-cons-bz input{height:28px;width:273px;}
 
-.sp-jdt-list{background:url(../../images/aztimg/sp-zt-1.jpg) no-repeat;height:24px;width:278px; float:left; margin-top:40px; position:relative; margin-right:30px;}
+.sp-jdt-list{background:url(../../images/aztimg/sp-zt-1.jpg) no-repeat;height:24px;width:28%; float:left; margin-top:40px; position:relative; margin-right:30px;}
 .sp-jdt-list{color:#cccccc;}
 .sp-jdt-list .jhs{color:#ff9c00;}
 .sp-jdt-list .hhs{color:#e3393c;}
 
 .video-shenghe-infomation table td{border-bottom:1px dotted #cacaca; clear:both; margin-bottom:20px;}
 .video-miaoShu{position:absolute;width:230px;;height:120px; z-index:1000;background:#ececec;top: 245px;left:320px;padding:15px; line-height:20px;}
+
+
+@media screen and (max-width:1280px){
+	.sp-edit{width:30%;}
+}
+
+@media screen and (max-width:1024px){
+	.sp-edit{width:25%;}
+	.sp-jdt-list{width:33%;}
+}

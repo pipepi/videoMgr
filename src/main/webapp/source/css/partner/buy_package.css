@@ -6,13 +6,13 @@ em{ font-style:normal;}
 .clear{clear:both;}
 ul,li{list-style:none;margin:0; padding:0;}
 .sj_buy-video{margin:0 auto;background:#ffffff;}
-.sj-buy-videoCons {width:890px;margin:0 auto;padding-top:24px;}
+.sj-buy-videoCons {max-width:1280px;width:100%;margin:0 auto;padding:24px 20px;}
 .tjt-font li{ float:left; height:30px; font-size:14px; margin-top:10px;}
-.package-Choice{border:1px solid #000;height:804px;width:890px;  position:relative; margin:0px auto;margin-top:10px;}
-.pageckge-choice-infors{width:178px;background:url(../../images/partner/package/bj_left.jpg) no-repeat; background-color:#f7f7f7; float:left; position:absolute; border-top:2px solid #313131; border-bottom:2px solid #e4e4e4;}
+.package-Choice{border:1px solid #000;height:804px;max-width:1280px;width:100%;  position:relative; margin:0px auto;margin-top:20px; clear:both;}
+.pageckge-choice-infors{width:20%;background:url(../../images/partner/package/bg.png) repeat-x; background-color:#f7f7f7; float:left; position:absolute; border-top:2px solid #313131; border-bottom:2px solid #e4e4e4;}
 .pageckge-choice-infors li,.pageckge-choice-infors2 li{height:50px; text-align:center; line-height:50px; color:#333333;font-size:14px;}
-.pageckge-choice-infors2{width:666px;background:url(../../images/partner/package/bj_right.jpg) no-repeat; background-color:#f7f7f7; float:left; position:absolute; border-top:2px solid #f84a4b; border-bottom:2px solid #e4e4e4;}
-.pageckge-choice-current{width:174px;background:url(../../images/partner/package/bj_left2.jpg) no-repeat;float:left; position:absolute; top:0;left:0; border:2px solid #e3393c; z-index:1; height:800px;}
+.pageckge-choice-infors2{width:80%;background:url(../../images/partner/package/bg_curren.png) repeat-x; background-color:#f7f7f7; float:left; position:absolute; border-top:2px solid #f84a4b; border-bottom:2px solid #e4e4e4;}
+.pageckge-choice-current{width:20%;background:url(../../images/partner/package/bg_curren.png) repeat-x;float:left; position:absolute; top:0;left:0; border:2px solid #e3393c; z-index:1; height:800px;}
 .pageckge-Cons{height:62px;background-color:#e4e4e4;}
 .next-btns{ text-align:center; width:161px; margin:20px auto; padding-bottom:20px;}
 .naxt-btns-cons{width:161px;height:48px;background-color:#e3393c; text-align:center;color:#ffffff; font-size:16px; line-height:48px; display:block; float:left;}
@@ -53,11 +53,9 @@ ul,li{list-style:none;margin:0; padding:0;}
 .money-weixin{border-top:1px solid #f2f2f2; padding-top:40px; text-align:center;}
 .wx-fonts{font-size:20px;margin-top:20px; padding-bottom:40px;}
 .wx-wap-fonts{font-size:20px;margin-top:5px; padding-bottom:20px;}
+.container-fluid{width: 1010px;position: relative;margin: 0 auto;overflow: hidden;padding: 20px 0 30px 200px;}
+.container-fluid2{width: 97%;position: relative;margin: 0 auto;overflow: hidden;padding:0 0 20px 0;}
 
-.container-fluid{left:52%;margin-left:-450px;overflow-y:hidden;padding:20px 15px;position:absolute;}
-
-
-.container-fluid{padding:0 15px;width:1010px;position:absolute;left:52%;margin-left:-450px;}
 .video-add-title{height:44px;background-color:#e6e6e6;font-size:14px; line-height:40px; color:#000000;padding-left:15px;}
 .video-add-title a{color:#000000;}
 .video-add-title ul li{ float:left; margin-right:15px;}
@@ -90,8 +88,20 @@ ul,li{list-style:none;margin:0; padding:0;}
 
 .video-titles-new{background-color:#e6e6e6; height:33px;}
 .video-titles-new span{line-height:33px;padding-left:10px;}
-.video-kuangs_new{padding-bottom:20px;width:502px;border:2px solid #333; position:absolute;background:#ffffff; top:38%;left:25%;}
+.video-kuangs_new{padding-bottom:20px;width:502px;border:2px solid #333; position:absolute;background:#ffffff; top:38%;left:35%;}
 .zf-fonts-new{margin-top:20px;width:440px;margin-left:20px; text-indent:2rem;}
 .video-btnsInfors-new{background-color:#e3393c;color:#ffffff;width:58px;height:38px;border:0; font-size:16px;display:block; float:left; text-align:center; line-height:38px; text-decoration:none; margin-left:10px;}
 .zf-fonts-new em{color:#e3393c; text-decoration:underline;}
 .close-icon{ float:right;}
+.mar65{margin-left:120px;}
+.mar295{margin-left:430px;}
+.mar295{margin-left:430px;}
+
+@media screen and (max-width:1280px){
+	.sj-buy-videoCons{width:88%;}
+}
+@media screen and (max-width:1024px){
+	.data-container{width:100%;padding:0 20px;margin:0 auto;margin-top:50px;}
+	
+}
+

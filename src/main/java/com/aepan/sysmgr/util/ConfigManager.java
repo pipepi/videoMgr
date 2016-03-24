@@ -139,12 +139,7 @@ public class ConfigManager {
 				config.name = "合作方地址配置";
 				partnerConfig =new PartnerConfig();
 				//partnerConfig.ROOT_PATH_KAIMAI8 = "http://192.168.1.250:8080";
-				partnerConfig.ROOT_PATH_KAIMAI8 = "http://www.kaimai8.com";
-				partnerConfig.PARTNER_INDEX_URL="";
-				partnerConfig.GET_PARTNER_PRODUCT_PAGE_URL="http://192.168.1.250:8080/SellerAdmin/product/ListProduct";
-				partnerConfig.GET_PARTNER_PRODUCT_DETAIL_URL="http://192.168.1.250:8080/Product/GetSKUByProductId";
-				partnerConfig.GET_VIDEOAUTH_URL="http://192.168.1.250:8080/api/member/videoauth";
-				partnerConfig.GET_SELLERVIDEOAUTH_URL="http://192.168.1.250:8080/api/member/sellervideoauth";
+				partnerConfig.rootPath = "http://www.kaimai8.com";
 				config.config = JSONUtil.toJson(partnerConfig);
 				configService.add(config);
 			}

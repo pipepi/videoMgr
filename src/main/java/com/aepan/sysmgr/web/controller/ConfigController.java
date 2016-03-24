@@ -62,8 +62,13 @@ public class ConfigController extends DataTableController {
 			List<Integer> userIds = userService.getUserIds(accountName);
 			if(userIds!=null&&!userIds.isEmpty()){
 				userService.deleteUser(userIds);
+				model.addAttribute("success", 0);
+				AjaxResponseUtil.returnData(res, JSONUtil.toJson(model));
+				return null;
 			}
 		}
+		model.addAttribute("success", 1);
+		AjaxResponseUtil.returnData(res, JSONUtil.toJson(model));
 		return null;
 	}
 	@RequestMapping("/config/page")

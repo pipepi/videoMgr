@@ -23,7 +23,7 @@ $(function(){
 <script type="text/javascript" src="${ctx}/source/js/libs/jquery.md5.js"></script>
 </head>
 <body>
-<div class="container-fluid">
+<div class="container-fluid container-fluid2">
       <div class="video-add">
           <div class="video-add-title">
          	<ul>

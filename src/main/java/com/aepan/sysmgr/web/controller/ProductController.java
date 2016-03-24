@@ -301,34 +301,9 @@ public class ProductController extends DataTableController {
 		
 		int page = reqInfo.getIntAttribute("page",1);
 		int pagesize = reqInfo.getIntAttribute("pagesize",6);
-		
-		
-		PartnerConfig partnerConfig = ConfigManager.getInstance().getPartnerConfig(configService);
-		String productPageUrl = partnerConfig.GET_PARTNER_PRODUCT_PAGE_URL;
-		
-		StringBuffer param= new StringBuffer("?saleStatus=1&auditStatus=2&page=").append(""+page).append("&rows="+pagesize);
-		
-		GetMethod method = new GetMethod(productPageUrl+param.toString());
-		
-
-		HttpClient client = new HttpClient();
-
-		logger.info(method.toString());
-		String ret = "";
-		try {
-			client.executeMethod(method);
-			ret = method.getResponseBodyAsString();
-			logger.debug("ret:"+ret);
-			
-	        if(method.getStatusCode() == 200 ){
-	        	Gson gson = new Gson();
-	        	PartnerProductPage hp = gson.fromJson(ret, PartnerProductPage.class);
-	        	AjaxResponseUtil.returnData(response, JSONUtil.toJson(hp));
-	        }
-		} catch (IOException e) {
-			logger.error(e.getMessage(), e);
-		}
-		
+		User user = (User)request.getSession().getAttribute(Constants.SESSION_USER);
+		PartnerProductPage hp = partnerDataService.getProducts(user.getPartnerAccountId(), page, pagesize, "time", "desc");
+	    AjaxResponseUtil.returnData(response, JSONUtil.toJson(hp));
 		return null;
 	}
 	

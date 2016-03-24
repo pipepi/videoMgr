@@ -6,6 +6,8 @@ package com.aepan.sysmgr.model.lucene;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.solr.client.solrj.beans.Field;
+
 /**
  * @author lanker
  * 2015年11月10日下午2:36:36
@@ -14,6 +16,7 @@ public class StoreSub implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private int id;
+	private String partnerUserId;
 	private String name;
 	private String desc;
 	private String img;
@@ -26,7 +29,7 @@ public class StoreSub implements Serializable {
 	private Date updateTime;
 	public StoreSub() {
 	}
-	public StoreSub(int id ,String name ,String desc ,String img,String imgMax,String storeType,String pids,float priceMax,float priceMin,int hot,Date updateTime) {
+	public StoreSub(int id ,String name ,String desc ,String img,String imgMax,String storeType,String pids,float priceMax,float priceMin,int hot,Date updateTime,String partnerUserId) {
 		this.id = id;
 		this.name = name;
 		this.desc = desc;
@@ -38,6 +41,7 @@ public class StoreSub implements Serializable {
 		this.priceMin = priceMin;
 		this.hot = hot;
 		this.updateTime = updateTime;
+		this.partnerUserId = partnerUserId;
 	}
 	
 	public int getId() {
@@ -45,6 +49,19 @@ public class StoreSub implements Serializable {
 	}
 	public void setId(int id) {
 		this.id = id;
+	}
+	
+	/**
+	 * @return the partnerUserId
+	 */
+	public String getPartnerUserId() {
+		return partnerUserId;
+	}
+	/**
+	 * @param partnerUserId the partnerUserId to set
+	 */
+	public void setPartnerUserId(String partnerUserId) {
+		this.partnerUserId = partnerUserId;
 	}
 	public String getName() {
 		return name;

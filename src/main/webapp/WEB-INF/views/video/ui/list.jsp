@@ -15,7 +15,7 @@
 <script type = "text/javascript" charset="utf-8" src="${ctx}/source/js/jquery.swfobject.1-1-1.js"></script>
 </head>
 <body>
- <div class="container-fluid">
+ <div class="container-fluid container-fluid2">
       <div class="video-add">
          <div class="video-add-title">
          	<ul>

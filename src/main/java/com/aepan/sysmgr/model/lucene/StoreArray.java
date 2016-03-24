@@ -16,6 +16,8 @@ public class StoreArray {
 	@Field
 	private String id;
 	@Field
+	private String partnerUserId;
+	@Field
 	private String name;
 	@Field
 	private String desc;
@@ -79,6 +81,19 @@ public class StoreArray {
 	 */
 	public void setId(String id) {
 		this.id = id;
+	}
+	
+	/**
+	 * @return the partnerUserId
+	 */
+	public String getPartnerUserId() {
+		return partnerUserId;
+	}
+	/**
+	 * @param partnerUserId the partnerUserId to set
+	 */
+	public void setPartnerUserId(String partnerUserId) {
+		this.partnerUserId = partnerUserId;
 	}
 	/**
 	 * @return the name

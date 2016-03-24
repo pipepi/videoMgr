@@ -20,13 +20,14 @@ var _had_linkproduct_count = parseInt("${linkPNumCount}");//已关联产品总�
 var _had_linkproduct_str = "${linkPNumListStr}";//已关联产品数量详情字符串
 
 function checkAnyGt(){
+	if(_had_linkproduct_str.length==0) return false; 
 	var _had_linkproduct_arr = _had_linkproduct_str.split('\\,');
 	if(_had_linkproduct_arr.length>0){
 		for(var i=0;i<_had_linkproduct_arr.length;i++){
-			if(_selected_pNum_perStore>_had_linkproduct_arr[i]) return false;
+			if(_selected_pNum_perStore>parseInt(_had_linkproduct_arr[i])) return true;
 		}
 	}
-	return true;
+	return false;
 } 
 $(function(){
 	var $this = $('.pageckge-choice-current');
@@ -61,7 +62,7 @@ function goVideoControlePage(){
 	window.location = '${ctx}/store/videolist';
 }
 function check(){
-	if(_had_store_num>_selected_store_num||_had_linkproduct_count>_selected_pNum_perStore*_selected_store_num||!checkAnyGt()){
+	if(_had_store_num>_selected_store_num||_had_linkproduct_count>_selected_pNum_perStore*_selected_store_num||checkAnyGt()){
 		//tip
 		 /*var tip= "尊敬的用户，您好：您当前已建立的智能播放器数量为"+_had_store_num+"个，每播放器关联的商品数量分别为"+_had_linkproduct_str+"个;\n"
 		+"您选择的新套餐的智能播放器数量为"+_selected_store_num+"个，每个智能播放器可关联的商品数量为"+_selected_pNum_perStore+"个;\n"
@@ -111,16 +112,11 @@ function nextStep(){
 
 <body>
 
-<div class="container-fluid">
+<div class="container-fluid container-fluid2">
 <div class="sj_buy-video">
    <div class="sj-buy-videoCons">
-     <img src="${ctx}/source/images/partner/package/jdt_1.jpg" width="885" height="62" />
-     <ul class="tjt-font">
-     	<li style="margin-left:65px;"><strong>套餐选择</strong></li>
-        <li style="margin-left:295px;">套餐支付</li>
-        <li style="margin-left:280px;">开启视频电商</li>
-        <div class="clear"></div>
-     </ul>
+     <img src="${ctx}/source/images/partner/package/jdt_1.png" width="100%"  />
+
      
      <!--套餐选择-->
      <div class="package-Choice"><!--package-Choice Begin-->
@@ -148,11 +144,11 @@ function nextStep(){
        <c:forEach items="${packageList}" varStatus="status" var="packageinfo">
             <c:choose>
             	<c:when test="${(currentPackageId==null)&&(status.index ==0)}">
-            	<div class="pageckge-choice-infors pageckge-choice-current" id="packageDiv${packageinfo.id}" style="margin-left:${(status.index+1)*178}px;" attrStoreNum = "${packageinfo.playerNum }" attrProductNum="${packageinfo.productNum }" onclick="choosePackage('${packageinfo.id}',${status.index+1 },this)">
+            	<div class="pageckge-choice-infors pageckge-choice-current" id="packageDiv${packageinfo.id}" style="margin-left:${(status.index+1)*20}%;" attrStoreNum = "${packageinfo.playerNum }" attrProductNum="${packageinfo.productNum }" onclick="choosePackage('${packageinfo.id}',${status.index+1 },this)">
            		 <input type="hidden" id="choosedId" value="${packageinfo.id}">
             	</c:when>
             	<c:otherwise>
-            		<div class="pageckge-choice-infors ${currentPackageId==packageinfo.id?'pageckge-choice-current':''}" id="packageDiv${packageinfo.id}" style="margin-left:${(status.index+1)*178}px;" attrStoreNum = "${packageinfo.playerNum }" attrProductNum="${packageinfo.productNum }" onclick="choosePackage('${packageinfo.id}',${status.index+1 },this)">
+            		<div class="pageckge-choice-infors ${currentPackageId==packageinfo.id?'pageckge-choice-current':''}" id="packageDiv${packageinfo.id}" style="margin-left:${(status.index+1)*20}%;" attrStoreNum = "${packageinfo.playerNum }" attrProductNum="${packageinfo.productNum }" onclick="choosePackage('${packageinfo.id}',${status.index+1 },this)">
             		<c:if test="${ currentPackageId==packageinfo.id}">
             			 <input type="hidden" id="choosedId" value="${packageinfo.id}">
             		</c:if>
