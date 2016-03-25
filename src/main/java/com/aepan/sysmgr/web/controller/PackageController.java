@@ -77,8 +77,8 @@ public class PackageController extends DataTableController {
     	String currentPackageId = request.getParameter("currentPackageId");
     	int userId = getLoginUser(request).getId();
     	List<Integer> linkPNumList = storeService.getLinkedProductPerStore(userId);
-    	int storeNum = linkPNumList==null?0:linkPNumList.size();
-    	model.addAttribute("storeNum", storeNum);
+    	PackageStat  packagestat = packageStatService.getByUserId(userId);
+    	model.addAttribute("storeNum", packagestat.getPlayerNum());
     	model.addAttribute("linkPNumListStr",list2Str(linkPNumList));
     	model.addAttribute("linkPNumCount",list2Count(linkPNumList));
 		model.addAttribute("packageList", packagelist);

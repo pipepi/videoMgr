@@ -127,6 +127,18 @@ var vids = "";
 var pids = "";
 initProductList();
 loadVideoList();
+function parseWindowTop(mouse_y){
+	if(mouse_y>330&&mouse_y<460){
+		mouse_y = mouse_y-460;
+	}else if(mouse_y<=330){
+		mouse_y = mouse_y -330;
+	}else if(mouse_y<630){
+		mouse_y = mouse_y -630;
+	}else{
+		mouse_y = mouse_y -670;
+	}
+	return mouse_y;
+}
 $(function(){
 	$("[previewbtn=1]").click(function(e){
 		var _store_id = $(this).attr('storeId');
@@ -136,13 +148,13 @@ $(function(){
 	$("[linkPbtn=1]").click(function(e){
 		var _store_id = $(this).attr('storeId');
 		var _mouse_y = e.pageY;
-		$('#product-list').css("top",_mouse_y-330+"px");
+		$('#product-list').css("top",parseWindowTop(_mouse_y)+"px");
 		clinkProductPage(_store_id);
 	});
 	$("[linkVbtn=1]").click(function(e){
 		var _store_id = $(this).attr('storeId');
 		var _mouse_y = e.pageY;
-		$('#video-list').css("top",_mouse_y-330+"px");
+		$('#video-list').css("top",parseWindowTop(_mouse_y)+"px");
 		clinkVideoPage(_store_id);
 	});
 });
@@ -159,7 +171,7 @@ function preView(mouseY,id){
 	}
 	//tmp todo
 	//id = 2
-	var _top_value = mouseY-330;
+	var _top_value = parseWindowTop(mouseY);
 	//console.log("mouseY="+mouseY+"  _top_value="+_top_value);
 	$('#video-yulan').css("top",_top_value+"px");
 	$('#video-yulan').toggle();

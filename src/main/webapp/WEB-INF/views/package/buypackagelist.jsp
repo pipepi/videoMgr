@@ -48,7 +48,7 @@ function choosePackage(id,selectedSortId,thisvar){
 	var $this = $(thisvar);
 	_selected_store_num = parseInt($this.attr('attrStoreNum'));
 	_selected_pNum_perStore = parseInt($this.attr('attrProductNum'));
-	log();
+	//log();
 	var beforeDuration=$("#choosedId").attr("value");
 	$("#choosedId").attr("value",id);
 	$("#packageDiv"+beforeDuration).removeClass("pageckge-choice-current");
