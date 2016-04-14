@@ -21,6 +21,7 @@ import com.aepan.sysmgr.model.config.LuceneConfig;
 import com.aepan.sysmgr.model.config.PartnerConfig;
 import com.aepan.sysmgr.model.config.SmsConfig;
 import com.aepan.sysmgr.model.config.StorageConfig;
+import com.aepan.sysmgr.model.config.VersionConfig;
 import com.aepan.sysmgr.model.config.WechatpayConfig;
 import com.aepan.sysmgr.service.ConfigService;
 import com.aepan.sysmgr.util.ConfigManager;
@@ -79,6 +80,16 @@ public class ConfigServiceImpl implements ConfigService {
 			add(config);
 			ConfigManager.getInstance().updateCache(id, storageConfig);
 		}
+		if(config==null&&id == Config.ID_版本){
+			config = new Config();
+			config.id = id;
+			config.name = "版本";
+			VersionConfig vconfig  = new VersionConfig();
+			vconfig.version = "1.0.0";
+			config.config = JSONUtil.toJson(vconfig);
+			add(config);
+			ConfigManager.getInstance().updateCache(id, vconfig);
+		}
 	}
 	@Override
 	public ConfigInfo getAllConfig(){
@@ -99,6 +110,7 @@ public class ConfigServiceImpl implements ConfigService {
 				case Config.ID_配置维护key:c.configMgrKey = list.get(i).config;break;
 				case Config.ID_流量统计:c.flowConfig = JSONUtil.fromJson(list.get(i).config, FlowConfig.class);break;
 				case Config.ID_存储使用平台:c.storageConfig = JSONUtil.fromJson(list.get(i).config, StorageConfig.class);break;
+				case Config.ID_版本:c.versionConfig = JSONUtil.fromJson(list.get(i).config, VersionConfig.class);break;
 				default:
 					break;
 				}

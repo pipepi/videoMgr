@@ -43,8 +43,10 @@ import com.aepan.sysmgr.service.PackageStatService;
 import com.aepan.sysmgr.service.PartnerDataService;
 import com.aepan.sysmgr.service.StorageService;
 import com.aepan.sysmgr.service.StoreService;
+import com.aepan.sysmgr.service.StoreStatusService;
 import com.aepan.sysmgr.service.UserService;
 import com.aepan.sysmgr.service.VideoService;
+import com.aepan.sysmgr.service.implement.StoreStatusServiceImpl;
 import com.aepan.sysmgr.util.AjaxResponseUtil;
 import com.aepan.sysmgr.util.ConfigManager;
 import com.aepan.sysmgr.util.Constants;
@@ -72,6 +74,8 @@ public class VideoController extends DataTableController {
 	private PackageStatService packageStatService;
 	@Autowired
 	private StoreService storeService;
+	@Autowired
+	private StoreStatusService storeStatusService;
 	@Autowired
 	private StorageService storageService;
 	@Autowired
@@ -132,7 +136,7 @@ public class VideoController extends DataTableController {
 		if(checkState!=null&&!checkState.trim().isEmpty()){
 			model.addAttribute("check_state", checkState);
 		}
-		//校验是否为管理者
+		setVersion(model);
 		return "/video/ui/check";
 	}
 	@RequestMapping("/video/check")
@@ -147,6 +151,9 @@ public class VideoController extends DataTableController {
 		int checkState = reqInfo.getIntParameter("state");
 		String checkMsg = reqInfo.getParameter("msg","");
 		videoService.check(videoId, checkState, checkMsg);
+		if(checkState == VideoCheck.state_下线){
+			storeStatusService.offLineVideo(videoId);
+		}
 		//记录操作日志
 		partnerDataService.addLog(new OperationLog(OperationLog.TYPE_视频, 
 						user.getPartnerAccountId(),
@@ -175,6 +182,7 @@ public class VideoController extends DataTableController {
 			for (String vid : videoIdArr) {
 				int vidInt = Integer.parseInt(vid);
 				videoService.check(vidInt, VideoCheck.state_下线, checkMsg);
+				storeStatusService.offLineVideo(vidInt);
 			}
 			//记录操作日志
 			partnerDataService.addLog(new OperationLog(OperationLog.TYPE_视频, 
@@ -234,11 +242,7 @@ public class VideoController extends DataTableController {
         				}
         				model.addAttribute("storeLogo", store.getLogoUrl());
         				//更新播放器状态
-        				if(store.getStatus()==Store.STATUS_离线){
-        					if(storeService.getLinkedProductNum(storeId)>0){
-        						store.setStatus(Store.STATUS_在线);
-        					}
-        				}
+        				storeStatusService.linkVideo(store, true);
         				storeService.update(configService, store);
         			}
         		}else{
@@ -260,10 +264,8 @@ public class VideoController extends DataTableController {
         		if(store!=null){
         			store.setLogoUrl("");
         			model.addAttribute("storeLogo", "");
-        			if(store.getStatus()==Store.STATUS_在线){
-        				store.setStatus(Store.STATUS_离线);
-        			}
         			storeService.update(configService, store);
+        			storeStatusService.linkVideo(store, false);
         		}
         	}
         	model.addAttribute("success", true);
@@ -297,8 +299,39 @@ public class VideoController extends DataTableController {
 		model.clear();
 		model.addAttribute("list", list);
 		model.addAttribute("turn", list.getPageTurn());
+		model.addAttribute("videoNum",list==null?0:list.size() );
 		return "/store/videolistsub";
 	}	
+	@RequestMapping("/video/list4player")
+	public String listVideos4Player(HttpServletRequest request,HttpServletResponse response,ModelMap model){
+		Validate vali = validate(request);
+		if(!vali.equals(Validate.OK)){
+			return validateResponse(vali, ResponseType.HTML, model, response);
+		}
+		HttpRequestInfo reqInfo = new HttpRequestInfo(request);
+		int storeId = reqInfo.getIntParameter("storeId", 0);
+		int userId = getUser(request).getId();
+		int pageNo = reqInfo.getIntParameter("pageNo",1);
+		int pageSize = reqInfo.getIntParameter("pageSize",4);
+		String sortBy = reqInfo.getParameter("sortBy", "updatetime");
+		String sortType = reqInfo.getParameter("sortType", "desc");
+		PageList<Video> list = videoService.videos4Link(storeId, userId, sortBy, sortType, pageNo, pageSize);
+		model.clear();
+		model.addAttribute("list", list);
+		model.addAttribute("turn", list.getPageTurn());
+		model.addAttribute("videoNum",list==null?0:list.size() );
+		String sortTimeType = "desc";
+		String sortCnumType = "desc";
+		if(sortBy.equals("updatetime")){
+			sortTimeType = sortType.equals("desc")?"asc":"desc";
+		}else{
+			sortCnumType = sortType.equals("desc")?"asc":"desc";
+		}
+		model.addAttribute("sortTimeType", sortTimeType);
+		model.addAttribute("sortCnumType", sortCnumType);
+		return "/store/videolistsub";
+	}
+	
 	@RequestMapping("video/listhm")
 	public String listVideoPage(HttpServletRequest request, HttpServletResponse response, ModelMap model){
 		Validate vali = validate(request);
@@ -404,6 +437,7 @@ public class VideoController extends DataTableController {
 		default:return null;
 		}
 	}
+	/**激活或下线播放器*/
 	@RequestMapping("/video/update_ajax")
 	public String updateAjax(HttpServletRequest req,HttpServletResponse res,ModelMap model){
 		Validate vali = validate(req);
@@ -423,37 +457,12 @@ public class VideoController extends DataTableController {
 					update = true;
 				}
 				if(update){
+					//按视频id删除关联关系,更新播放器状态为下线
+					if(v.active == Video.active_未激活){
+						storeStatusService.unActiveVideo(v.getId());
+						videoService.deleteLinkRelationByVideoId(user.getId(), v.getId());
+					}
 					videoService.update(v);
-					
-					/*List<StoreVideo> videoList = videoService.getStoreVideoListByVideoId(v.id);
-					if(videoList!=null){
-						for (StoreVideo storeVideo : videoList) {
-							int storeId=storeVideo.getStoreId();
-							int userId=storeVideo.getUserId();
-							List<StoreVideo> storeVideoList = storeService.getStoreVideoList(userId, storeId);
-							
-							if(storeVideoList==null){
-								continue;
-							}
-							StringBuffer idBuff=new StringBuffer();
-							for (StoreVideo storeVideo2 : storeVideoList) {
-								idBuff.append(storeVideo2.getVideoId()).append(",");
-							}
-							
-							Store store = storeService.getById(storeId);
-							Video logoVideo = videoService.getStoreLogoVideo(idBuff.toString());
-							if(logoVideo==null){
-								store.setLogoUrl("");
-								store.setMaxLogoUrl("");
-							}else{
-								store.setLogoUrl(logoVideo.imgMin);
-								store.setMaxLogoUrl(logoVideo.imgMax);
-							}
-							
-							storeService.update(configService, store);
-							
-						}
-					}*/
 					
 					partnerDataService.addLog(new OperationLog(OperationLog.TYPE_视频, 
 									user.getPartnerAccountId(),
@@ -485,11 +494,11 @@ public class VideoController extends DataTableController {
         int srcHeight = bi.getHeight();
         String imageId = f.getName();
         String imageUrl = f.getAbsolutePath();
-        if(srcWidth<1280||srcHeight<800){
+        if(srcWidth<1004||srcHeight<565){
         	model.addAttribute("width", srcWidth);
             model.addAttribute("height", srcHeight);
         	model.addAttribute("status", 2);
-        	model.addAttribute("errMSG", "上传图片最小分辨率1280*800!");
+        	model.addAttribute("errMSG", "上传图片最小分辨率1004*565!");
         	storageService.deleteImg(new UploadFileInput(imageId, "", true));
         }else{
         	//清楚上一次上传和裁剪的图片
@@ -598,7 +607,9 @@ public class VideoController extends DataTableController {
 		String id = req.getParameter("id");
 		Integer idInt = Integer.valueOf(id);
 		videoService.addVideoCNum(idInt);
+		logger.debug("add clickvideo num idInt="+idInt);
 		if(RandomUtils.nextInt(100)>60){
+			logger.debug("add clickvideo num into solr idInt="+idInt);
 			storeService.reflashSearchIndex(idInt);
 		}
 	}

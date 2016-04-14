@@ -3,6 +3,8 @@
  */
 package com.aepan.sysmgr.service.implement;
 
+import java.net.URLEncoder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +60,35 @@ public class PartnerDataServiceImpl implements PartnerDataService {
         }
 		return null;
 	}
+	@Override
+	public PartnerProductPage getProducts4Link(int partnerUserId,String productIds,String searchKey,int pageNo,int pageSize,String orderBy,String orderType){
+		PartnerConfig partnerConfig = ConfigManager.getInstance().getPartnerConfig(configService);
+		String productPageUrl = partnerConfig.rootPath+"/api/productSearch/";
+		StringBuffer param = new StringBuffer();
+		if(productIds==null||productIds.isEmpty()){
+			productIds = "_";
+		}
+		if(searchKey==null||searchKey.isEmpty()){
+			searchKey = "_";
+		}else{//如果输入了搜索关键字，不传入productIds
+			productIds = "_";
+		}
+		param.append(partnerUserId)
+		.append("/").append(pageNo)
+		.append("/").append(pageSize)
+		.append("/").append(URLEncoder.encode(searchKey))
+		.append("/").append(productIds)
+		.append("/").append(orderBy)
+		.append("/").append(orderType);
+		String url = productPageUrl+param.toString();
+		String ret = HttpsUtil.doPost(url);
+        if(ret!=null&&ret.length()>0){
+        	Gson gson = new Gson();
+        	PartnerProductPage hp = gson.fromJson(ret, PartnerProductPage.class);
+        	return hp;
+        }
+		return null;
+	}
 
 	/* 
 	 * 根据ids获取商品信息列表，用于更新搜索索引
@@ -94,6 +125,7 @@ public class PartnerDataServiceImpl implements PartnerDataService {
 		if(unlinkedPids.length()==0){unlinkedPids = "0";}
 		PartnerConfig partnerConfig = ConfigManager.getInstance().getPartnerConfig(configService);
 		String url = partnerConfig.rootPath+"/api/UpdateProductIsStore/"+linkedPids+"/"+unlinkedPids;
+		logger.debug(url);
 		HttpsUtil.doPost(url);
 	}
 	/* 
@@ -137,6 +169,6 @@ public class PartnerDataServiceImpl implements PartnerDataService {
 		}else if(OperationLog.TYPE_播放器==oplog.getOpType()){
 			url+="player";
 		}
-		HttpsUtil.doGet(url, oplog.toParams());
+		HttpsUtil.doPost(url, oplog.toParams());
 	}
 }

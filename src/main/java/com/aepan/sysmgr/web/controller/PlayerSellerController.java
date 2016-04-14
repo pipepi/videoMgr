@@ -54,7 +54,7 @@ public class PlayerSellerController extends DataTableController {
 			model.put("error_desc", "Do not have privilege.");
 			return "error";
 		}
-		List<PackageInfo> packageList = packageService.getList(PackageInfo.PACKAGE_TYPE_PACKAGE, 1, 3);
+		List<PackageInfo> packageList = packageService.getList(PackageInfo.PACKAGE_TYPE_PACKAGE, 1, 4);
 		model.addAttribute("packageList",packageList);
 		return "/manage/list";
 	}

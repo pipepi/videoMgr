@@ -37,6 +37,7 @@ import com.aepan.sysmgr.util.Constants;
 import com.aepan.sysmgr.util.DateUtil;
 import com.aepan.sysmgr.util.EncryptUtil;
 import com.aepan.sysmgr.util.StringUtil;
+import com.aepan.sysmgr.web.api.pay.MD5Util;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -69,7 +70,7 @@ public class PartnerController extends DataTableController{
 		String action = request.getParameter("action");//操作  0:冻结;1:激活 
 		String sign = request.getParameter("sign");//签名
 		String timestamp = request.getParameter("timestamp");//时间戳
-		logger.debug("freezeUser partnerId:"+partnerIdStr+",partnerAccountId:"+partnerAccountIdStr+",sign:"+sign);
+		logger.debug("freezeUser partnerId:"+partnerIdStr+",partnerAccountId:"+partnerAccountIdStr+",sign:"+sign+" action:"+action);
 		
 		
 		try {
@@ -98,9 +99,10 @@ public class PartnerController extends DataTableController{
 		}
 		   
 		try {
-			String md5Sign = EncryptUtil.getMd5Str(partnerAccountIdStr + timestamp);
+			//String md5Sign = EncryptUtil.getMd5Str(partnerAccountIdStr + timestamp);
+			String md5Sign =MD5Util.MD5Encode(""+partnerAccountIdStr+timestamp+EncryptUtil.MD5_SALT, "utf-8"); 
         	if(!sign.equals(md5Sign)){
-        		logger.warn(" sign valid.mysign"+md5Sign+",sign:"+sign+","+sign.equals(md5Sign));	
+        		logger.warn("sign before ="+partnerAccountIdStr + timestamp+"aztsysmgr_md5"+" sign valid.mysign"+md5Sign+",sign:"+sign+","+sign.equals(md5Sign));	
            		AjaxResponseUtil.returnData(response,  "{\"success\":false, \"msg\":\"sign not valid!\"}");
         		return;
         	}
@@ -128,6 +130,7 @@ public class PartnerController extends DataTableController{
 			}else{
 				cacheService.deleteByUserId(CacheObject.STOREINFO, user.getId());
 			}
+			logger.debug("freezeUser success action="+action+" user.status="+user.getStatus());
 			AjaxResponseUtil.returnData(response,  "{\"success\":true, \"msg\":\"freezeUser userId="+user.getId()+" partnerAccountIdStr="+partnerAccountIdStr+"\"}");
 			return;
 		}
@@ -140,6 +143,11 @@ public class PartnerController extends DataTableController{
        	Integer partnerAccountId = Integer.valueOf(partnerAccountIdStr);
        	User user = userService.partnerLogin(partnerId, partnerAccountId);
        	AjaxResponseUtil.returnData(response, user==null?"{\"success\":false}":"{\"success\":true}");
+	}
+	public static void main(String[] args) throws Exception {
+		String md5Sign = EncryptUtil.getMd5Str("2902016-03-28 17:40:19");
+		System.out.println(md5Sign);
+		
 	}
 	/**
 	 * 
@@ -193,9 +201,11 @@ public class PartnerController extends DataTableController{
 		}
 		   
 		try {
-			String md5Sign = EncryptUtil.getMd5Str(partnerAccountIdStr + timestamp);
+			//String md5Sign = EncryptUtil.getMd5Str(partnerAccountIdStr + timestamp);
+			String signOrigin = partnerAccountIdStr + timestamp+EncryptUtil.MD5_SALT;
+			String md5Sign =MD5Util.MD5Encode(signOrigin, "utf-8"); 
         	if(!sign.equals(md5Sign)){
-        		logger.warn(" sign valid.mysign"+md5Sign+",sign:"+sign+","+sign.equals(md5Sign));	
+        		logger.warn("sign before:"+signOrigin+" sign valid.mysign"+md5Sign+",sign:"+sign+","+sign.equals(md5Sign));	
            		AjaxResponseUtil.returnData(response,  "{\"success\":false, \"msg\":\"sign not valid!\"}");
         		return;
         	}

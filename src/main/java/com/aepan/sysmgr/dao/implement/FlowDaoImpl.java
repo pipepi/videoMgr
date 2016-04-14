@@ -43,4 +43,8 @@ public class FlowDaoImpl implements FlowDao {
 		Date now = new Date();
 		jdbcTemplate.update(sql, f.userId,f.storeId,f.videoId,f.flow,now);
 	}
+	
+	public void delete(){
+		
+	}
 }

@@ -29,6 +29,9 @@ public class ConfigInfo implements Serializable {
 	public String configMgrKey;
 	public FlowConfig flowConfig;
 	public StorageConfig storageConfig;
+	//版本
+	public VersionConfig versionConfig;
+	
 	
 	
 	public Ks3Config getKs3Config() {
@@ -102,6 +105,12 @@ public class ConfigInfo implements Serializable {
 	}
 	public void setWechatpayConfig(WechatpayConfig wechatpayConfig) {
 		this.wechatpayConfig = wechatpayConfig;
+	}
+	public VersionConfig getVersionConfig() {
+		return versionConfig;
+	}
+	public void setVersionConfig(VersionConfig versionConfig) {
+		this.versionConfig = versionConfig;
 	}
 	
 }

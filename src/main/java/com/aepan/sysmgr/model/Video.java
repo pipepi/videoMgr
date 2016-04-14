@@ -316,5 +316,29 @@ public class Video implements Serializable {
 	public void setModificationTime(Date modificationTime) {
 		this.modificationTime = modificationTime;
 	}
+	/**
+	 * @return the videoCnum
+	 */
+	public long getVideoCnum() {
+		return videoCnum;
+	}
+	/**
+	 * @param videoCnum the videoCnum to set
+	 */
+	public void setVideoCnum(long videoCnum) {
+		this.videoCnum = videoCnum;
+	}
+	/**
+	 * @return the h5VideoCnum
+	 */
+	public long getH5VideoCnum() {
+		return h5VideoCnum;
+	}
+	/**
+	 * @param h5VideoCnum the h5VideoCnum to set
+	 */
+	public void setH5VideoCnum(long h5VideoCnum) {
+		this.h5VideoCnum = h5VideoCnum;
+	}
 	
 }

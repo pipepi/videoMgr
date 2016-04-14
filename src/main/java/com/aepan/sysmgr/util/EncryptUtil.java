@@ -13,7 +13,7 @@ import sun.misc.BASE64Encoder;
  */
 public class EncryptUtil {
 
-	private static final String MD5_SALT = "aztsysmgr_md5";
+	public static final String MD5_SALT = "aztsysmgr_md5";
 	
 	/**
 	 * 采用md5方式加密

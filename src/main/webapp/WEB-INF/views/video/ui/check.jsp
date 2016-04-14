@@ -306,7 +306,7 @@ function preView(id){
 	$('#video-yulan').toggle();
 	$("div#yulan").flash(
 	    {
-	      swf:ctx+"/source/swf/shenhe/YPPlayer.swf",
+	      swf:ctx+"/source/swf/shenhe/YPPlayer.swf?v=${version}",
 	      width:704,
 	      height:555,
 	      allowFullScreen:true,

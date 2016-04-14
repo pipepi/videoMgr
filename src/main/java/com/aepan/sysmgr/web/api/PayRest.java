@@ -713,8 +713,8 @@ public class PayRest {
 						user.getPartnerAccountId(),
 						user.getPartnerAccountName(),
 						"/package/updateuserpackage", 
-						logMsg+":"+packageStat.toString(), 
-						order.getOrderId()));
+						logMsg, 
+						"订单id（无ip）："+order.getOrderId()));
 		
 		
 	}

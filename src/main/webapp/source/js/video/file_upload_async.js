@@ -30,8 +30,8 @@ var v = {
 			scale:1,
 			small_size:120,//预览图宽
 			small_size_height:67.5,//预览图高
-			big_size:200,//被裁剪图宽
-			big_size_height:112.5,//被裁剪图高
+			big_size:270,//被裁剪图宽
+			big_size_height:152,//被裁剪图高
 			img_cut:ctx+'/video/cutimg',//图片裁剪接口
 			cut_img_id:'',//裁剪后的图片Id
 			cutnum:0,//裁剪次数，用于更新同名图片
@@ -109,6 +109,9 @@ var v = {
 				var reg=new RegExp("^图片大小为");   
 				if(tipstr=='请选择视频'||tipstr=='格式不支持'||tipstr=='已上传视频'||reg.test(tipstr)){$('#video-tip').hide();}
 				$('.progress-bar').toggle();
+				var _video_name =  file.name;
+				_video_name = _video_name.substring(0,_video_name.lastIndexOf("."))
+				//console.log("_video_name:"+_video_name);
 				v.canUpVideo = false;
 				//保存按钮致灰
 				v.submit_disable();
@@ -133,6 +136,7 @@ var v = {
 			    			  
 			    			  $('#'+v.options.up_video_file_input_id).attr("disabled",true);
 			    			  $('#'+v.options.up_video_file_input_id).parent().css('background-color','#999999');
+			    			  $('input[name = "video-name"]').val(_video_name);
 			    		  }else{
 			    			  v.tip('video-tip',"上传失败");
 			    			  $('.progress-bar').toggle();
@@ -195,18 +199,26 @@ var v = {
 				    		  if(attr.status==0){
 				    			  $('#img-tip').hide();
 				    			  //根据被裁剪图高宽计算缩放比
-				    			  var scale = 1;
 				    			  var scaleW = v.options.big_size / (attr.width || 1);
 				    			  var scaleH = v.options.big_size_height / (attr.height || 1); 
-					    		  if(scaleW>scaleH) {
-					    			  scale = scaleH;
+					    		  if(scaleW<scaleH) {
+					    			  zoom = scaleH;
 					    		  } else {
-					    			  scale = scaleW;
+					    			  zoom = scaleW;
 					    		  }
-					    		  v.options.scale = scale;
-					    		  var width = attr.width * scale;
-					    		 
-					    		  var height = attr.height * scale;
+					    		  zmax = cutx/1004;
+					    		  zminx = cutx/(attr.width||1);
+					    		  zminy = cuty/(attr.width||1);
+					    		  zmin = zminx>zminy?zminx:zminy;
+					    		  if(zoom>=zmax){
+					    			  zoom=zmax;
+					    		  }
+					    		  if(zoom<=zmin){
+					    			  zoom=zmin;
+					    		  }
+					    		  v.options.scale = zoom;
+					    		  var width = attr.width * zoom;
+					    		  var height = attr.height * zoom;
 					    		  v.options.width = attr.width;
 					    		  v.options.height = attr.height;
 					    		  v.options.src_img_id = attr.imageId;
@@ -217,12 +229,30 @@ var v = {
 					    		  var imgurl = ctx+"/video/downimg?img_url="+attr.imageId;
 					    		  //console.log(imgurl+"    width="+width+"  height="+height);
 					    		  //显示被裁剪图
+					    		  $('#cut_img').attr('src',imgurl);
+					    		  $('#cut_img').attr('width', width);
+					    		  $('#cut_img').attr('height', height);
+					    		  $('#cut_img').css('top', (divy-height)/2-divy);
+					    		  $('#cut_img').css('left', (divx-width)/2);
+					    		  $('#cut_img').show();
+					    		  imgdefw=v.options.width;
+					    		  imgdefh=v.options.height;
+					    		  //设置滑块位置
+					    		  var imgTrackWidth = $('#img_track').width();
+					    		  var slidleft = ((zoom-zmin)/((zmax-zmin)||1))*imgTrackWidth;
+					    		  //console.log("zoom="+zoom+"   zmin="+zmin+"   zmax="+zmax);
+					    		  //console.log("imgTrackWidth:"+imgTrackWidth+"   slidleft:"+slidleft);
+					    		  $('#img_grip').css('left',slidleft-92);
+					    		 // console.log( $('#cut_big_img_div').css('background-color'));
+					    		  $('#cut_big_img_div').removeClass('cut_btn').addClass('cut_btn1');
+					    		  getTransform();
+					    		  /* 
 					    		  $('#'+v.options.cover_img_big).attr('src',imgurl);
 					    		  $('#'+v.options.cover_img_big).attr('width', width);
 					    		  $('#'+v.options.cover_img_big).attr('height', height);
 					    		  $('#img-title').remove();
 					    		  $('#'+v.options.cover_img_big).show();
-					    		  $('#cut_big_img_div').css('background-color','#e3393c')
+					    		  $('#cut_big_img_div').css('background-color','#e3393c');
 					    		  $(function () {
 					    			  $('#'+v.options.cover_div_small).empty();
 					    			  var viewImageWidth = Math.round(v.options.small_size*width/(1004*scale));
@@ -243,8 +273,8 @@ var v = {
 					    			  var y2 = x2/16*9;
 					    		      v.options.y2 = Math.round(y2);
 					    		      //console.log("x2="+x2+"   y2="+y2);
-					    		      $('#'+v.options.cover_img_big).imgAreaSelect({ x1: 0, y1: 0, x2: x2, y2: y2, aspectRatio: '16:9',resizable:false,persistent:true, handles:true, onSelectChange: v.preview, onSelectEnd: v.next});
-					    		  });
+					    		      $('#'+v.options.cover_img_big).imgAreaSelect({ x1: 0, y1: 0, x2: x2, y2: y2, aspectRatio: '16:9',resizable:true,persistent:true, handles:true, onSelectChange: v.preview, onSelectEnd: v.next});
+					    		  });*/
 				    		  }else{
 				    			  v.tip('img-tip',attr.errMSG);
 				    		  }
@@ -258,6 +288,8 @@ var v = {
 				});
 			},
 			img_cut:function(){
+				//console.log("click cut");
+				//console.log("v.options.src_img_id="+v.options.src_img_id);
 				if(v.options.src_img_id==''){
 					v.tip('img-tip',"请选择图片");
 					return;

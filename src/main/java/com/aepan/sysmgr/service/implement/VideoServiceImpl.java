@@ -8,8 +8,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -32,6 +30,7 @@ import com.aepan.sysmgr.model.packageinfo.PackageInfo;
 import com.aepan.sysmgr.model.tempinfo.LinkVideoInfo;
 import com.aepan.sysmgr.service.CacheService;
 import com.aepan.sysmgr.service.StorageService;
+import com.aepan.sysmgr.service.StoreService;
 import com.aepan.sysmgr.service.VideoService;
 import com.aepan.sysmgr.util.DateUtil;
 import com.aepan.sysmgr.util.ThreadManager;
@@ -55,6 +54,8 @@ public class VideoServiceImpl implements VideoService {
 	private StorageService storageService;
 	@Autowired
 	private CacheService cacheService;
+	@Autowired
+	private StoreService storeService;
 	@Override
 	public int insert(Video v) throws Exception {
 		int id = videoDao.addVideoWithGenKey(v.harmSensitiveWord());
@@ -94,10 +95,25 @@ public class VideoServiceImpl implements VideoService {
 			storageService.deleteImg(in);
 			videoDao.delete(id);
 			//删除关联关系
-			videoDao.deleteLinkRelationByVideoId(userId, id);
+			deleteLinkRelationByVideoId(userId, id);
+			//删除缓存
+			cacheService.deleteByVideoId(CacheObject.STOREINFO, id);
 		}
 	}
-	
+	@Override
+	public void deleteLinkRelationByVideoId(int userId,int videoId){
+		resetLinkedStoreLogo(videoId);
+		videoDao.deleteLinkRelationByVideoId(userId, videoId);
+	}
+	//删除关联关系的同时，重置播放器logo图片    //to do 只适用于一个播放器关联一个视频，不适用于关联多个视频
+	private void resetLinkedStoreLogo(int videoId){
+		List<StoreVideo> svs = videoDao.getStoreVideoListByVideoId(videoId);
+		if(svs!=null&&!svs.isEmpty()){
+			for (StoreVideo storeVideo : svs) {
+				storeService.deleteStoreLogo(storeVideo.getStoreId());
+			}
+		}
+	}
 	@Override
 	public void update(Video v) {
 		videoDao.updateVideo(v.harmSensitiveWord());
@@ -161,6 +177,8 @@ public class VideoServiceImpl implements VideoService {
 				vcList.add(vc);
 				v.checkMsgs = vcList;
 			}			
+		}else{
+			v.active = Video.active_激活;
 		}
 		cacheService.deleteByVideoId(CacheObject.STOREINFO, videoId);
 		videoDao.updateVideo(v);
@@ -287,5 +305,8 @@ public class VideoServiceImpl implements VideoService {
 	public List<StoreVideo> getStoreVideoListByVideoId(int videoId){
 		return videoDao.getStoreVideoListByVideoId(videoId);
 	}
-
+	@Override
+	public PageList<Video> videos4Link(int storeId,int userId,String sortBy,String sortType,int pageNo,int pageSize){
+		return videoDao.videos4Link(storeId, userId, sortBy, sortType, pageNo, pageSize);
+	}
 }

@@ -5,6 +5,7 @@ package com.aepan.sysmgr.service.implement;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,14 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.NumericField;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 
 import com._21cn.framework.util.PageList;
 import com.aepan.sysmgr.dao.PackageStatDao;
@@ -34,7 +32,6 @@ import com.aepan.sysmgr.model.StoreProducts;
 import com.aepan.sysmgr.model.StoreVideo;
 import com.aepan.sysmgr.model.User;
 import com.aepan.sysmgr.model.Video;
-import com.aepan.sysmgr.model.VideoCheck;
 import com.aepan.sysmgr.model._enum.CacheObject;
 import com.aepan.sysmgr.model.hm.PartnerProduct;
 import com.aepan.sysmgr.model.hm.PartnerProductPage;
@@ -46,14 +43,13 @@ import com.aepan.sysmgr.service.ConfigService;
 import com.aepan.sysmgr.service.PartnerDataService;
 import com.aepan.sysmgr.service.SearchService;
 import com.aepan.sysmgr.service.StoreService;
-import com.aepan.sysmgr.util.lucene.SearchHelper;
 import com.aepan.sysmgr.web.controller.VideoController;
 
 /**
  * @author rakika
  * 2015年8月10日下午5:15:54
  */
-@Controller
+@Service
 public class StoreServiceImpl implements StoreService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(VideoController.class);
@@ -243,14 +239,48 @@ public class StoreServiceImpl implements StoreService {
 	}
 	private void msgPartnerProductUnlink(int userId,int storeId){
 		List<StoreProduct> sp = productDao.getStoreProductList(userId, storeId);
+		List<StoreProduct> usersp = productDao.getStoreProductListByUserId(userId);
+		
 		if(sp!=null&&!sp.isEmpty()){
 			String unLinkPids = "";
 			for (StoreProduct p : sp) {
-				unLinkPids +=p.getProductId()+",";
+				if(!inByPId(except(usersp,sp),p.getProductId())){
+					unLinkPids +=p.getProductId()+",";
+				}
 			}
-			unLinkPids = unLinkPids.substring(0,unLinkPids.length()-1);
-			partnerDataService.sendMsgOfProductsLinked("", unLinkPids);
+			if(unLinkPids.endsWith(",")){
+				unLinkPids = unLinkPids.substring(0,unLinkPids.length()-1);
+			}
+			logger.debug("unLinkPids="+unLinkPids);
+			if(unLinkPids.length()>0){
+				partnerDataService.sendMsgOfProductsLinked("", unLinkPids);
+			}
 		}
+	}
+	private List<StoreProduct> except(List<StoreProduct> a,List<StoreProduct>b){
+		List<StoreProduct> list = new ArrayList<StoreProduct>();
+		for (StoreProduct aa : a) {
+			if(!inById(b,aa.getId())){
+				list.add(aa);
+			}
+		}
+		return list;
+	}
+	private boolean inById(List<StoreProduct> list,int id){
+		for (StoreProduct sp : list) {
+			if(sp.getId()==id){
+				return true;
+			}
+		}
+		return false;
+	}
+	private boolean inByPId(List<StoreProduct> list,int pid){
+		for (StoreProduct sp : list) {
+			if(sp.getProductId()==pid){
+				return true;
+			}
+		}
+		return false;
 	}
 	@Override
 	public int getLinkedProductNum(int storeId){
@@ -294,7 +324,8 @@ public class StoreServiceImpl implements StoreService {
 			}
 		}
 	}
-	private String getProductIds(int storeId){
+	@Override
+	public String getProductIds(int storeId){
 		Store store = getById(storeId);
 		if(store!=null){
 			List<StoreProduct> spList = productDao.getStoreProductList(store.getUserId(), store.getId());
@@ -309,7 +340,7 @@ public class StoreServiceImpl implements StoreService {
 				return pIds.toString();
 			}
 		}
-		return null;
+		return "";
 	}
 	private com.aepan.sysmgr.model.lucene.Store getLuceneStore(ConfigService configService,Store store){
 		if(store != null){
@@ -609,7 +640,7 @@ public class StoreServiceImpl implements StoreService {
 	@Override
 	public void reloadSearchIndex(){
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("status", Store.STATUS_在线);
+		params.put("status", Store.STATUS_V_OK_P_OK);
 		int count = storeDao.getOnlineAmount();
 		int pageSize = 100;
 		int pageCount = count%pageSize==0?count/pageSize:count/pageSize+1;
@@ -621,5 +652,37 @@ public class StoreServiceImpl implements StoreService {
 				}
 			}
 		}
+	}
+	@Override
+	public void deleteStoreLogo(int storeId){
+		Store store = storeDao.getById(storeId);
+		store.setLogoUrl("");
+		store.setLogoUrl_301("");
+		store.setMaxLogoUrl("");
+		store.setMaxLogoUrl_414("");
+		storeDao.update(store);
+	}
+	
+	/**
+	 * 视频下线，
+	 * @param videoId
+	 */
+	public void offLineByVideo(int videoId){
+		
+	}
+	/**
+	 * 商家主动下架商品，和播放器的关联关系删除，清除redis缓存，更新搜索引擎索引
+	 * @param productId
+	 */
+	@Override
+	public void deleteLinkedStoreRelation(int productId){
+		List<StoreProduct> sp = productDao.getStoreProductListByProductId(productId);
+		if(sp!=null&&!sp.isEmpty()){
+			productDao.deleteLinkRelationByProductId(productId);
+			for (StoreProduct storeProduct : sp) {
+				cacheService.deleteByProductId(CacheObject.STOREINFO, storeProduct.getStoreId());
+			}
+		}
+		
 	}
 }

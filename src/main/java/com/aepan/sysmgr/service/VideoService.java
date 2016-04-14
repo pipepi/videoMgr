@@ -89,4 +89,23 @@ public interface VideoService {
 	 * @return
 	 */
 	List<StoreVideo> getStoreVideoListByVideoId(int videoId);
+	/**
+	 * 播放器关联视频，视频列表
+	 * 排序： 已关联的视频>已发布的视频；然后发布时间，或播放次数排序（默认时间倒序）；
+	 * @param storeId
+	 * @param userId
+	 * @param sortBy
+	 * @param sortType
+	 * @param pageNo
+	 * @param pageSize
+	 * @return
+	 */
+	PageList<Video> videos4Link(int storeId, int userId, String sortBy,
+			String sortType, int pageNo, int pageSize);
+	/**
+	 * 按视频id删除关联关系
+	 * @param userId
+	 * @param videoId
+	 */
+	void deleteLinkRelationByVideoId(int userId, int videoId);
 }

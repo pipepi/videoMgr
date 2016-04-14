@@ -12,9 +12,6 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -24,7 +21,6 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -47,6 +43,10 @@ public class HttpsUtil implements Serializable {
 	public static String doPost(String url,String params){
 		logger.debug(url+"\n params= "+params);
 		String rs = "";
+		//兼容http请求
+		if(url!=null&&url.startsWith("http:")){
+			return HttpUtil.doPost(url,params);
+		}
 		try {
 			rs = doPost(url, params, DEFAULT_CHARSET, DEFAULT_TIMEOUT, DEFAULT_TIMEOUT,METHOD_POST);
 		} catch (Exception e) {
@@ -58,6 +58,10 @@ public class HttpsUtil implements Serializable {
 	public static String doPost(String url){
 		logger.debug(url);
 		String rs = "";
+		//兼容http请求
+		if(url!=null&&url.startsWith("http:")){
+			return HttpUtil.doPost(url);
+		}
 		try {
 			rs = doPost(url, null, DEFAULT_CHARSET, DEFAULT_TIMEOUT, DEFAULT_TIMEOUT,METHOD_POST);
 		} catch (Exception e) {
@@ -66,7 +70,7 @@ public class HttpsUtil implements Serializable {
 		logger.debug(rs);
 		return rs;
 	}
-	public static String doGet(String url,String params){
+	private static String doGet(String url,String params){
 		logger.debug(url+"\n params= "+params);
 		String rs = "";
 		try {
@@ -80,6 +84,10 @@ public class HttpsUtil implements Serializable {
 	public static String doGet(String url){
 		logger.debug(url);
 		String rs = "";
+		//兼容http请求
+		if(url!=null&&url.startsWith("http:")){
+			return HttpUtil.doGet(url);
+		}
 		try {
 			rs = doPost(url, null, DEFAULT_CHARSET, DEFAULT_TIMEOUT, DEFAULT_TIMEOUT,METHOD_GET);
 		} catch (Exception e) {

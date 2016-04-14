@@ -3,9 +3,11 @@
  */
 package com.aepan.sysmgr.service.implement;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import com.aepan.sysmgr.model.StoreVideo;
 import com.aepan.sysmgr.model._enum.CacheObject;
 import com.aepan.sysmgr.service.CacheService;
 import com.aepan.sysmgr.service.ConfigService;
+import com.aepan.sysmgr.service.SearchService;
 import com.aepan.sysmgr.service.StoreService;
 import com.aepan.sysmgr.util.JSONUtil;
 import com.aepan.sysmgr.util.lucene.SearchHelper;
@@ -48,6 +51,8 @@ public class CacheServiceImpl<K, V> implements CacheService {
 	private ConfigService configService;
 	@Autowired 
 	private StoreService storeService;
+	@Autowired
+	private SearchService searchService;
 	@Override
 	public void add(CacheObject cacheObject, Object obj) {
 		String k  = "";
@@ -107,7 +112,14 @@ public class CacheServiceImpl<K, V> implements CacheService {
 		List<Store> storeList = storeService.getListByUserId(userId);
 		if(storeList!=null&&!storeList.isEmpty()){
 			for (Store store : storeList) {
-				SearchHelper.delete(configService, store.getId()+"");
+				//SearchHelper.delete(configService, store.getId()+"");
+				try {
+					searchService.delete(store.getId()+"");
+				} catch (SolrServerException e) {
+					logger.debug("delete store search index error . store id ="+store.getId()+"\n"+e.getMessage());
+				} catch (IOException e) {
+					logger.debug("delete store search index error . store id ="+store.getId()+"\n"+e.getMessage());
+				}
 			}
 		}
 		//to do 删除redis缓存  待定 
@@ -132,6 +144,13 @@ public class CacheServiceImpl<K, V> implements CacheService {
 					int[] storeIds = new int[sv.size()];
 					for (int i = 0; i < sv.size(); i++) {
 						storeIds[i] = sv.get(i).storeId;
+						try {
+							searchService.delete(storeIds[i]+"");
+						} catch (SolrServerException e) {
+							logger.debug("delete store search index error . store id ="+storeIds[i]+"\n"+e.getMessage());
+						} catch (IOException e) {
+							logger.debug("delete store search index error . store id ="+storeIds[i]+"\n"+e.getMessage());
+						}
 					}
 					delete(cacheObject, storeIds);
 					logger.debug("\n\n deleteByVideoId vid= "+vid);

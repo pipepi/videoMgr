@@ -96,4 +96,15 @@ public interface VideoDao {
 	 * @return
 	 */
 	int getStoreClickNum(int storeId);
+	/**
+	 * @param storeId
+	 * @param userId
+	 * @param sortBy
+	 * @param sortType
+	 * @param pageNo
+	 * @param pageSize
+	 * @return
+	 */
+	PageList<Video> videos4Link(int storeId, int userId, String sortBy,
+			String sortType, int pageNo, int pageSize);
 }

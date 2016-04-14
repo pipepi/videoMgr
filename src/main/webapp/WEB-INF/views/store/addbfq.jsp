@@ -65,7 +65,7 @@ jQuery(document).ready(function($) {
                 </tr>
                 <tr <c:if test="${store==null||store.linkedVideoIds==''||store.linkedProductIds==''}"> style="display:none"</c:if>>
                   <td align="right" ><label>播放器分享内嵌代码：</label></td>
-                  <td><textarea style="height:105px;" name="innerCode" placeholder="请输入播放器分享内嵌代码" readonly="readonly"><object type="application/x-shockwave-flash" data="http://video.kaimai8.com/source/swf/YPPlayer.swf" width="768" height="550" id="flashcontent" style="visibility: visible;"><param name="quality" value="high"><param name="allowfullscreen" value="true"><param name="flashvars" value="storeId=${store.id}&amp;autoPlay=false&amp;"></object></textarea>
+                  <td><textarea style="height:105px;" name="innerCode" placeholder="请输入播放器分享内嵌代码" readonly="readonly"><object type="application/x-shockwave-flash" data="https://player.kaimai8.com/source/swf/shopPage/YPPlayer.swf" width="960" height="618" id="flashcontent" style="visibility: visible;"><param name="quality" value="high"><param name="allowfullscreen" value="true"><param name="flashvars" value="storeId=${store.id}&amp;autoPlay=false&amp;"></object></textarea>
                   <span id="inner-tip" stye="display:none"></span></td>
                 </tr>
                 <tr>

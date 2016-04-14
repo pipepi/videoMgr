@@ -26,6 +26,7 @@ import com.aepan.sysmgr.dao.VideoDao;
 import com.aepan.sysmgr.dao.rowmapper.VideoRowMapper;
 import com.aepan.sysmgr.model.StoreVideo;
 import com.aepan.sysmgr.model.Video;
+import com.aepan.sysmgr.model.VideoCheck;
 import com.aepan.sysmgr.util.DaoUtil;
 import com.aepan.sysmgr.util.JSONUtil;
 
@@ -62,8 +63,53 @@ public class VideoDaoImpl implements VideoDao {
 		return jdbcTemplate.queryForObject(sql, new Object[]{userId}, Integer.class);
 	}
 	
-
-	
+	/**
+	 * 播放器关联视频，视频列表
+	 * 排序： 已关联的视频>已发布的视频；然后发布时间，或播放次数排序（默认时间倒序）；
+	 */
+	@Override
+	public PageList<Video> videos4Link(int storeId,int userId,String sortBy,String sortType,int pageNo,int pageSize){
+		StringBuffer sql = new StringBuffer();
+		   sql.append(" from  t_sysmgr_video a left join  (select store_id,video_id from t_sysmgr_store_video where user_id= ")
+		   .append(userId);
+		   if(storeId>0){
+			   sql.append(" and store_id= ")
+			   .append(storeId);
+			   
+		   }
+		   sql.append(") b on a.id = b.video_id ") 
+		   .append(" where ") 
+		   .append(" a.user_id = ")
+		   .append(userId)
+		   .append(" ")
+		   .append(" and (b.store_id>0 or a.check_state=")
+		   .append(VideoCheck.state_上线)
+		   .append(") ")
+		   .append(" and a.active = 1 ");
+		StringBuffer querySql = new StringBuffer();
+		querySql.append("select a.* ")
+				.append(sql.toString())
+		   		.append(" order by b.store_id desc ");
+		if(sortBy.equals("updatetime")){
+			querySql.append(", a.update_time ");
+		}else if(sortBy.equals("cnum")){
+			querySql.append(", a.video_cnum+a.h5_video_cnum ");
+		}else{}
+		querySql.append(sortType);
+		querySql.append(" limit ")
+		.append((pageNo-1)*pageSize)
+		.append(",")
+		.append(pageSize)
+		.append(" ");
+		PageList<Video> list= toPageList(jdbcTemplate.query(querySql.toString(),new VideoRowMapper()));
+		list = list==null?new PageList<Video>():list;
+		list.setPageTurn(new PageTurn(pageNo, pageSize,countBySql("select count(0) "+sql.toString())));
+		return list;
+	}
+	private int countBySql(String sql){
+		int count = (Integer)jdbcTemplate.queryForObject(sql,Integer.class);
+		return count;
+	}
 	@Override
 	public PageList<Video> pageList(Map<String, Object> params, int pageNo,
 			int pageSize) {

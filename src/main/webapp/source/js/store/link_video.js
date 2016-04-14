@@ -1,13 +1,56 @@
 function loadVideoList(){
 		var url = _ctx+"/video/listhm4player";
-		$.post(url,{},function(data){
+		$.post(url,{
+			storeId:_player,
+			pageNo:v_page_no,
+			pageSize:v_page_size,
+			sortBy:v_sort_by,
+			sortType:v_sort_type
+			},function(data){
 			$('#video-list').html(data);
 		});
 }
+var v_page_no=1;
+var v_page_size=4;
+var v_sort_by = "updatetime";//cnum
+var v_sort_type = "desc";//asc
+function sort(sb,st){
+	v_sort_by = sb;
+	v_sort_type = st;
+	loadVideoListPerPlayer();
+}
+function goVideo(pn){
+	v_page_no = pn;
+	loadVideoListPerPlayer();
+}
+function loadVideoListPerPlayer(){
+	var url = _ctx+"/video/list4player";
+	/*console.log("   storeId="+_player
+				+"  pageNo="+v_page_no
+				+"  pageSize="+v_page_size
+				+"  sortBy="+v_sort_by
+				+"  sortType="+v_sort_type
+				);*/
+	$.post(url,
+		{
+		storeId:_player,
+		pageNo:v_page_no,
+		pageSize:v_page_size,
+		sortBy:v_sort_by,
+		sortType:v_sort_type
+		},
+		function(data){
+		$('#video-list').html(data);
+		callbackAction();
+	});
+}
 function showLinkVideoPage(playerid){
 	_player = playerid;
+	loadVideoListPerPlayer();
+}
+function callbackAction(){
 	_linked_videoids_arr = new Array();
-	var linkedids = $('#link-video-a-'+playerid).attr("linked-video-ids");
+	var linkedids = $('#link-video-a-'+_player).attr("linked-video-ids");
 	if(linkedids){
 		if(linkedids.indexOf(',',0)>0){
 			var lidsArr = linkedids.split(',');
@@ -41,6 +84,20 @@ function checkVideo(obj){
 	if($(obj).attr('checked')){
 		$('#checkednum').text(num+1);
 		_linked_videoids_arr.push(id);
+		//取消已其他已选择
+		var _checkboxs = $('#video-list').find('input[type=checkbox][checked=true][value!='+id+']')
+		if(_checkboxs){
+			if(_checkboxs.length>0){
+				for(var i=0;i<_checkboxs.length;i++){
+					$(_checkboxs[i]).attr('checked',false);
+					var _num = parseInt($('#checkednum').text());
+					$('#checkednum').text(_num-1);
+					var _id = parseInt($(_checkboxs[i]).val());
+					var ind = $.inArray(_id,_linked_videoids_arr);
+					_linked_videoids_arr.splice(ind,1);
+				}
+			}
+		}
 	}else{
 		$('#checkednum').text(num-1);
 		var ind = $.inArray(id,_linked_videoids_arr);
@@ -72,6 +129,10 @@ function saveVideoLinks(){
 			vids+=""+_linked_videoids_arr[i]+",";
 		}
 		vids = vids.substring(0,vids.length-1);
+	}else{
+		if(!confirm("没有关联任何视频，播放器无法正常使用")){
+			return;
+		}
 	}
 	$.post(url,{storeId:_player,videoIds:vids},function(data){
 		 var datas = data.substring(data.indexOf('{')+1,data.lastIndexOf('}'));

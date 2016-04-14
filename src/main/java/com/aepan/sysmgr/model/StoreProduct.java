@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.aepan.sysmgr.model.hm.PartnerProduct;
 import com.aepan.sysmgr.model.lucene.ProductAttribute;
 
 /**
@@ -20,7 +21,8 @@ public class StoreProduct implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -7610653488618260030L;
-
+	public static final int STATUS_违规下架 = 4;
+	public static final int STATUS_销售中 = 2;
 	public int id;
 	
 	public int userId;
@@ -41,6 +43,25 @@ public class StoreProduct implements Serializable{
 	public float productPrice;
 	
 	public Date createTime;
+	
+	/**
+	 * 1:待审核   
+	 * 2:销售中
+	 * 3:未通过
+	 * 4:违规下架
+	 * 5:未审核
+	 */
+	public int auditState;
+	public static boolean hasProductOffline(List<StoreProduct> list){
+		if(list!=null&&!list.isEmpty()){
+			for (StoreProduct partnerProduct : list) {
+				if(partnerProduct.getAuditState()==STATUS_违规下架){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	
 	public StoreProduct() {
 	}
@@ -154,5 +175,18 @@ public class StoreProduct implements Serializable{
 	public void setProductType(String productType) {
 		this.productType = productType;
 	}
+	/**
+	 * @return the auditState
+	 */
+	public int getAuditState() {
+		return auditState;
+	}
+	/**
+	 * @param auditState the auditState to set
+	 */
+	public void setAuditState(int auditState) {
+		this.auditState = auditState;
+	}
+	
 	
 }

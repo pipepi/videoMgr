@@ -20,6 +20,8 @@ public class PartnerProduct implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+
 	/**
 	 * 产品id
 	 */
@@ -48,6 +50,16 @@ public class PartnerProduct implements Serializable{
 	 * 库存，目前数据不对
 	 */
 	private int Stock;
+	
+	/**
+	 * 1:待审核   
+	 * 2:销售中
+	 * 3:未通过
+	 * 4:违规下架
+	 * 5:未审核
+	 */
+	private int AuditState;
+	
 	/**
 	 * 发布时间
 	 */
@@ -56,6 +68,8 @@ public class PartnerProduct implements Serializable{
 	 * 计量单位
 	 */
 	private String Unit;
+	
+	
 	public List<ProductAttribute> toProductAttr(){
 		if(this.ProductAttributeList==null||this.ProductAttributeList.size()==0){
 			return null;
@@ -139,6 +153,19 @@ public class PartnerProduct implements Serializable{
 	 */
 	public void setUnit(String unit) {
 		Unit = unit;
+	}
+	
+	/**
+	 * @return the auditState
+	 */
+	public int getAuditState() {
+		return AuditState;
+	}
+	/**
+	 * @param auditState the auditState to set
+	 */
+	public void setAuditState(int auditState) {
+		AuditState = auditState;
 	}
 	/**
 	 * @return the publishTime

@@ -19,16 +19,17 @@ import com.aepan.sysmgr.service.implement.SearchServiceImpl;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/applicationContext.xml")
 public class SearchServiceTest {
-	private SearchService searchService;
+	private static SearchService searchService;
 	public static void main(String[] args) throws IOException, SolrServerException {
-		SearchServiceTest s = new SearchServiceTest();
-		s.add();
+		//SearchServiceTest s = new SearchServiceTest();
+		//s.add();
 		//s.delete("1000");
+		delete();
 	}
-	@Test
-	public void delete() throws SolrServerException, IOException{
+	//@Test
+	public static void delete() throws SolrServerException, IOException{
 		searchService = new SearchServiceImpl();
-		searchService.delete("1111");
+		searchService.delete("10");
 	}
 	//@Test
 	public void add() throws IOException, SolrServerException{

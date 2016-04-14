@@ -12,6 +12,8 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +25,12 @@ import org.slf4j.LoggerFactory;
 public class HttpUtil implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LoggerFactory.getLogger(HttpUtil.class);
+	/**
+	 * 用于短信发送
+	 * @param url
+	 * @param param
+	 * @return
+	 */
 	public static String post(String url,String param){
 		 PrintWriter out = null;
 	        BufferedReader in = null;
@@ -71,7 +79,7 @@ public class HttpUtil implements Serializable {
 	        }
 	        return result;
 	}
-	public static void postJsonParam(String url,String jsonParam){
+	public static String doPost(String url,String jsonParam){
 		PostMethod method = new PostMethod(url);
 		method.setRequestBody(jsonParam);
 		method.setRequestHeader("Content-Type", "application/json");
@@ -86,5 +94,36 @@ public class HttpUtil implements Serializable {
 		}catch (IOException e) {
 			logger.error(e.getMessage(),e);
 		}
+		return ret;
+	}
+	public static  String doGet(String url){
+		String rs = "";	
+		HttpClient client = new HttpClient();
+		GetMethod method = new GetMethod(url);
+		try {
+			client.executeMethod(method);
+			rs = method.getResponseBodyAsString();
+		} catch (HttpException e) {
+			logger.debug("do post error . e"+e.getMessage());
+		} catch (IOException e) {
+			logger.debug("do post error . e"+e.getMessage());
+		}
+		logger.debug("rs:"+rs);
+		return rs;
+	}
+	public static String doPost(String url){
+		String rs = "";	
+		HttpClient client = new HttpClient();
+		PostMethod method = new PostMethod(url);
+		try {
+			client.executeMethod(method);
+			rs = method.getResponseBodyAsString();
+		} catch (HttpException e) {
+			logger.debug("do post error . e"+e.getMessage());
+		} catch (IOException e) {
+			logger.debug("do post error . e"+e.getMessage());
+		}
+		logger.debug("rs:"+rs);
+		return rs;
 	}
 }

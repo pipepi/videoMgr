@@ -35,7 +35,9 @@ import com.aepan.sysmgr.common.cache.ParamInfoCache;
 import com.aepan.sysmgr.model.ProductType;
 import com.aepan.sysmgr.model.Store;
 import com.aepan.sysmgr.model.User;
+import com.aepan.sysmgr.model.Video;
 import com.aepan.sysmgr.model.config.FileConfig;
+import com.aepan.sysmgr.model.hm.PartnerProductPage;
 import com.aepan.sysmgr.model.hm.StoreSubInfo;
 import com.aepan.sysmgr.model.log.OperationLog;
 import com.aepan.sysmgr.model.lucene.ProductAttribute;
@@ -46,6 +48,7 @@ import com.aepan.sysmgr.model.packageinfo.PackageInfo;
 import com.aepan.sysmgr.model.packageinfo.PackageStat;
 import com.aepan.sysmgr.service.PartnerDataService;
 import com.aepan.sysmgr.service.SearchService;
+import com.aepan.sysmgr.service.UserService;
 import com.aepan.sysmgr.util.AjaxResponseUtil;
 import com.aepan.sysmgr.util.ConfigManager;
 import com.aepan.sysmgr.util.Constants;
@@ -67,6 +70,8 @@ public class StoreController extends DataTableController {
 	private SearchService searchService;
 	@Autowired
 	private PartnerDataService partnerDataService;
+	@Autowired
+	private UserService userService;
 	/**
 	 * 获取店铺list
 	 * @param request
@@ -267,6 +272,10 @@ public class StoreController extends DataTableController {
 		
 		FileConfig config = ConfigManager.getInstance().getFileConfig(configService);
 		model.addAttribute("imgpre", config.IMG_AZURE_PRE);
+		//购买新套餐后，更新session中的套餐
+		user = userService.getByUserId(userId);
+		session.setAttribute(Constants.SESSION_USER, user);
+		
 		int packageId = user.getPackageId();
 		PackageInfo packageInfo = packageService.getById(packageId);
 		PackageStat packageStatInfo = packageStatService.getByUserId(userId);
@@ -322,11 +331,20 @@ public class StoreController extends DataTableController {
 		String memberId = (String) session.getAttribute(Constants.SESSION_MEMBERID);
 		//用于播放器预览、传人参数
 		model.addAttribute("memberId", memberId);
-		
-		
+		setVersion(model);
+		setProductsNum(user.getPartnerAccountId(),model);
+		setVideoNum(user.getId(),model);
 		return "store/bfqlist";
 	}
-	
+	private void setProductsNum(int userId,ModelMap model){
+		PartnerProductPage hp = partnerDataService.getProducts4Link(userId,
+				"", "", 1, 1, "time", "desc");
+		model.addAttribute("productNum", hp==null?0:hp.getTotal());
+	}
+	private void setVideoNum(int userId,ModelMap model){
+		PageList<Video> list = videoService.videos4Link(0, userId, "updatetime", "desc", 1, 1);
+		model.addAttribute("videoNum",list==null?0:list.getPageTurn().getRowCount() );
+	}
 	
 	/**
 	 * 

@@ -27,6 +27,7 @@ import com.aepan.sysmgr.model.User;
 import com.aepan.sysmgr.model._enum.ResponseType;
 import com.aepan.sysmgr.model._enum.Validate;
 import com.aepan.sysmgr.model.config.PartnerConfig;
+import com.aepan.sysmgr.model.config.VersionConfig;
 import com.aepan.sysmgr.model.hm.Privilege;
 import com.aepan.sysmgr.model.hm.VideoAuth;
 import com.aepan.sysmgr.model.packageinfo.PackageStat;
@@ -234,8 +235,8 @@ public class DataTableController {
 			String rs = "";
 			switch (v) {
 			case ALL_NO_LOGIN:rs = "redirect:/login";break;
-			case ADMIN_NO_PRIVILEGE:model.put("error_desc", "admin not have privilege.");rs = "error";break;
-			case SELLER_NO_PRIVILEGE:model.put("error_desc", "seller Do not have privilege.");rs = "error";break;
+			case ADMIN_NO_PRIVILEGE:model.put("error_desc", "admin not have privilege.");rs = "privilege";break;
+			case SELLER_NO_PRIVILEGE:model.put("error_desc", "seller Do not have privilege.");rs = "privilege";break;
 			default:break;
 			}
 			return rs;
@@ -274,5 +275,9 @@ public class DataTableController {
 		HttpSession session = req.getSession();
 		User user = (User)session.getAttribute(Constants.SESSION_USER);
 		return user==null?(User)session.getAttribute(Constants.SESSION_ADMIN_USER):user;
+	}
+	protected void setVersion(ModelMap model){
+		VersionConfig versionConfig = ConfigManager.getInstance().getVersionConfig();
+		model.addAttribute("version", versionConfig==null?"1.0.0":versionConfig.version);
 	}
 }

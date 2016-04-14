@@ -22,6 +22,7 @@ import com.aepan.sysmgr.model.config.LuceneConfig;
 import com.aepan.sysmgr.model.config.PartnerConfig;
 import com.aepan.sysmgr.model.config.SmsConfig;
 import com.aepan.sysmgr.model.config.StorageConfig;
+import com.aepan.sysmgr.model.config.VersionConfig;
 import com.aepan.sysmgr.model.config.WechatpayConfig;
 import com.aepan.sysmgr.service.ConfigService;
 
@@ -55,6 +56,7 @@ public class ConfigManager {
 	private Ks3Config ks3Config;
 	private FlowConfig flowConfig;
 	private StorageConfig storageConfig;
+	private VersionConfig versionConfig;
 	public static String imgPre(int storage){
 		String rs = "";
 		if( storage==StorageConfig.PLATFORM_AZURE){
@@ -77,6 +79,7 @@ public class ConfigManager {
 		this.ks3Config = c.ks3Config;
 		this.flowConfig = c.flowConfig;
 		this.storageConfig = c.storageConfig;
+		this.versionConfig = c.versionConfig;
 	}
 	public void updateCache(int id,Object obj){
 		switch (id) {
@@ -91,6 +94,7 @@ public class ConfigManager {
 		case Config.ID_金山云配置:ks3Config = (Ks3Config) obj;reInitStorageConfig(null,ks3Config);break;
 		case Config.ID_流量统计:flowConfig = (FlowConfig) obj;break;
 		case Config.ID_存储使用平台:storageConfig = (StorageConfig)obj;break;
+		case Config.ID_版本:versionConfig = (VersionConfig)obj;break;
 		default:
 			break;
 		}
@@ -322,6 +326,12 @@ public class ConfigManager {
 	}
 	public void setStorageConfig(StorageConfig storageConfig) {
 		this.storageConfig = storageConfig;
+	}
+	public VersionConfig getVersionConfig() {
+		return versionConfig;
+	}
+	public void setVersionConfig(VersionConfig versionConfig) {
+		this.versionConfig = versionConfig;
 	}
 	
 }

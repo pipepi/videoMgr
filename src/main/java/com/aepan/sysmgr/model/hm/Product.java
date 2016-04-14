@@ -26,6 +26,14 @@ public class Product implements Serializable{
 	private float marketPrice;//市场价
 	private int quantity;//数量
 	private String addedDate;//添加日期
+	/**
+	 * 1:待审核   
+	 * 2:销售中
+	 * 3:未通过
+	 * 4:违规下架
+	 * 5:未审核
+	 */
+	private int auditState;
 	public Product() {
 	}
 	public Product(int id,int shopId,String productName,String imagePath,float marketPrice,int quantity,String addedDate) {
@@ -92,6 +100,12 @@ public class Product implements Serializable{
 	}
 	public void setAddedDate(String addedDate) {
 		this.addedDate = addedDate;
+	}
+	public int getAuditState() {
+		return auditState;
+	}
+	public void setAuditState(int auditState) {
+		this.auditState = auditState;
 	}
 	
 

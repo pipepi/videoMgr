@@ -4,6 +4,7 @@
 package com.aepan.sysmgr.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import com.aepan.sysmgr.model.config.FlowConfig;
@@ -23,6 +24,8 @@ public class StoreInfo implements Serializable{
 	
 	private int id;
 	
+	private int shopId;
+	
 	private int userId;
 	
 	private String name;
@@ -33,9 +36,15 @@ public class StoreInfo implements Serializable{
 	
 	private String innerCode;
 	
+	private String maxLogoUrl_414;
+	
 	private String qqidKey;
 	
+	private Date createTime;
+	
 	private List<Video> videoList;
+	
+	private List<Integer> productIdList;
 	
 	private String productList;
 	
@@ -51,6 +60,20 @@ public class StoreInfo implements Serializable{
 
 	public int getId() {
 		return id;
+	}
+
+	/**
+	 * @return the shopId
+	 */
+	public int getShopId() {
+		return shopId;
+	}
+
+	/**
+	 * @param shopId the shopId to set
+	 */
+	public void setShopId(int shopId) {
+		this.shopId = shopId;
 	}
 
 	/**
@@ -79,6 +102,20 @@ public class StoreInfo implements Serializable{
 		return shareContent;
 	}
 
+	/**
+	 * @return the maxLogoUrl_414
+	 */
+	public String getMaxLogoUrl_414() {
+		return maxLogoUrl_414;
+	}
+
+	/**
+	 * @param maxLogoUrl_414 the maxLogoUrl_414 to set
+	 */
+	public void setMaxLogoUrl_414(String maxLogoUrl_414) {
+		this.maxLogoUrl_414 = maxLogoUrl_414;
+	}
+
 	public String getInnerCode() {
 		return innerCode;
 	}
@@ -97,8 +134,30 @@ public class StoreInfo implements Serializable{
 		this.qqidKey = qqidKey;
 	}
 
+	/**
+	 * @return the createTime
+	 */
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	/**
+	 * @param createTime the createTime to set
+	 */
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
 	public List<Video> getVideoList() {
 		return videoList;
+	}
+	
+	public List<Integer> getProductIdList() {
+		return productIdList;
+	}
+
+	public void setProductIdList(List<Integer> productIdList) {
+		this.productIdList = productIdList;
 	}
 
 	public String getProductList() {

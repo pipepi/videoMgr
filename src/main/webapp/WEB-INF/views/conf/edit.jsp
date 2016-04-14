@@ -307,6 +307,19 @@
 		    </tr>
 	</table>
 </div>
+<div class="title_1">版本管理</div>
+<div>
+	<div class="float title_2">版本号
+	<c:if test="${conf.versionConfig==null }"><a href="javascript:init(13);">初始化</a></c:if>
+	</div><div class="float folder close"></div><div style="clear:both"></div>
+	<table confid="13" confname="VersionConfig">
+		<tr>
+			<td>版本号</td>
+			<td>${conf.versionConfig.version }</td>
+			<td><div class="btn" attrname="version"></div></td>
+		</tr>
+	</table>
+</div>
 <script type="text/javascript">
 function deleteUserData(){
 	var accountName = $('#accountName').val();

@@ -13,16 +13,11 @@
 </head>
 
 <body>
-<div class="container-fluid">
+<div class="container-fluid container-fluid2">
 <div class="sj_buy-video">
    <div class="sj-buy-videoCons">
-     <img src="${ctx}/source/images/partner/package/jdt_3.jpg" width="885" height="62" />
-     <ul class="tjt-font">
-     	<li style="margin-left:65px;"><strong>套餐选择</strong></li>
-        <li style="margin-left:295px;"><strong>套餐支付</strong></li>
-        <li style="margin-left:280px;"><strong>开启视频电商</strong></li>
-        <div class="clear"></div>
-     </ul>
+     <img src="${ctx}/source/images/partner/package/jdt_3.png" width="100%"  />
+  
      
      <!--支付成功-->
      <div class="sj-pay">
@@ -44,7 +39,7 @@
        </ul>
      </div> 
 	<input type="hidden" id="IndexUrl" value="${partnerIndexUrl}">
-     <div class="next-btns" style="width:350px; "><a href="javascript:toHelpPage()" class="ck-infors-btns">查看详情说明</a><a href="javascript:goVideoManage()" class="naxt-btns-cons">我去开启</a>
+     <div class="next-btns" style="width:350px; "><a href="javascript:toHelpPage()" class="ck-infors-btns">查看详情说明</a><a href="/store/videolist" class="naxt-btns-cons">我去开启</a>
       <div class="clear"></div>  
      </div>
    
@@ -54,15 +49,17 @@
 
 
 <script type="text/javascript">
-	function goVideoManage(){
+	/* function goVideoManage(){
 		   //var IndexUrl=$("#IndexUrl").val();
 		   //top.window.location.href=partner_ctx+"/SellerAdmin?url="+ctx+"/video/async/page&tar="+ctx+"/video/listhm";
-			window.top.location="${ctx}/store/videolist";
+			window.location.href="${ctx}/store/videolist?v=re";
 		    
-	}
+	} */
 	function toHelpPage(){
 		
-		top.window.location.href="${partnerIndexUrl}/Article/Category";
+		//top.window.location.href="${partnerIndexUrl}/Article/Category";
+		top.window.location.href="https://www.kaimai8.com/Article/Category";
+		
 	}
 
 </script>

@@ -128,7 +128,7 @@ public class PackageController extends DataTableController {
 	@RequestMapping("/package/finishpay")
 	public String finishPay(ModelMap model){
 		PartnerConfig partnerConfig = ConfigManager.getInstance().getPartnerConfig(configService);
-		String partnerIndexUrl = partnerConfig.rootPath+"/SellerAdmin";
+		String partnerIndexUrl = partnerConfig.rootPath;
 		model.addAttribute("partnerIndexUrl", partnerIndexUrl);
 		return "/package/buypackagesuccess";
 	}
@@ -376,7 +376,9 @@ public class PackageController extends DataTableController {
                 throw new BusinessRuntimeException( "error.param.wrong", "无效参数" );
             }
     		rpackage.setId(id);
-    		rpackage.setName(reqInfo.getParameter("name"));
+    		String packageName = reqInfo.getParameter("name","");
+    		logger.debug("\npackageName="+packageName);
+    		rpackage.setName(packageName);
         	Integer playerNum = reqInfo.getIntParameter("playerNum",0);
         	Integer videoNum = reqInfo.getIntParameter("videoNum",0);
         	Integer productNum = reqInfo.getIntParameter("productNum",0);
@@ -402,7 +404,7 @@ public class PackageController extends DataTableController {
 							user.getPartnerAccountId(),
 							user.getPartnerAccountName(),
 							"/package/update", 
-							"修改套餐"+rpackage, 
+							"修改套餐", 
 							request.getRemoteAddr()));
     	}
 		return "redirect:/package/list.do";

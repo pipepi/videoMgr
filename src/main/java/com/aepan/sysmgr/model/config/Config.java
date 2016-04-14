@@ -31,6 +31,7 @@ public class Config implements Serializable {
 	public static final int ID_金山云配置 = 11;
 	
 	public static final int ID_存储使用平台 = 12;
+	public static final int ID_版本 = 13;
 	
 	public int id;
 	public String name;

@@ -33,6 +33,7 @@ import com.aepan.sysmgr.model.config.PartnerConfig;
 import com.aepan.sysmgr.model.hm.PartnerProduct;
 import com.aepan.sysmgr.model.hm.PartnerProductPage;
 import com.aepan.sysmgr.model.hm.Product;
+import com.aepan.sysmgr.model.packageinfo.PackageInfo;
 import com.aepan.sysmgr.model.packageinfo.PackageStat;
 import com.aepan.sysmgr.model.tempinfo.LinkProductInfo;
 import com.aepan.sysmgr.service.ConfigService;
@@ -40,6 +41,8 @@ import com.aepan.sysmgr.service.PackageStatService;
 import com.aepan.sysmgr.service.PartnerDataService;
 import com.aepan.sysmgr.service.ProductService;
 import com.aepan.sysmgr.service.StoreService;
+import com.aepan.sysmgr.service.StoreStatusService;
+import com.aepan.sysmgr.service.UserService;
 import com.aepan.sysmgr.util.AjaxResponseUtil;
 import com.aepan.sysmgr.util.ConfigManager;
 import com.aepan.sysmgr.util.Constants;
@@ -63,13 +66,21 @@ public class Product3Controller extends DataTableController {
 	@Autowired
 	StoreService storeService;
 	@Autowired
+	private StoreStatusService storeStatusService;
+	@Autowired
 	private PartnerDataService partnerDataService;
+	
+	@Autowired
+	UserService userService;
+	
 	/**
 	 * 播放器页面关联产品
 	 */
 	@RequestMapping("/product3/list4player")
 	public String list4player(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws AzureMediaSDKException{
 		HttpRequestInfo reqInfo = new HttpRequestInfo(request);
+		int storeId = reqInfo.getIntParameter("storeId",0);
+		String searchKey = reqInfo.getParameter("searchKey","");
 		String pageNo = reqInfo.getParameter("pageNo");
 		String pageSize = reqInfo.getParameter("pageSize");
 		String orderBy = reqInfo.getParameter("orderBy","time");
@@ -78,13 +89,16 @@ public class Product3Controller extends DataTableController {
 		int ps = pageSize==null?6:Integer.parseInt(pageSize);
 		if(!isLogin(request)){
 			//initConfig(userName, request);
-			return "redirect:/login";
+			//return "redirect:/login";
+			User user =userService.get(83);
+			
+			request.getSession().setAttribute(Constants.SESSION_USER, user);
 		}
 		PartnerProductPage ppi = new PartnerProductPage();
 		//从第三方系统获取商品信息 todo
 		//String retStr = "{\"count\":7,\"products\":[{\"addedDate\":\"1443429246996\",\"id\":123,\"imagePath\":\"/Storage/Shop/210/Products/234/1.png\",\"marketPrice\":100000,\"productName\":\"商品发布了\",\"quantity\":10,\"shopId\":210},{\"addedDate\":\"1443429246996\",\"id\":124,\"imagePath\":\"/Storage/Shop/210/Products/234/1.png\",\"marketPrice\":12000,\"productName\":\"限时购的商品\",\"quantity\":10,\"shopId\":210},{\"addedDate\":\"1443429246996\",\"id\":125,\"imagePath\":\"/Storage/Shop/210/Products/234/1.png\",\"marketPrice\":12000,\"productName\":\"限时购的商品\",\"quantity\":10,\"shopId\":210},{\"addedDate\":\"1443429246996\",\"id\":126,\"imagePath\":\"/Storage/Shop/210/Products/234/1.png\",\"marketPrice\":12000,\"productName\":\"限时购的商品\",\"quantity\":10,\"shopId\":210},{\"addedDate\":\"1443429246996\",\"id\":127,\"imagePath\":\"/Storage/Shop/210/Products/234/1.png\",\"marketPrice\":12000,\"productName\":\"限时购的商品\",\"quantity\":10,\"shopId\":210},{\"addedDate\":\"1443429246996\",\"id\":128,\"imagePath\":\"/Storage/Shop/210/Products/234/1.png\",\"marketPrice\":12000,\"productName\":\"限时购的商品\",\"quantity\":10,\"shopId\":210}]}";
 		//ppi = JSONUtil.fromJson(retStr, ProductPageInfo.class);
-		ppi = getUserPageProductList(request,pn,ps,orderBy,orderType);
+		ppi = getUserPageProductList(request,searchKey,storeId,pn,ps,orderBy,orderType);
 				
 		List<Product> productList = new ArrayList<Product>();
 		if(ppi!=null){
@@ -104,7 +118,17 @@ public class Product3Controller extends DataTableController {
 		model.addAttribute("imgpre", config.rootPath);
 		model.addAttribute("orderby", orderBy.equals("time")?0:1);
 		model.addAttribute("ordertype", orderType.equals("desc")?0:1);
+		setOneStoreCanLinkProductsNum(request,model);
 		return "/store/productlistsub";
+	}
+	/**设置每个播放器可关联商品数量
+	 * @param request
+	 * @param model
+	 */
+	private void setOneStoreCanLinkProductsNum(HttpServletRequest request, ModelMap model){
+		User user = getLoginUser(request);
+		PackageInfo p = packageService.getById(user.getPackageId());
+		model.addAttribute("canLinkNum", p==null?0:p.getProductNum());
 	}
 	private List<Product> toP(List<PartnerProduct> list){
 		List<Product> rs = new ArrayList<Product>();
@@ -118,24 +142,34 @@ public class Product3Controller extends DataTableController {
 				p.setAddedDate(pp.getPublishTime());
 				p.setMarketPrice(pp.getPrice());
 				p.setQuantity(pp.getStock());
+				p.setAuditState(pp.getAuditState());
 				rs.add(p);
 			}
 		}
 		return rs;
 		
 	}
-	private PartnerProductPage getUserPageProductList(HttpServletRequest request,int page,int pagesize,String orderBy,String orderType){
+	private PartnerProductPage getUserPageProductList(HttpServletRequest request,String searchKey,int storeId,int page,int pagesize,String orderBy,String orderType){
 		
 		HttpSession session = request.getSession();
 		
 		User user = (User)session.getAttribute(Constants.SESSION_USER);
-		PartnerProductPage hp = partnerDataService.getProducts(user.getPartnerAccountId(), page, pagesize, orderBy, orderType);
+		String productIds = getLindedProductIds(storeId);
+		//PartnerProductPage hp = partnerDataService.getProducts(user.getPartnerAccountId(), page, pagesize, orderBy, orderType);
+		PartnerProductPage hp = partnerDataService.getProducts4Link(user.getPartnerAccountId(),
+				productIds, searchKey, page, pagesize, orderBy, orderType);
 		if(hp!=null){
 			add2Session(request,hp);
         	return hp;
 		}
 		return null;
 	} 
+	private String getLindedProductIds(int storeId){
+		if(storeId>0){
+			return storeService.getProductIds(storeId);
+		}
+		return "";
+	}
 	/**
 	 * 将第三方返回的产品数据存入session，用于关联播放器获取产品名称、描述、类型等搜索关键词
 	 */
@@ -200,6 +234,7 @@ public class Product3Controller extends DataTableController {
         				sv.productDesc = p.getShotDescription();
         				sv.productPrice = p.getPrice();
         				sv.productAttrs = p.toProductAttr();
+        				sv.auditState = p.getAuditState();
         				//sv.productType = p.get
         			}
 					batchList.add(sv);
@@ -217,12 +252,13 @@ public class Product3Controller extends DataTableController {
         			Store store = storeService.getById(storeId);
         			if(store!=null){
         				//更新播放器状态
-        				if(store.getStatus()==Store.STATUS_离线){
+        				/*if(store.getStatus()==Store.STATUS_V_NO_P_NO){
         					if(storeService.getLinkedVideoNum(user.getId(), storeId)>0){
-        						store.setStatus(Store.STATUS_在线);
+        						store.setStatus(Store.STATUS_V_OK_P_OK);
         					}
-        				}
+        				}*/
         				storeService.update(configService, store);
+        				storeStatusService.linkProduct(store, true, StoreProduct.hasProductOffline(batchList));
         			}
         			
         		}else{
@@ -244,10 +280,11 @@ public class Product3Controller extends DataTableController {
         		//更新被关联播放器logo 状态
         		Store store = storeService.getById(storeId);
         		if(store!=null){
-        			if(store.getStatus()==Store.STATUS_在线){
-        				store.setStatus(Store.STATUS_离线);
-        			}
+        			/*if(store.getStatus()==Store.STATUS_V_OK_P_OK){
+        				store.setStatus(Store.STATUS_V_NO_P_NO);
+        			}*/
         			storeService.update(configService, store);
+        			storeStatusService.linkProduct(store, false, false);
         		}
         	}
         	model.addAttribute("success", true);

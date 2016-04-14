@@ -67,7 +67,7 @@ public class FlowRest {
 	}
 	public static void main(String[] args) {
 		//System.out.println(MD5Util.MD5Encode(""+1+1+1+1.1+"abdc3936fa6b4c16be4940b3068a8206", "utf-8"));
-		System.out.println(MD5Util.MD5Encode("64101545.0abdc3936fa6b4c16be4940b3068a8206", "utf-8"));
+		System.out.println(MD5Util.MD5Encode("2902016-03-28 16:55:19aztsysmgr_md5", "utf-8"));
 	}
 	private boolean valiParams(Object... params){
 		if(params!=null&&params.length>0){

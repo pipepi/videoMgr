@@ -81,8 +81,13 @@ public class StoreDaoImpl implements StoreDao {
 		String sql = "  select id, name, description, share_content, inner_code, "
 				+ " type, private_dns, com_address, com_tele, user_id, logo_url, logo_url_301,max_logo_url,max_logo_url_414,"
 				+ " status, create_time,update_time from t_sysmgr_store where id = ? ";
-		return jdbcTemplate.queryForObject(sql, new Object[] {id}, new StoreRowMapper());
-		
+		Store store = null;
+		try {
+			store = jdbcTemplate.queryForObject(sql, new Object[] {id}, new StoreRowMapper());
+		} catch (Exception e) {
+			//没有查询到播放器
+		}		
+		return store;
 	}
 
 	/* (non-Javadoc)
@@ -135,7 +140,7 @@ public class StoreDaoImpl implements StoreDao {
 	@Override
 	public List<StoreSubInfo> getStoreSubInfoByIds(List<Integer> ids){
 		StringBuffer sb = new StringBuffer();
-		sb.append("select s.id,s.user_id,s.name,s.logo_url,s.logo_url_301,s.max_logo_url,s.max_logo_url_414,u.partner_account_id from t_sysmgr_store s,t_sysmgr_user u where s.user_id=u.id  and s.id in (");
+		sb.append("select s.id,s.user_id,s.name,s.logo_url,s.logo_url_301,s.max_logo_url,s.max_logo_url_414,u.partner_account_id from t_sysmgr_store s,t_sysmgr_user u where s.user_id=u.id and s.id in (");
 		for (int i = 0; i < ids.size(); i++) {
 			if(i!=0) sb.append(",");
 			sb.append("?");
@@ -225,7 +230,7 @@ public class StoreDaoImpl implements StoreDao {
 	public List<StoreSubInfo> getSellerOtherStores(int userId,int storeId){
 		StringBuffer sb = new StringBuffer();
 		sb.append("select s.id,s.user_id,s.name,s.status,s.logo_url,s.logo_url_301,s.max_logo_url,s.max_logo_url_414,u.partner_account_id from t_sysmgr_store s,t_sysmgr_user u where  s.user_id = ? and s.user_id=u.id and s.status=")
-		.append(Store.STATUS_在线)
+		.append(Store.STATUS_V_OK_P_OK)
 		.append("  and s.id <> ? order by s.id desc limit 0,5");
 		return jdbcTemplate.query(sb.toString(), new Object[]{userId,storeId},STORESUBINFO_OTHER_ROWMAPPER);
 	}
@@ -240,7 +245,7 @@ public class StoreDaoImpl implements StoreDao {
 	public List<StoreSubInfo> getCategoryOtherStores(int userId,String type,int num){
 		StringBuffer sb = new StringBuffer();
 		sb.append("select s.id,s.user_id,s.name,s.status,s.logo_url,s.logo_url_301,s.max_logo_url,s.max_logo_url_414,u.partner_account_id from t_sysmgr_store s,t_sysmgr_user u where  s.user_id=u.id and s.type like concat('%',?,'%') and s.status=")
-		.append(Store.STATUS_在线)
+		.append(Store.STATUS_V_OK_P_OK)
 		.append(" and s.user_id <> ? order by s.id desc limit 0,? ");
 		return jdbcTemplate.query(sb.toString(), new Object[]{type,userId,num},STORESUBINFO_OTHER_ROWMAPPER);
 	}

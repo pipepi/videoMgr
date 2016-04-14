@@ -111,4 +111,20 @@ public interface StoreService {
 	 * 重新加载搜索索引
 	 */
 	void reloadSearchIndex();
+	/**
+	 * 商品id列表
+	 * @param storeId
+	 * @return
+	 */
+	String getProductIds(int storeId);
+	/**
+	 * 清楚播放器logo
+	 * @param storeId
+	 */
+	void deleteStoreLogo(int storeId);
+	/**
+	 * 商家主动下架商品，和播放器的关联关系删除，清除redis缓存，更新搜索引擎索引
+	 * @param productId
+	 */
+	void deleteLinkedStoreRelation(int productId);
 }

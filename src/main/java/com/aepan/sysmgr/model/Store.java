@@ -26,8 +26,84 @@ public class Store implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 7262644731986089332L;
-	public static final int STATUS_离线 = 0;
-	public static final int STATUS_在线 = 1;
+	public static final int STATUS_V_NO_P_NO = 0;//视频：未关联；商品:未关联
+	public static final int STATUS_V_NO_P_OK = 2;//视频：未关联；商品:已关联
+	public static final int STATUS_V_NO_P_OFF = 3;//视频：未关联；商品:包含违规下架
+	public static final int STATUS_V_OK_P_NO = 4;//视频：已关联；商品:未关联
+	public static final int STATUS_V_OK_P_OK = 1;//视频：已关联；商品:已关联
+	public static final int STATUS_V_OK_P_OFF = 5;//视频：已关联；商品:包含违规下架
+	public static final int STATUS_V_OFF_P_NO = 6;//视频：违规下架；商品:未关联
+	public static final int STATUS_V_OFF_P_OK = 7;//视频：违规下架；商品:已关联
+	public static final int STATUS_V_OFF_P_OFF = 8;//视频：违规下架；商品:包含违规下架
+	public void setStatusProductNo(){
+		if(status==STATUS_V_OK_P_OK||
+		   status==STATUS_V_OK_P_OFF){
+		   status = STATUS_V_OK_P_NO;
+		}else if (
+		   status==STATUS_V_NO_P_OK||
+		   status==STATUS_V_NO_P_OFF){
+		   status = STATUS_V_NO_P_NO;
+		}else if(
+		   status==STATUS_V_OFF_P_OK||
+		   status==STATUS_V_OFF_P_OFF){
+			status = STATUS_V_OFF_P_NO;
+		}
+	}
+	public void setStatusProductOff(){
+		if(status==STATUS_V_OK_P_OK||
+				status==STATUS_V_OK_P_NO){
+			status = STATUS_V_OK_P_OFF;
+		}else if (
+				status==STATUS_V_NO_P_OK||
+				status==STATUS_V_NO_P_NO){
+			status = STATUS_V_NO_P_OFF;
+		}else if(
+				status==STATUS_V_OFF_P_OK||
+				status==STATUS_V_OFF_P_NO){
+			status = STATUS_V_OFF_P_OFF;
+		}
+	}
+	public void setStatusProductOk(){
+		if(status==STATUS_V_OK_P_NO||
+				status==STATUS_V_OK_P_OFF){
+			status = STATUS_V_OK_P_OK;
+		}else if (
+				status==STATUS_V_NO_P_NO||
+				status==STATUS_V_NO_P_OFF){
+			status = STATUS_V_NO_P_OK;
+		}else if(
+				status==STATUS_V_OFF_P_NO||
+				status==STATUS_V_OFF_P_OFF){
+			status = STATUS_V_OFF_P_OK;
+		}
+	}
+	public boolean isVideoOk(){
+		if(status==STATUS_V_OK_P_NO||
+		   status==STATUS_V_OK_P_OFF||
+		   status==STATUS_V_OK_P_OK){
+			return true;
+		}
+		return false;
+	}
+	public boolean isProductOk(){
+		if(status==STATUS_V_NO_P_OK||
+		   status==STATUS_V_OFF_P_OK||
+		   status==STATUS_V_OK_P_OK){
+			return true;
+		}
+		return false;
+	}
+	public boolean isOff(){
+		if(status==STATUS_V_NO_P_OFF||
+		   status==STATUS_V_OK_P_OFF||
+		   status==STATUS_V_OFF_P_NO||
+		   status==STATUS_V_OFF_P_OFF||
+		   status==STATUS_V_OFF_P_OK
+				){
+			return true;
+		}
+		return false;
+	}
 	
 	/**
 	 * html标签过滤

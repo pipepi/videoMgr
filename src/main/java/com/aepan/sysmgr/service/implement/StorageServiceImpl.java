@@ -11,7 +11,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 
 import com.aepan.sysmgr.azure.AzureSDK;
 import com.aepan.sysmgr.azure.KS3YunSDK;
@@ -31,7 +31,7 @@ import com.aepan.sysmgr.util.FileUtilAzure;
  * @author lanker
  * 2015年12月31日上午10:14:20
  */
-@Controller
+@Service
 public class StorageServiceImpl implements StorageService {
 	private static final Logger logger = LoggerFactory.getLogger(StorageServiceImpl.class);
 	

@@ -35,6 +35,7 @@ import com.aepan.sysmgr.service.ConfigService;
 import com.aepan.sysmgr.service.PartnerDataService;
 import com.aepan.sysmgr.service.ProductService;
 import com.aepan.sysmgr.service.StoreService;
+import com.aepan.sysmgr.service.StoreStatusService;
 import com.aepan.sysmgr.service.UserService;
 import com.aepan.sysmgr.service.VideoService;
 import com.aepan.sysmgr.util.ConfigManager;
@@ -54,7 +55,8 @@ public class StoreRest {
 	private static final Logger logger = LoggerFactory.getLogger(StoreRest.class);	
 	@Autowired
 	StoreService storeService;
-	
+	@Autowired
+	private StoreStatusService storeStatusService;
 	@Autowired
 	ProductService productService;
 	
@@ -100,16 +102,74 @@ public class StoreRest {
         	cacheService.delete(CacheObject.STOREINFO, storeId);
         }
         if(productId>0){
+        	int[] pidarr = new int[1];
+        	pidarr[0] = productId;
         	cacheService.deleteByProductId(CacheObject.STOREINFO, productId);
+        	storeStatusService.resetStatusByProducts(pidarr);
         }
         if(productIds!=null&&!productIds.trim().isEmpty()){
         	String[] ids = productIds.split(",");
         	if(ids!=null&&ids.length>0){
-				for (String pid : ids) {
-					cacheService.deleteByProductId(CacheObject.STOREINFO, Integer.parseInt(pid));
+        		int[] pidarr = new int[ids.length];
+				for (int i=0;i<ids.length;i++) {
+					pidarr[i] = Integer.parseInt(ids[i]);
+					cacheService.deleteByProductId(CacheObject.STOREINFO, pidarr[i]);
 				}
+				storeStatusService.resetStatusByProducts(pidarr);
 			}
         }
+	}
+	@RequestMapping(value="/offlineBySeller" , method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public void productOffLineBySeller( HttpServletRequest request, HttpServletResponse response ){
+		HttpRequestInfo reqInfo = new HttpRequestInfo(request);
+		String productIds = reqInfo.getParameter("productIds", "");
+		if(productIds!=null&&!productIds.trim().isEmpty()){
+        	String[] ids = productIds.split(",");
+        	if(ids!=null&&ids.length>0){
+        		int[] pidarr = new int[ids.length];
+				for (int i=0;i<ids.length;i++) {
+					pidarr[i] = Integer.parseInt(ids[i]);
+					storeService.deleteLinkedStoreRelation(pidarr[i]);
+				}
+				storeStatusService.resetStatusByProducts(pidarr);
+			}
+        }
+	}
+
+	//获取所有在线商铺详细
+	@RequestMapping(value = "/showStoreNoProduct", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE )
+	@ResponseBody
+	public String showStoreNoProductMsg( HttpServletRequest request, HttpServletResponse response ) throws IOException {
+		HttpRequestInfo reqInfo = new HttpRequestInfo(request);
+        int storeId = reqInfo.getIntParameter("storeId", -1);
+        StoreInfo storeInfo = new StoreInfo();
+        Store store =null;
+        store  = storeService.getById(storeId);
+        if(store ==null){
+        	return responseLog(JsonResp.CODE_GET_STORE_FAILED , "Get store error id:"+storeId);
+        }
+        //校验播放器归属用户状态  已冻结用户，播放器不可播放
+        int userId = store.getUserId();
+        User user = userService.getByUserId(userId);
+        if(user==null||user.getStatus()==User.STATUS_FREEZE){
+        	return responseLog(JsonResp.CODE_GET_USER_FREEZE , "Get store error id:"+storeId+"user had been freezed,userId="+user.getId());
+        }
+		storeInfo.setId(store.getId());
+		storeInfo.setShareContent(store.getShareContent());
+		storeInfo.setName(store.getName());
+		storeInfo.setDescription(store.getDescription());
+		storeInfo.setUserId(store.getUserId());
+		storeInfo.setCreateTime(store.getCreateTime());
+		storeInfo.setShopId(user.getPartnerAccountId());
+		storeInfo.setMaxLogoUrl_414(store.getMaxLogoUrl_414());
+        if(user!=null){
+        	storeInfo.setQqidKey(user.getQqidKey());
+        }
+        List<Video> videoList = videoService.getListByStoreId(storeId, userId);
+        storeInfo.setVideoList(videoList);
+        List<Integer> productIdList = productService.getStoreProductIdList(storeId);
+        storeInfo.setProductIdList(productIdList);
+    	return JSONUtil.toJson(storeInfo);
 	}
 	//获取所有在线商铺详细
 	@RequestMapping(value = "/showStore", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE )
@@ -142,6 +202,7 @@ public class StoreRest {
 		storeInfo.setName(store.getName());
 		storeInfo.setDescription(store.getDescription());
 		storeInfo.setUserId(store.getUserId());
+		storeInfo.setCreateTime(store.getCreateTime());
         if(user!=null){
         	storeInfo.setQqidKey(user.getQqidKey());
         }
